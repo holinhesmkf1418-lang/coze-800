@@ -4,7 +4,42 @@
 
 ---
 
-## 快速开始
+## ⚡ 极速启动（免 MySQL，30 秒联调）
+
+无需安装数据库，内存服务器直接跑：
+
+```bash
+cd server
+npm install
+npm run dev:standalone
+# → 🚀 Base URL: http://localhost:3000
+# → 🔧 开发登录: POST /api/auth/dev-login
+# → 📊 内置 30 条词汇数据，核心接口全部可用
+```
+
+**前端直接联调：**
+```javascript
+// 1. 设置 baseURL
+api.common.setBaseURL('http://localhost:3000');
+
+// 2. 开发登录
+const data = await api.auth.devLogin('测试用户');
+// → { token: "eyJ...", user: { id: 1 } }
+
+// 3. 打卡
+const today = await api.checkin.getToday();
+// → { date, vocabs: [...], completed }
+
+// 4. 随心测
+const quiz  = await api.quiz.start({ timeLimit: 1800, questionCount: 10 });
+const score = await api.quiz.submit({ testId: quiz.testId, answers: [...], duration: 120 });
+```
+
+> ⚠️ 内存服务器重启后数据会丢失。正式环境仍需 MySQL + 完整启动。
+
+---
+
+## 完整启动（需 MySQL）
 
 ### 环境要求
 
