@@ -114,26 +114,32 @@ huasheng800-words/
 4. AppID 使用测试号或填入真实 AppID
 5. 点击「编译」预览
 
-### 需要补充的文件
+### TabBar 图标
 
-- `assets/icons/` 下需要 10 个 TabBar 图标 PNG（40×40px 的普通态 + 选中态），命名：
-  - `home.png` / `home-active.png`
-  - `checkin.png` / `checkin-active.png`
-  - `wrongbook.png` / `wrongbook-active.png`
-  - `quiz.png` / `quiz-active.png`
-  - `profile.png` / `profile-active.png`
+`assets/icons/` 下已生成 10 个占位 SVG 风格 PNG 图标（81×81px，含默认态和选中态），可直接在微信开发者工具中预览。
 
-## 待对接的 API（与后端对齐）
+## 待对接的 API（已对齐后端 `server/docs/api.md`）
 
-| 接口 | 方法 | 用途 | 对应页面 |
-|------|------|------|----------|
-| `/api/user/login` | POST | 微信登录 | 全局 |
-| `/api/words/today` | GET | 获取今日打卡词汇 | 打卡页 |
-| `/api/checkin` | POST | 提交打卡 | 打卡页 |
-| `/api/wrong-book/list` | GET | 获取错题列表 | 错题本 |
-| `/api/wrong-book/stats` | GET | 获取错题统计 | 错题本 |
-| `/api/quiz/generate` | POST | 生成随机试卷 | 随心测 |
-| `/api/quiz/submit` | POST | 提交答案 + 返回成绩 | 随心测 |
+| 接口 | 方法 | 认证 | 用途 | 对应页面 |
+|------|------|------|------|----------|
+| `POST /api/auth/login`    | POST | 否 | 微信登录换取 JWT | 全局 |
+| `GET /api/check-in/today`  | GET | 是 | 今日打卡状态+词汇 | 打卡页 |
+| `POST /api/check-in/submit` | POST | 是 | 提交打卡 | 打卡页 |
+| `GET /api/check-in/streak`  | GET | 是 | 连续打卡天数 | 首页 |
+| `GET /api/wrong-answers`    | GET | 是 | 错题列表（分页+筛选）| 错题本 |
+| `GET /api/wrong-answers/stats` | GET | 是 | 错题统计（正确率+分类）| 错题本 |
+| `POST /api/wrong-answers`   | POST | 是 | 收录错题 | 随心测 |
+| `DELETE /api/wrong-answers/:vocabId` | DELETE | 是 | 移除错题 | 错题本 |
+| `POST /api/tests/start`     | POST | 是 | 开始随心测 | 随心测 |
+| `POST /api/tests/submit`    | POST | 是 | 提交答案+返回成绩 | 随心测 |
+| `GET /api/tests/history`    | GET | 是 | 测试历史 | 个人中心 |
+| `GET /api/vocabs/categories`| GET | 是 | 词汇分类列表 | 错题本 |
+
+所有接口统一响应格式 `{ code, message, data }`，认证用 Header `Authorization: Bearer <token>`。
+
+### ⚠️ 待对齐项（PM审查提出）
+
+- **随心测答题模型**：前端为 4 选项选择题（提交 optionIndex），后端当前为 `userAnswer: boolean` 判断题模式。需后端调整为返回 `options + answerIndex`，前端提交 `selectedOption`。详见 `server/docs/api.md` 中的 `POST /api/tests/start` 和 `POST /api/tests/submit`。
 
 ## 协作规则
 
