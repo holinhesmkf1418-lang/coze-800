@@ -20,6 +20,7 @@
  *   GET  /api/vocabs/:id
  *   POST /api/tests/start
  *   POST /api/tests/submit
+ *   GET  /api/tests/history
  */
 import express from 'express';
 import cors from 'cors';
@@ -41,6 +42,7 @@ const users: Map<number, User> = new Map();
 const vocabs: Vocab[] = [];
 const checkIns: Map<string, { date: string; completed: boolean; vocabCount: number; totalCount: number; checkedAt: string | null }> = new Map();
 const wrongAnswers: Map<string, { vocabId: number; word: string; definition: string; category: string | null; wrongCount: number; sourceType: string; createdAt: string }> = new Map();
+const testHistory: any[] = [];
 let testCounter = 0;
 const tests: Map<number, any> = new Map();
 
@@ -301,6 +303,14 @@ app.post('/api/tests/submit', auth, (req, res) => {
     }
   }
 
+  // 写入测试历史（个人中心需要 GET /api/tests/history）
+  testHistory.unshift({
+    id: testId, score: correctCount, total: record.total,
+    accuracyRate: `${((correctCount / record.total) * 100).toFixed(2)}%`,
+    duration, timeLimit: record.timeLimit,
+    status: record.status, createdAt: new Date().toISOString()
+  });
+
   res.json({
     code: 0, message: '交卷成功！',
     data: {
@@ -309,6 +319,17 @@ app.post('/api/tests/submit', auth, (req, res) => {
       duration, timeLimit: record.timeLimit,
       status: record.status, details, wrongVocabs
     }
+  });
+});
+
+// 测试历史（个人中心用）
+app.get('/api/tests/history', auth, (req, res) => {
+  const page = parseInt((req.query.page as string) || '1', 10);
+  const pageSize = parseInt((req.query.pageSize as string) || '20', 10);
+  const start = (page - 1) * pageSize;
+  res.json({
+    code: 0, message: 'ok',
+    data: { list: testHistory.slice(start, start + pageSize), total: testHistory.length, page, pageSize }
   });
 });
 
