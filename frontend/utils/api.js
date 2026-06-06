@@ -2,19 +2,34 @@
  * API 接口集合 — 搞定公考800词
  *
  * 按业务模块组织所有后端接口，页面直接引用，无需关心路径和请求细节。
+ * 内置字段适配层：definition→meaning, seqNo→seq，页面无需感知后端字段差异。
  *
  * 用法:
  *   const api = require('../../utils/api');
  *   const data = await api.checkin.getToday();
  *   const result = await api.quiz.submit({ testId: 88, answers: [...], duration: 120 });
+ *   await api.auth.devLogin('测试用户');  // 本地联调登录
  */
 
 const request = require('./request');
+const adapter = require('./adapter');
 
 // ===== 认证 =====
 const auth = {
   /** 微信登录 */
   login: () => request.wxLogin(),
+
+  /**
+   * 开发环境模拟登录（无需微信 code）
+   * 后端 POST /api/auth/dev-login
+   * @param {string} nickname - 测试用昵称
+   */
+  devLogin: (nickname) =>
+    request.post('/api/auth/dev-login', { nickname }).then(data => {
+      if (data.token) request.setToken(data.token);
+      if (data.user) request.setUserInfo(data.user);
+      return data;
+    }),
 
   /** 获取用户信息（需登录） */
   getProfile: () => request.get('/api/auth/profile'),
@@ -23,15 +38,14 @@ const auth = {
   isLoggedIn: () => request.isLoggedIn(),
 
   /** 退出登录 */
-  logout: () => {
-    request.clearToken();
-  }
+  logout: () => request.clearToken()
 };
 
 // ===== 每日打卡 =====
 const checkin = {
-  /** 获取今日打卡状态和词汇列表 */
-  getToday: () => request.get('/api/check-in/today'),
+  /** 获取今日打卡状态和词汇列表（自动适配字段） */
+  getToday: () =>
+    request.get('/api/check-in/today').then(adapter.checkinToday),
 
   /** 提交打卡 */
   submit: (date) => request.post('/api/check-in/submit', { date }),
@@ -46,9 +60,10 @@ const checkin = {
 
 // ===== 错题管理 =====
 const wrongAnswers = {
-  /** 错题列表（分页 + 分类筛选） */
+  /** 错题列表（分页 + 分类筛选，自动适配字段） */
   getList: (page = 1, pageSize = 20, category) =>
-    request.get('/api/wrong-answers', { page, pageSize, category }),
+    request.get('/api/wrong-answers', { page, pageSize, category })
+      .then(adapter.wrongAnswerList),
 
   /** 错题统计（正确率 + 分类汇总） */
   getStats: () => request.get('/api/wrong-answers/stats'),
@@ -89,11 +104,62 @@ const quiz = {
 
 // ===== 词汇 =====
 const vocabs = {
-  /** 获取所有分类 */
-  getCategories: () => request.get('/api/vocabs/categories'),
+  /** 获取所有分类（自动适配为 [{key, name, count}] 格式） */
+  getCategories: () =>
+    request.get('/api/vocabs/categories').then(adapter.categories),
 
   /** 获取单个词汇详情 */
-  getDetail: (id) => request.get(`/api/vocabs/${id}`)
+  getDetail: (id) => request.get(`/api/vocabs/${id}`).then(adapter.vocab)
+};
+
+// ===== 数据导入 =====
+const imports = {
+  /**
+   * 上传 CSV/JSON 词库文件（multipart/form-data）
+   * 使用 wx.uploadFile，不走 request.post()
+   *
+   * @param {string} filePath - 微信临时文件路径 (wx.chooseMessageFile 返回的)
+   * @returns {Promise<{batchId, fileName, totalCount, successCount, failCount}>}
+   */
+  upload: (filePath) => {
+    return new Promise((resolve, reject) => {
+      const token = request.getToken();
+      const header = {};
+      if (token) {
+        header['Authorization'] = `Bearer ${token}`;
+      }
+
+      wx.uploadFile({
+        url: request.getBaseURL() + '/api/import/upload',
+        filePath,
+        name: 'file',
+        header,
+        success(res) {
+          if (res.statusCode === 401) {
+            request.clearToken();
+            reject({ code: 401, message: '登录已过期' });
+            return;
+          }
+          try {
+            const body = JSON.parse(res.data);
+            if (body.code === 0) {
+              resolve(body.data);
+            } else {
+              reject({ code: body.code, message: body.message });
+            }
+          } catch (e) {
+            reject({ code: -1, message: '响应解析失败' });
+          }
+        },
+        fail(err) {
+          reject({ code: -1, message: '上传失败', error: err });
+        }
+      });
+    });
+  },
+
+  /** 导入批次历史 */
+  getHistory: () => request.get('/api/import/history')
 };
 
 // ===== 通用 =====
@@ -111,5 +177,6 @@ module.exports = {
   wrongAnswers,
   quiz,
   vocabs,
+  imports,
   common
 };

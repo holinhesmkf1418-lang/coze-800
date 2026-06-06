@@ -52,6 +52,10 @@ function setBaseURL(url) {
   BASE_URL = url.replace(/\/$/, '');  // 去末尾斜杠
 }
 
+function getBaseURL() {
+  return BASE_URL;
+}
+
 function onUnauthorized(fn) {
   onTokenExpired = fn;
 }
@@ -200,6 +204,7 @@ function isLoggedIn() {
 module.exports = {
   // 配置
   setBaseURL,
+  getBaseURL,
   onUnauthorized,
 
   // 请求方法
