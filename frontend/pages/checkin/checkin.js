@@ -20,7 +20,10 @@ Page({
   },
 
   onShow() {
-    this.loadCheckinState();
+    // 仅在 mock 模式下刷新本地状态；API 模式数据来自后端
+    if (this.data.dataSource !== 'api') {
+      this.loadCheckinState();
+    }
   },
 
   async initPage() {
@@ -30,16 +33,22 @@ Page({
 
     this.setData({ todayDate: dateStr });
 
+    // 等待登录完成
+    await getApp().globalData.loginReady;
+
     // 优先真实 API
     try {
       await this.loadFromAPI();
       this.setData({ dataSource: 'api' });
+      // API 模式：不调 loadCheckinState()，避免本地 storage 覆盖后端状态
+      return;
     } catch (e) {
       console.warn('[checkin] API 不可用，fallback mock:', e.message);
       this.loadFromMock();
       this.setData({ dataSource: 'mock' });
     }
 
+    // mock 模式：读取本地打卡状态
     this.loadCheckinState();
   },
 

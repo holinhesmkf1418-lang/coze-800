@@ -20,8 +20,8 @@ App({
     // 初始化本地存储
     this.initStorage();
 
-    // 恢复登录态
-    this.restoreLoginState();
+    // 启动登录（异步），页面可通过 loginReady 等待
+    this.globalData.loginReady = this.restoreLoginState();
   },
 
   /**
@@ -118,6 +118,8 @@ App({
     statusBarHeight: 0,
     userInfo: null,
     isLoggedIn: false,
+    // Promise: 登录完成后 resolve，页面可 await getApp().globalData.loginReady
+    loginReady: null,
     // API 实例，页面可通过 getApp().api 调用
     api: null,
     // 主题色

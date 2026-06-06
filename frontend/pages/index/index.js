@@ -21,6 +21,9 @@ Page({
   },
 
   async loadStats() {
+    // 等待登录完成（避免页面先于登录触发 fallback）
+    await getApp().globalData.loginReady;
+
     try {
       await this.loadFromAPI();
       this.setData({ dataSource: 'api' });
