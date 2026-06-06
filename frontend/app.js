@@ -6,6 +6,7 @@
  */
 
 const api = require('./utils/request');
+const config = require('./utils/config');
 
 App({
   onLaunch() {
@@ -29,7 +30,7 @@ App({
    */
   initRequest() {
     // 设置后端 baseURL（联调时修改为实际地址）
-    const baseURL = wx.getStorageSync('api_base_url') || 'http://localhost:3000';
+    const baseURL = config.baseURL;
     api.setBaseURL(baseURL);
 
     // 设置 token 过期回调 → 清除状态，等待下次登录
@@ -53,16 +54,26 @@ App({
       return;
     }
 
-    // 本地联调：自动 devLogin，无需微信 code
-    try {
-      const apiMod = require('./utils/api');
-      await apiMod.auth.devLogin('备考同学');
-      this.globalData.isLoggedIn = true;
-      this.globalData.userInfo = api.getUserInfo();
-      console.log('[app] devLogin 成功，已就绪');
-    } catch (e) {
-      console.warn('[app] devLogin 失败，保持未登录状态:', e.message);
-      this.globalData.isLoggedIn = false;
+    // 按配置选择登录方式
+    if (config.loginMode === 'dev') {
+      // 本地联调：自动 devLogin
+      try {
+        const apiMod = require('./utils/api');
+        await apiMod.auth.devLogin('备考同学');
+        this.globalData.isLoggedIn = true;
+        this.globalData.userInfo = api.getUserInfo();
+        console.log('[app] devLogin 成功');
+      } catch (e) {
+        console.warn('[app] devLogin 失败:', e.message);
+        this.globalData.isLoggedIn = false;
+      }
+    } else {
+      // 生产：等待用户触发微信登录（首次进入时引导）
+      const token = api.getToken();
+      if (token) {
+        this.globalData.isLoggedIn = true;
+        this.globalData.userInfo = api.getUserInfo();
+      }
     }
   },
 
@@ -118,9 +129,8 @@ App({
     statusBarHeight: 0,
     userInfo: null,
     isLoggedIn: false,
-    // Promise: 登录完成后 resolve，页面可 await getApp().globalData.loginReady
+    isProduction: config.isProduction,
     loginReady: null,
-    // API 实例，页面可通过 getApp().api 调用
     api: null,
     // 主题色
     themeColor: '#4F6EF7',

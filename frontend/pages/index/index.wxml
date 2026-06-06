@@ -19,7 +19,7 @@
         <text class="brand-tagline">公考高频成语 · 科学背诵</text>
       </view>
     </view>
-    <view class="brand-badge">
+    <view class="brand-badge" wx:if="{{!isProduction}}">
       <text class="badge-text">MVP</text>
     </view>
   </view>

@@ -9,10 +9,12 @@ Page({
     overviewStats: { totalWords: 800, masteredWords: 0, accuracy: 0 },
     weeklyStats: [],
     categoryMastery: [],
-    dataSource: 'mock'  // 'api' | 'mock'
+    dataSource: 'mock',  // 'api' | 'mock'
+    isProduction: false
   },
 
   onLoad() {
+    this.setData({ isProduction: getApp().globalData.isProduction });
     this.loadStats();
   },
 
