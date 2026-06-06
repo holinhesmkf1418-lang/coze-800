@@ -111,7 +111,7 @@ Authorization: Bearer <token>
     "date": "2026-06-06",
     "completed": false,
     "vocabCount": 0,
-    "totalCount": 10,
+    "totalCount": 30,
     "vocabs": [
       {
         "id": 1,

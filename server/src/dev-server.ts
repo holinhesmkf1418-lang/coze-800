@@ -40,6 +40,7 @@ interface Vocab  { id: number; word: string; definition: string; category: strin
 
 const users: Map<number, User> = new Map();
 const vocabs: Vocab[] = [];
+const DAILY_CHECKIN_COUNT = 30;
 const checkIns: Map<string, { date: string; completed: boolean; vocabCount: number; totalCount: number; checkedAt: string | null }> = new Map();
 const wrongAnswers: Map<string, { vocabId: number; word: string; definition: string; category: string | null; wrongCount: number; sourceType: string; createdAt: string }> = new Map();
 const testHistory: any[] = [];
@@ -141,11 +142,11 @@ app.get('/api/check-in/today', auth, (req, res) => {
 
   let record = checkIns.get(key);
   if (!record) {
-    record = { date: today, completed: false, vocabCount: 0, totalCount: 10, checkedAt: null };
+    record = { date: today, completed: false, vocabCount: 0, totalCount: DAILY_CHECKIN_COUNT, checkedAt: null };
     checkIns.set(key, record);
   }
 
-  const dailyVocabs = vocabs.slice(0, 10);
+  const dailyVocabs = vocabs.slice(0, DAILY_CHECKIN_COUNT);
 
   res.json({
     code: 0, message: 'ok',
@@ -160,9 +161,9 @@ app.post('/api/check-in/submit', auth, (req, res) => {
   const key = `${userId}_${date}`;
   const now = new Date().toISOString();
 
-  checkIns.set(key, { date, completed: true, vocabCount: 10, totalCount: 10, checkedAt: now });
+  checkIns.set(key, { date, completed: true, vocabCount: DAILY_CHECKIN_COUNT, totalCount: DAILY_CHECKIN_COUNT, checkedAt: now });
 
-  res.json({ code: 0, message: '打卡成功 🎉', data: { id: 1, date, completed: true, vocabCount: 10, totalCount: 10, checkedAt: now } });
+  res.json({ code: 0, message: '打卡成功 🎉', data: { id: 1, date, completed: true, vocabCount: DAILY_CHECKIN_COUNT, totalCount: DAILY_CHECKIN_COUNT, checkedAt: now } });
 });
 
 // 连续打卡天数

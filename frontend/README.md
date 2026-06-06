@@ -99,7 +99,7 @@ huasheng800-words/
 `utils/mock.js` 提供完整 mock 数据层，覆盖：
 
 - **词库**：30 条示例词汇（覆盖 8 个分类），含词条、拼音、释义、例句
-- **今日打卡**：`getTodayWords()` 返回前 20 条
+- **今日打卡**：`getTodayWords()` 返回前 30 条
 - **错题本**：`getWrongBook()` + `getWrongStats()` 返回错题列表和统计
 - **随心测**：`generateQuiz(count)` 生成随机试卷，`calculateScore()` 计算成绩
 - **打卡统计**：`getCheckinStats()` 返回总进度和本周数据

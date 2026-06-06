@@ -52,11 +52,11 @@ const categories = [
 ];
 
 /**
- * 获取今日打卡词汇（模拟：取前 20 条）
+ * 获取今日打卡词汇（模拟：取前 30 条）
  */
 function getTodayWords() {
   // 实际项目根据日期哈希取不同词条
-  return wordBank.slice(0, 20);
+  return wordBank.slice(0, 30);
 }
 
 /**

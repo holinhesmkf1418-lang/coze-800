@@ -4,7 +4,7 @@ const api = require('../../utils/api');
 Page({
   data: {
     continuousDays: 0,
-    todayProgress: { completed: 0, total: 20 },
+    todayProgress: { completed: 0, total: 30 },
     wrongCount: 0,
     overviewStats: { totalWords: 800, masteredWords: 0, accuracy: 0 },
     weeklyStats: [],

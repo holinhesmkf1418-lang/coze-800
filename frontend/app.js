@@ -135,7 +135,7 @@ App({
     // 主题色
     themeColor: '#4F6EF7',
     // 每日打卡词汇数
-    dailyWordCount: 20,
+    dailyWordCount: 30,
     // 随心测题数
     quizQuestionCount: 100,
     // 随心测默认倒计时（秒），0 表示不限时

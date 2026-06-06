@@ -44,17 +44,21 @@
 
   <!-- 词条列表 -->
   <view class="word-list">
-    <word-card
-      wx:for="{{wordList}}"
+    <view
+      class="word-item {{item._hiding ? 'word-item-hiding' : ''}}"
+      wx:for="{{visibleWordList}}"
       wx:key="id"
-      word="{{item}}"
-      index="{{item.seq}}"
-      checked="{{item._checked}}"
-      showArrow="{{true}}"
-      mode="default"
       bindtap="onWordTap"
-      data-index="{{index}}"
-    />
+      data-id="{{item.id}}"
+    >
+      <word-card
+        word="{{item}}"
+        index="{{item.seq}}"
+        checked="{{item._checked}}"
+        showArrow="{{!allDone}}"
+        mode="{{allDone ? 'compact' : 'default'}}"
+      />
+    </view>
   </view>
 
   <!-- 底部打卡按钮 -->

@@ -101,6 +101,21 @@
   padding: 0 24rpx;
 }
 
+.word-item {
+  max-height: 420rpx;
+  opacity: 1;
+  transform: translateX(0);
+  transition: transform 0.22s ease, opacity 0.22s ease, max-height 0.22s ease, margin 0.22s ease;
+  overflow: hidden;
+}
+
+.word-item-hiding {
+  max-height: 0;
+  opacity: 0;
+  transform: translateX(-120%);
+  margin-bottom: 0;
+}
+
 /* ===== 底部打卡按钮 ===== */
 .checkin-footer {
   position: fixed;

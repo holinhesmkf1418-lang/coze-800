@@ -26,7 +26,7 @@ export const config = {
 
   // 打卡
   checkIn: {
-    dailyVocabCount: 10,       // 每日打卡词汇数
+    dailyVocabCount: 30,       // 每日打卡词汇数
   },
 
   // 导入

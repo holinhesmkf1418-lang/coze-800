@@ -5,6 +5,7 @@ Page({
   data: {
     todayDate: '',
     wordList: [],
+    visibleWordList: [],
     totalCount: 0,
     completedCount: 0,
     remainingCount: 0,
@@ -61,7 +62,7 @@ Page({
 
     const data = await api.checkin.getToday();  // adapter 已映射 definition→meaning
 
-    const words = (data.vocabs || []).map(w => ({ ...w, _checked: !!data.completed }));
+    const words = (data.vocabs || []).map(w => ({ ...w, _checked: !!data.completed, _hiding: false }));
     const completedCount = data.completed ? words.length : 0;
 
     // 同时获取连续打卡
@@ -71,7 +72,7 @@ Page({
       streak = streakData?.streak || 0;
     } catch (_) {}
 
-    this.setData({
+    this.updateWordState(words, {
       wordList: words,
       totalCount: words.length,
       completedCount,
@@ -87,10 +88,10 @@ Page({
    * Mock 兜底
    */
   loadFromMock() {
-    const words = mock.getTodayWords().map(w => ({ ...w, _checked: false }));
+    const words = mock.getTodayWords().map(w => ({ ...w, _checked: false, _hiding: false }));
     const stats = mock.getCheckinStats();
 
-    this.setData({
+    this.updateWordState(words, {
       wordList: words,
       totalCount: words.length,
       incompleteCount: words.length,
@@ -105,11 +106,12 @@ Page({
     if (checkinData.checkedIds && checkinData.checkedIds.length > 0) {
       const wordList = this.data.wordList.map(w => ({
         ...w,
-        _checked: checkinData.checkedIds.includes(w.id)
+        _checked: checkinData.checkedIds.includes(w.id),
+        _hiding: false
       }));
       const completedCount = wordList.filter(w => w._checked).length;
 
-      this.setData({
+      this.updateWordState(wordList, {
         wordList,
         completedCount,
         remainingCount: this.data.totalCount - completedCount,
@@ -118,7 +120,9 @@ Page({
         allDone: completedCount === this.data.totalCount
       });
     } else {
-      this.setData({
+      const wordList = this.data.wordList.map(w => ({ ...w, _checked: false, _hiding: false }));
+      this.updateWordState(wordList, {
+        wordList,
         completedCount: 0,
         remainingCount: this.data.totalCount,
         incompleteCount: this.data.totalCount,
@@ -129,22 +133,52 @@ Page({
   },
 
   onWordTap(e) {
-    const { index } = e.currentTarget.dataset;
-    const wordList = [...this.data.wordList];
-    wordList[index]._checked = !wordList[index]._checked;
+    const { id } = e.currentTarget.dataset;
+    if (!id || this.data.allDone) return;
+
+    const wordList = this.data.wordList.map(w => {
+      if (String(w.id) !== String(id) || w._checked) return w;
+      return { ...w, _checked: true, _hiding: true };
+    });
 
     const completedCount = wordList.filter(w => w._checked).length;
+    const allDone = completedCount === this.data.totalCount;
 
-    this.setData({
+    this.updateWordState(wordList, {
       wordList,
       completedCount,
       remainingCount: this.data.totalCount - completedCount,
       incompleteCount: this.data.totalCount - completedCount,
       progressPercent: Math.round((completedCount / this.data.totalCount) * 100),
-      allDone: completedCount === this.data.totalCount
+      allDone
     });
 
     this.saveCheckinState();
+
+    if (allDone) {
+      wx.showToast({ title: '今日词条全部完成', icon: 'success', duration: 1200 });
+      return;
+    }
+
+    setTimeout(() => {
+      const nextList = this.data.wordList.map(w => (
+        String(w.id) === String(id) ? { ...w, _hiding: false } : w
+      ));
+      this.updateWordState(nextList, { wordList: nextList });
+    }, 220);
+  },
+
+  updateWordState(wordList, extra = {}) {
+    const allDone = extra.allDone ?? (wordList.length > 0 && wordList.every(w => w._checked));
+    const visibleWordList = allDone
+      ? wordList.map(w => ({ ...w, _checked: true, _hiding: false }))
+      : wordList.filter(w => !w._checked || w._hiding);
+
+    this.setData({
+      ...extra,
+      wordList,
+      visibleWordList
+    });
   },
 
   /**
