@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "花生800词",
+  "usingComponents": {
+    "stats-panel": "../../components/stats-panel/stats-panel",
+    "word-card": "../../components/word-card/word-card"
+  }
+}

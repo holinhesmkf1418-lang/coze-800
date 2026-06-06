@@ -1,0 +1,170 @@
+/**
+ * word-card 组件样式
+ * design-tokens 继承自 app.wxss 全局变量
+ */
+
+.word-card {
+  position: relative;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28rpx 32rpx;
+  margin-bottom: 20rpx;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+
+.word-card:active {
+  transform: scale(0.99);
+}
+
+/* 序号 */
+.card-index {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: var(--font-sm);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  margin-top: 4rpx;
+}
+
+/* 主体 */
+.card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 词条行 */
+.word-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.word-text {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.word-pinyin {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+  background: #F5F5F7;
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+}
+
+.category-tag {
+  font-size: var(--font-xs);
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 2rpx 14rpx;
+  border-radius: 20rpx;
+  font-weight: 500;
+}
+
+/* 释义 */
+.meaning-text {
+  font-size: var(--font-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+  margin-bottom: 8rpx;
+}
+
+/* 例句 */
+.example-text {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+  line-height: 1.6;
+  padding: 16rpx 20rpx;
+  background: #F9FAFB;
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--color-primary);
+}
+
+.example-label {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* 错题信息 */
+.wrong-info {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 12rpx;
+}
+
+.wrong-count {
+  font-size: var(--font-xs);
+  color: var(--color-danger);
+  background: rgba(255, 59, 48, 0.08);
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
+}
+
+.wrong-date {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+}
+
+/* 打卡完成标记 */
+.check-mark {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background: var(--color-success);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.check-icon {
+  color: #FFFFFF;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+/* 已打卡状态 */
+.word-card.checked {
+  border: 2rpx solid rgba(52, 199, 89, 0.2);
+  background: rgba(52, 199, 89, 0.02);
+}
+
+/* 箭头 */
+.card-arrow {
+  margin-left: 12rpx;
+  flex-shrink: 0;
+}
+
+.arrow-icon {
+  font-size: 36rpx;
+  color: var(--color-text-hint);
+}
+
+/* ===== compact 模式 ===== */
+.word-card.compact {
+  padding: 20rpx 24rpx;
+  margin-bottom: 12rpx;
+}
+
+.word-card.compact .word-text {
+  font-size: var(--font-md);
+}
+
+.word-card.compact .meaning-text {
+  font-size: var(--font-xs);
+}

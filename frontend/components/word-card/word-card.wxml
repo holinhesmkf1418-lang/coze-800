@@ -1,0 +1,49 @@
+<!--
+  词条卡片组件 - WordCard
+  属性：
+    word: 词条对象 { word, pinyin, meaning, example, category }
+    mode: 'default' | 'compact' | 'quiz'
+    showCategory: 是否显示分类标签
+    checked: 已打卡状态
+    index: 序号
+-->
+<view class="word-card {{mode}} {{checked ? 'checked' : ''}}">
+  <!-- 序号 -->
+  <view class="card-index" wx:if="{{index}}">{{index}}</view>
+
+  <!-- 主体内容 -->
+  <view class="card-body">
+    <!-- 词条行 -->
+    <view class="word-row">
+      <text class="word-text">{{word.word}}</text>
+      <text class="word-pinyin">{{word.pinyin}}</text>
+      <view class="category-tag" wx:if="{{showCategory && word.category}}">
+        {{word.category}}
+      </view>
+    </view>
+
+    <!-- 释义 -->
+    <view class="meaning-text">{{word.meaning}}</view>
+
+    <!-- 例句（非 compact 模式显示） -->
+    <view class="example-text" wx:if="{{mode !== 'compact' && word.example}}">
+      <text class="example-label">例句：</text>{{word.example}}
+    </view>
+
+    <!-- 错题信息（错题模式下显示） -->
+    <view class="wrong-info" wx:if="{{word.wrongCount}}">
+      <text class="wrong-count">错误 {{word.wrongCount}} 次</text>
+      <text class="wrong-date">{{word.wrongDate}}</text>
+    </view>
+  </view>
+
+  <!-- 打卡状态标记 -->
+  <view class="check-mark" wx:if="{{checked}}">
+    <text class="check-icon">✓</text>
+  </view>
+
+  <!-- 右侧箭头 -->
+  <view class="card-arrow" wx:if="{{showArrow}}">
+    <text class="arrow-icon">›</text>
+  </view>
+</view>

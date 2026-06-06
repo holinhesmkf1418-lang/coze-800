@@ -1,0 +1,205 @@
+<!--
+  随心测页 - Random Test
+  ---
+  功能：设置页面 → 答题界面 → 成绩结果
+  答题界面：词条 + 4选项、顶部倒计时、进度条
+  状态：静态原型，数据来自 mock
+-->
+<view class="page-container">
+
+  <!-- ====== 状态1：设置页面 ====== -->
+  <block wx:if="{{quizState === 'setup'}}">
+    <view class="setup-section">
+      <!-- 标题 -->
+      <view class="setup-header">
+        <view class="setup-icon-wrap">
+          <text class="setup-icon">🎯</text>
+        </view>
+        <text class="setup-title">随心测</text>
+        <text class="setup-desc">随机抽取词汇，模拟真实考试场景</text>
+      </view>
+
+      <!-- 题目数量设置 -->
+      <view class="card setup-card">
+        <text class="setup-label">题目数量</text>
+        <view class="count-selector">
+          <view class="count-option {{questionCount === 50 ? 'active' : ''}}" bindtap="setCount" data-count="50">
+            <text>50 题</text>
+          </view>
+          <view class="count-option {{questionCount === 100 ? 'active' : ''}}" bindtap="setCount" data-count="100">
+            <text>100 题</text>
+          </view>
+          <view class="count-option {{questionCount === 200 ? 'active' : ''}}" bindtap="setCount" data-count="200">
+            <text>200 题</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 倒计时设置 -->
+      <view class="card setup-card">
+        <text class="setup-label">答题倒计时</text>
+        <view class="timer-options">
+          <view class="timer-option {{duration === 0 ? 'active' : ''}}" bindtap="setDuration" data-dur="0">
+            <text class="timer-opt-title">不限时</text>
+            <text class="timer-opt-desc">自由作答</text>
+          </view>
+          <view class="timer-option {{duration === 900 ? 'active' : ''}}" bindtap="setDuration" data-dur="900">
+            <text class="timer-opt-title">15 分钟</text>
+            <text class="timer-opt-desc">标准模式</text>
+          </view>
+          <view class="timer-option {{duration === 1800 ? 'active' : ''}}" bindtap="setDuration" data-dur="1800">
+            <text class="timer-opt-title">30 分钟</text>
+            <text class="timer-opt-desc">挑战模式</text>
+          </view>
+          <view class="timer-option {{duration === 3600 ? 'active' : ''}}" bindtap="setDuration" data-dur="3600">
+            <text class="timer-opt-title">60 分钟</text>
+            <text class="timer-opt-desc">完整模拟</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 开始按钮 -->
+      <button class="btn-primary start-btn" bindtap="startQuiz">
+        🚀 开始测试
+      </button>
+    </view>
+  </block>
+
+  <!-- ====== 状态2：答题界面 ====== -->
+  <block wx:if="{{quizState === 'active'}}">
+    <!-- 顶部信息栏 -->
+    <view class="quiz-topbar">
+      <!-- 倒计时 -->
+      <view class="timer-display {{timeWarning ? 'warning' : ''}} {{timeUrgent ? 'urgent' : ''}}">
+        <text class="timer-icon">{{timeUrgent ? '🔴' : timeWarning ? '🟡' : '⏱️'}}</text>
+        <text class="timer-text">{{timerDisplay}}</text>
+      </view>
+
+      <!-- 进度 -->
+      <view class="quiz-progress">
+        <text class="progress-num">{{currentIndex + 1}}/{{questions.length}}</text>
+        <view class="progress-bar-mini">
+          <view class="progress-bar-fill" style="width: {{(currentIndex + 1) / questions.length * 100}}%;"></view>
+        </view>
+      </view>
+
+      <!-- 正确数 -->
+      <view class="score-indicator">
+        <text class="score-text">{{correctCount}} ✓</text>
+      </view>
+    </view>
+
+    <!-- 题目卡片 -->
+    <view class="question-card" wx:if="{{currentQuestion}}">
+      <!-- 题号 + 分类 -->
+      <view class="q-header">
+        <text class="q-number">第 {{currentIndex + 1}} 题</text>
+        <view class="q-category">{{currentQuestion.category}}</view>
+      </view>
+
+      <!-- 词条展示 -->
+      <view class="q-word-display">
+        <text class="q-word">{{currentQuestion.word}}</text>
+        <text class="q-pinyin">{{currentQuestion.pinyin}}</text>
+      </view>
+
+      <!-- 释义 -->
+      <view class="q-meaning">{{currentQuestion.meaning}}</view>
+
+      <!-- 问题提示 -->
+      <view class="q-prompt">以下哪个是「{{currentQuestion.word}}」的正确写法？</view>
+
+      <!-- 选项列表 -->
+      <view class="options-list">
+        <view
+          class="option-item {{selectedOption === index ? 'selected' : ''}} {{submitted ? (index === currentQuestion.answerIndex ? 'correct' : (selectedOption === index ? 'wrong' : '')) : ''}}"
+          wx:for="{{currentQuestion.options}}"
+          wx:key="*this"
+          wx:for-index="index"
+          bindtap="selectOption"
+          data-index="{{index}}"
+        >
+          <view class="option-badge">{{['A', 'B', 'C', 'D'][index]}}</view>
+          <text class="option-text">{{item}}</text>
+          <view class="option-result" wx:if="{{submitted}}">
+            <text wx:if="{{index === currentQuestion.answerIndex}}">✓</text>
+            <text wx:elif="{{selectedOption === index}}">✗</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="q-actions">
+        <button
+          class="btn-primary submit-btn"
+          bindtap="submitAnswer"
+          disabled="{{selectedOption === -1 || submitted}}"
+          wx:if="{{!submitted}}"
+        >
+          提交答案
+        </button>
+        <button
+          class="btn-primary next-btn"
+          bindtap="nextQuestion"
+          wx:if="{{submitted}}"
+        >
+          {{currentIndex < questions.length - 1 ? '下一题' : '查看成绩'}}
+        </button>
+      </view>
+
+      <!-- 正确/错误提示 -->
+      <view class="answer-feedback {{lastCorrect ? 'feedback-correct' : 'feedback-wrong'}}" wx:if="{{submitted}}">
+        <text class="feedback-icon">{{lastCorrect ? '✅' : '❌'}}</text>
+        <text class="feedback-text">{{lastCorrect ? '回答正确！' : '回答错误，请记住正确答案'}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- ====== 状态3：成绩结果 ====== -->
+  <block wx:if="{{quizState === 'result'}}">
+    <view class="result-section">
+      <!-- 成绩展示 -->
+      <stats-panel type="quiz" stats="{{resultStats}}" />
+
+      <!-- 答题详情 -->
+      <view class="section-header">
+        <text class="section-title">答题详情</text>
+      </view>
+
+      <view class="card detail-list">
+        <view
+          class="detail-item {{item.isCorrect ? 'detail-correct' : 'detail-wrong'}}"
+          wx:for="{{resultStats.details}}"
+          wx:key="questionId"
+        >
+          <view class="detail-header">
+            <text class="detail-num">{{index + 1}}.</text>
+            <text class="detail-word">{{item.word}}</text>
+            <text class="detail-result {{item.isCorrect ? 'text-success' : 'text-danger'}}">
+              {{item.isCorrect ? '✓' : '✗'}}
+            </text>
+          </view>
+          <view class="detail-options">
+            <text
+              class="detail-opt {{optIdx === item.correctAnswer ? 'opt-correct' : ''}} {{optIdx === item.userChoice && !item.isCorrect ? 'opt-user-wrong' : ''}}"
+              wx:for="{{item.options}}"
+              wx:for-index="optIdx"
+              wx:key="*this"
+            >
+              {{['A','B','C','D'][optIdx]}}. {{item}}
+            </text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 底部操作 -->
+      <view class="result-actions safe-bottom">
+        <button class="btn-outline retry-btn" bindtap="retryQuiz">🔄 再来一次</button>
+        <button class="btn-primary back-btn" bindtap="backToSetup">📋 返回设置</button>
+      </view>
+    </view>
+  </block>
+
+  <!-- 底部安全区 -->
+  <view class="safe-bottom" style="height: 60rpx;" wx:if="{{quizState !== 'result'}}"></view>
+</view>

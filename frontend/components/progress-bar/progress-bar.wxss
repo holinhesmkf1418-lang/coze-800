@@ -1,0 +1,32 @@
+.progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.progress-label {
+  font-size: var(--font-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  min-width: 80rpx;
+}
+
+.progress-track {
+  flex: 1;
+  background: #E5E7EB;
+  border-radius: 100rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  border-radius: 100rpx;
+  transition: width 0.4s ease;
+  background: linear-gradient(90deg, #4F6EF7 0%, #6B8AFF 100%);
+}
+
+.progress-text {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+  min-width: 60rpx;
+  text-align: right;
+}

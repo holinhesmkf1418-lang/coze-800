@@ -3,27 +3,34 @@ node_modules/
 
 # Build outputs
 dist/
+build/
 
 # Environment
 .env
-
-# Uploads
-uploads/
+.env.local
+.env.*.local
 
 # OS
 .DS_Store
 Thumbs.db
 
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
 # Logs
 *.log
+npm-debug.log*
 
-# IDE
-.vscode/
-.idea/
+# Uploads
+uploads/
 
 # Prisma
 prisma/*.db
 prisma/*.db-journal
+server/prisma/migrations/
 
 # Coverage
 coverage/

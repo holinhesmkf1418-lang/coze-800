@@ -1,0 +1,148 @@
+/**
+ * 花生800词 - 全局样式
+ * 设计风格：简洁白底 + 学术蓝主题色 #4F6EF7
+ * 适用场景：公考备考
+ */
+
+/* ===== CSS 变量 / 设计 Token ===== */
+page {
+  --color-primary: #4F6EF7;
+  --color-primary-light: #EEF1FE;
+  --color-primary-dark: #3B54D4;
+  --color-success: #34C759;
+  --color-warning: #FF9500;
+  --color-danger: #FF3B30;
+  --color-text-primary: #1A1A2E;
+  --color-text-secondary: #6B7280;
+  --color-text-hint: #9CA3AF;
+  --color-bg-page: #F5F7FA;
+  --color-bg-card: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-divider: #F3F4F6;
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 24rpx;
+  --shadow-sm: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
+  --font-xs: 22rpx;
+  --font-sm: 26rpx;
+  --font-base: 28rpx;
+  --font-md: 30rpx;
+  --font-lg: 34rpx;
+  --font-xl: 40rpx;
+  --font-xxl: 48rpx;
+
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue',
+    'Microsoft YaHei', sans-serif;
+  font-size: var(--font-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-page);
+  line-height: 1.6;
+}
+
+/* ===== 通用工具类 ===== */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-hint { color: var(--color-text-hint); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-primary { color: var(--color-primary); }
+.text-success { color: var(--color-success); }
+.text-danger { color: var(--color-danger); }
+.text-warning { color: var(--color-warning); }
+
+.font-bold { font-weight: 600; }
+.font-xs { font-size: var(--font-xs); }
+.font-sm { font-size: var(--font-sm); }
+.font-md { font-size: var(--font-md); }
+.font-lg { font-size: var(--font-lg); }
+.font-xl { font-size: var(--font-xl); }
+
+/* ===== 通用按钮 ===== */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 88rpx;
+  background: linear-gradient(135deg, #4F6EF7 0%, #6B8AFF 100%);
+  color: #FFFFFF;
+  font-size: var(--font-md);
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba(79, 110, 247, 0.3);
+}
+
+.btn-primary:active {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+
+.btn-primary[disabled] {
+  background: #C7D2FE;
+  box-shadow: none;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-outline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72rpx;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: var(--font-sm);
+  font-weight: 500;
+  border: 2rpx solid var(--color-primary);
+  border-radius: var(--radius-md);
+}
+
+.btn-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 72rpx;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-sm);
+  border: none;
+}
+
+/* ===== 通用卡片 ===== */
+.card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 32rpx;
+  margin: 0 24rpx 24rpx;
+}
+
+/* ===== 页面容器 ===== */
+.page-container {
+  min-height: 100vh;
+  padding-bottom: 120rpx;
+}
+
+/* ===== 安全区适配 ===== */
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}

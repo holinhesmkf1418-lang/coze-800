@@ -1,0 +1,124 @@
+<!--
+  统计面板组件 - StatsPanel
+  属性：
+    stats: 统计数据对象
+    type: 'overview' | 'wrongbook' | 'quiz'
+-->
+<view class="stats-panel {{type}}">
+  <!-- 概览统计（首页用） -->
+  <block wx:if="{{type === 'overview'}}">
+    <view class="stat-row">
+      <view class="stat-item">
+        <text class="stat-value">{{stats.masteredWords || 0}}</text>
+        <text class="stat-label">已掌握</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.continuousDays || 0}}</text>
+        <text class="stat-label">连续打卡</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value text-primary">{{stats.accuracy || 0}}%</text>
+        <text class="stat-label">正确率</text>
+      </view>
+    </view>
+    <!-- 总进度 -->
+    <view class="total-progress">
+      <progress-bar
+        percent="{{(stats.masteredWords / stats.totalWords) * 100}}"
+        label="总进度"
+        showText="{{true}}"
+      />
+    </view>
+  </block>
+
+  <!-- 错题统计（错题本页用） -->
+  <block wx:if="{{type === 'wrongbook'}}">
+    <view class="stat-row">
+      <view class="stat-item">
+        <text class="stat-value text-danger">{{stats.totalWrong || 0}}</text>
+        <text class="stat-label">错题总数</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.totalAnswered || 0}}</text>
+        <text class="stat-label">已答题目</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value text-success">{{stats.accuracy || 0}}%</text>
+        <text class="stat-label">正确率</text>
+      </view>
+    </view>
+    <!-- 分类薄弱项 -->
+    <view class="category-section" wx:if="{{stats.categoryBreakdown}}">
+      <text class="section-title">薄弱项分析</text>
+      <view class="category-list">
+        <view
+          class="category-item"
+          wx:for="{{stats.categoryBreakdown}}"
+          wx:key="category"
+          wx:for-item="cat"
+        >
+          <view class="category-header">
+            <text class="category-name">{{cat.category}}</text>
+            <text class="category-accuracy {{cat.accuracy >= 90 ? 'text-success' : cat.accuracy >= 70 ? 'text-warning' : 'text-danger'}}">
+              {{cat.accuracy}}%
+            </text>
+          </view>
+          <progress-bar
+            percent="{{cat.accuracy}}"
+            showText="{{false}}"
+            height="{{8}}"
+            color="{{cat.accuracy >= 90 ? '#34C759' : cat.accuracy >= 70 ? '#FF9500' : '#FF3B30'}}"
+          />
+          <text class="category-count">错误 {{cat.count}} 次</text>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 测试成绩统计（结果页用） -->
+  <block wx:if="{{type === 'quiz'}}">
+    <view class="score-circle-wrap">
+      <view class="score-circle">
+        <text class="score-number">{{stats.score || 0}}</text>
+        <text class="score-unit">分</text>
+      </view>
+    </view>
+    <view class="stat-row">
+      <view class="stat-item">
+        <text class="stat-value text-success">{{stats.correct || 0}}</text>
+        <text class="stat-label">正确</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value text-danger">{{stats.incorrect || 0}}</text>
+        <text class="stat-label">错误</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.total || 0}}</text>
+        <text class="stat-label">总题数</text>
+      </view>
+    </view>
+    <!-- 分类得分 -->
+    <view class="category-section" wx:if="{{stats.categoryBreakdown}}">
+      <text class="section-title">分类得分</text>
+      <view class="category-list">
+        <view
+          class="category-item"
+          wx:for="{{stats.categoryBreakdown}}"
+          wx:key="category"
+          wx:for-item="cat"
+        >
+          <view class="category-header">
+            <text class="category-name">{{cat.category}}</text>
+            <text class="category-accuracy">{{cat.correct}}/{{cat.total}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

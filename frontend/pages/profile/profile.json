@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "我的",
+  "usingComponents": {
+    "stats-panel": "../../components/stats-panel/stats-panel"
+  }
+}

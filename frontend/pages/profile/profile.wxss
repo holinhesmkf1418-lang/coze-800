@@ -1,0 +1,102 @@
+/* 个人中心样式 */
+
+/* ===== 用户头部 ===== */
+.profile-header {
+  position: relative;
+  margin: 24rpx;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.profile-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #4F6EF7 0%, #6B8AFF 50%, #95A9FF 100%);
+}
+
+.profile-content {
+  position: relative;
+  padding: 48rpx 36rpx 36rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  z-index: 1;
+}
+
+.avatar-wrap {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4rpx solid rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.profile-name {
+  font-size: var(--font-xl);
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.profile-bio {
+  font-size: var(--font-sm);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ===== 菜单区域 ===== */
+.menu-section {
+  margin: 0 24rpx 24rpx;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  border-bottom: 2rpx solid var(--color-divider);
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:active {
+  background: #F9FAFB;
+}
+
+.menu-icon {
+  font-size: 32rpx;
+  margin-right: 20rpx;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: var(--font-md);
+  color: var(--color-text-primary);
+}
+
+.menu-value {
+  font-size: var(--font-sm);
+  color: var(--color-text-hint);
+  margin-right: 8rpx;
+}
+
+.menu-arrow {
+  font-size: 36rpx;
+  color: var(--color-text-hint);
+}

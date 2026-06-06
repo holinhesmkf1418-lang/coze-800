@@ -1,0 +1,102 @@
+<!--
+  错题本页 - Wrong Answer Book
+  ---
+  功能：错题列表、统计面板（正确率、薄弱项分类）、分类筛选
+  状态：静态原型，数据来自 mock
+-->
+<view class="page-container">
+  <!-- 统计面板 -->
+  <view class="section-header">
+    <text class="section-title">错题统计</text>
+  </view>
+  <stats-panel type="wrongbook" stats="{{wrongStats}}" />
+
+  <!-- 分类筛选 Tab -->
+  <scroll-view class="category-tabs" scroll-x enable-flex>
+    <view
+      class="tab-item {{activeCategory === item.key ? 'active' : ''}}"
+      wx:for="{{categories}}"
+      wx:key="key"
+      bindtap="onCategoryChange"
+      data-key="{{item.key}}"
+    >
+      <text class="tab-name">{{item.name}}</text>
+      <text class="tab-count">{{item.count}}</text>
+    </view>
+  </scroll-view>
+
+  <!-- 排序和操作栏 -->
+  <view class="toolbar">
+    <view class="sort-group">
+      <view
+        class="sort-item {{sortBy === 'date' ? 'active' : ''}}"
+        bindtap="onSortChange"
+        data-sort="date"
+      >
+        <text>时间</text>
+        <text class="sort-arrow">{{sortBy === 'date' ? '↓' : ''}}</text>
+      </view>
+      <view
+        class="sort-item {{sortBy === 'count' ? 'active' : ''}}"
+        bindtap="onSortChange"
+        data-sort="count"
+      >
+        <text>错误次数</text>
+        <text class="sort-arrow">{{sortBy === 'count' ? '↓' : ''}}</text>
+      </view>
+    </view>
+    <view class="toolbar-action" bindtap="onReviewAll">
+      <text class="action-text">复习全部</text>
+    </view>
+  </view>
+
+  <!-- 错题列表 -->
+  <view class="wrong-list" wx:if="{{filteredList.length > 0}}">
+    <view class="wrong-item" wx:for="{{filteredList}}" wx:key="wrongId">
+      <!-- 错题标记 -->
+      <view class="wrong-marker">
+        <text class="marker-icon">✗</text>
+        <text class="marker-count" wx:if="{{item.wrongCount > 1}}">×{{item.wrongCount}}</text>
+      </view>
+
+      <!-- 词条卡片 -->
+      <view class="wrong-card">
+        <view class="wrong-card-header">
+          <text class="wrong-word">{{item.word}}</text>
+          <text class="wrong-pinyin">{{item.pinyin}}</text>
+          <view class="category-tag">{{item.category}}</view>
+        </view>
+
+        <view class="wrong-meaning">{{item.meaning}}</view>
+
+        <!-- 错误对比 -->
+        <view class="compare-section">
+          <view class="compare-item user-answer">
+            <text class="compare-label">我的答案</text>
+            <text class="compare-text wrong-text">{{item.userAnswer}}</text>
+          </view>
+          <view class="compare-arrow">→</view>
+          <view class="compare-item correct-answer">
+            <text class="compare-label">正确答案</text>
+            <text class="compare-text correct-text">{{item.correctAnswer}}</text>
+          </view>
+        </view>
+
+        <view class="wrong-meta">
+          <text class="meta-date">{{item.wrongDate}}</text>
+          <text class="meta-action" bindtap="onRemoveWrong" data-id="{{item.wrongId}}">移出错题本</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <text class="empty-emoji">🎉</text>
+    <text class="empty-title">暂无错题</text>
+    <text class="empty-desc">继续保持，你是最棒的！</text>
+  </view>
+
+  <!-- 底部安全区 -->
+  <view class="safe-bottom" style="height: 120rpx;"></view>
+</view>

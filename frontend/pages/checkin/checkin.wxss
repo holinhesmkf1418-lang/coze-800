@@ -1,0 +1,130 @@
+/* 每日打卡页样式 */
+
+/* ===== 页面头部 ===== */
+.checkin-header {
+  background: var(--color-bg-card);
+  margin: 24rpx;
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+}
+
+.today-date {
+  display: block;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.today-label {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+  margin-top: 4rpx;
+}
+
+.streak-badge {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  background: rgba(255, 149, 0, 0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 40rpx;
+}
+
+.streak-fire {
+  font-size: 28rpx;
+}
+
+.streak-text {
+  font-size: var(--font-xs);
+  color: var(--color-warning);
+  font-weight: 600;
+}
+
+.progress-wrap {
+  margin-bottom: 16rpx;
+}
+
+.progress-detail {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-text {
+  font-size: var(--font-xs);
+  color: var(--color-text-secondary);
+}
+
+.detail-hint {
+  font-size: var(--font-xs);
+  color: var(--color-warning);
+  font-weight: 500;
+}
+
+.detail-done {
+  font-size: var(--font-xs);
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+/* ===== 引导标语 ===== */
+.hint-banner {
+  margin: 0 24rpx 20rpx;
+  padding: 16rpx 24rpx;
+  background: var(--color-primary-light);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.hint-icon {
+  font-size: 28rpx;
+}
+
+.hint-text {
+  font-size: var(--font-xs);
+  color: var(--color-primary-dark);
+  font-weight: 500;
+}
+
+/* ===== 词条列表 ===== */
+.word-list {
+  padding: 0 24rpx;
+}
+
+/* ===== 底部打卡按钮 ===== */
+.checkin-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx 48rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(245, 247, 250, 0) 0%, rgba(245, 247, 250, 0.95) 30%, #F5F7FA 100%);
+}
+
+.checkin-btn {
+  width: 100%;
+}
+
+.checkin-btn.done-state {
+  background: linear-gradient(135deg, #34C759 0%, #5EDC7A 100%);
+  box-shadow: 0 8rpx 24rpx rgba(52, 199, 89, 0.3);
+}
+
+.footer-hint {
+  display: block;
+  text-align: center;
+  margin-top: 12rpx;
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+}

@@ -1,0 +1,90 @@
+<!--
+  首页 - 花生800词
+  ---
+  功能：今日任务概览、快捷入口、学习统计
+-->
+<view class="page-container">
+  <!-- 顶部问候区域 -->
+  <view class="hero-section">
+    <view class="hero-bg"></view>
+    <view class="hero-content">
+      <view class="greeting">
+        <text class="greeting-text">今日学习</text>
+        <text class="greeting-sub">坚持就是胜利 💪</text>
+      </view>
+      <view class="hero-stats">
+        <view class="hero-stat-item">
+          <text class="hero-stat-num">{{continuousDays}}</text>
+          <text class="hero-stat-label">连续打卡</text>
+        </view>
+        <view class="hero-stat-divider"></view>
+        <view class="hero-stat-item">
+          <text class="hero-stat-num">{{todayProgress.completed}}/{{todayProgress.total}}</text>
+          <text class="hero-stat-label">今日进度</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-actions">
+    <view class="action-card checkin-card" bindtap="goToCheckin">
+      <view class="action-icon-wrap checkin-icon">
+        <text class="action-emoji">📝</text>
+      </view>
+      <view class="action-info">
+        <text class="action-title">每日打卡</text>
+        <text class="action-desc">今日 {{todayProgress.completed}}/{{todayProgress.total}} 词</text>
+      </view>
+      <view class="action-arrow">›</view>
+    </view>
+
+    <view class="action-card quiz-card" bindtap="goToQuiz">
+      <view class="action-icon-wrap quiz-icon">
+        <text class="action-emoji">🎯</text>
+      </view>
+      <view class="action-info">
+        <text class="action-title">随心测</text>
+        <text class="action-desc">随机 100 题 · 模拟考试</text>
+      </view>
+      <view class="action-arrow">›</view>
+    </view>
+
+    <view class="action-card wrong-card" bindtap="goToWrongBook">
+      <view class="action-icon-wrap wrong-icon">
+        <text class="action-emoji">📊</text>
+      </view>
+      <view class="action-info">
+        <text class="action-title">错题本</text>
+        <text class="action-desc">{{wrongCount}} 道错题待复习</text>
+      </view>
+      <view class="action-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 学习统计 -->
+  <view class="section-header">
+    <text class="section-title">学习统计</text>
+  </view>
+  <stats-panel type="overview" stats="{{overviewStats}}" />
+
+  <!-- 本周打卡记录 -->
+  <view class="section-header">
+    <text class="section-title">本周打卡</text>
+  </view>
+  <view class="week-chart card">
+    <view class="week-bars">
+      <view class="week-bar-item" wx:for="{{weeklyStats}}" wx:key="day">
+        <view class="bar-wrap">
+          <view class="bar-fill {{item.count === 0 ? 'bar-empty' : item.count >= 20 ? 'bar-full' : ''}}"
+                style="height: {{item.count * 2.8}}rpx;"></view>
+        </view>
+        <text class="bar-label">{{item.day}}</text>
+        <text class="bar-value">{{item.count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部安全区 -->
+  <view class="safe-bottom" style="height: 120rpx;"></view>
+</view>

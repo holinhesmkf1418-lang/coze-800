@@ -1,0 +1,73 @@
+<!--
+  每日打卡页 - Daily Check-in
+  ---
+  功能：展示今日词条列表、打卡状态标记、批量打卡、进度追踪
+  状态：当前为静态原型，数据来自 mock
+-->
+<view class="page-container">
+  <!-- 顶部进度概览 -->
+  <view class="checkin-header">
+    <view class="header-top">
+      <view class="today-info">
+        <text class="today-date">{{todayDate}}</text>
+        <text class="today-label">今日打卡</text>
+      </view>
+      <view class="streak-badge" wx:if="{{continuousDays > 0}}">
+        <text class="streak-fire">🔥</text>
+        <text class="streak-text">连续 {{continuousDays}} 天</text>
+      </view>
+    </view>
+
+    <!-- 进度条 -->
+    <view class="progress-wrap">
+      <progress-bar
+        percent="{{progressPercent}}"
+        label="完成进度"
+        showText="{{true}}"
+        color="#34C759"
+      />
+    </view>
+
+    <!-- 进度数字 -->
+    <view class="progress-detail">
+      <text class="detail-text">已学 {{completedCount}} / {{totalCount}} 词</text>
+      <text class="detail-hint" wx:if="{{remainingCount > 0}}">还剩 {{remainingCount}} 词</text>
+      <text class="detail-done" wx:else>🎉 今日任务全部完成！</text>
+    </view>
+  </view>
+
+  <!-- 打卡引导标语 -->
+  <view class="hint-banner" wx:if="{{!allDone}}">
+    <text class="hint-icon">💡</text>
+    <text class="hint-text">点击词条查看详情，确认掌握后标记完成</text>
+  </view>
+
+  <!-- 词条列表 -->
+  <view class="word-list">
+    <word-card
+      wx:for="{{wordList}}"
+      wx:key="id"
+      word="{{item}}"
+      index="{{item.seq}}"
+      checked="{{item._checked}}"
+      showArrow="{{true}}"
+      mode="default"
+      bindtap="onWordTap"
+      data-index="{{index}}"
+    />
+  </view>
+
+  <!-- 底部打卡按钮 -->
+  <view class="checkin-footer safe-bottom">
+    <button
+      class="btn-primary checkin-btn {{allDone ? 'done-state' : ''}}"
+      disabled="{{incompleteCount === totalCount}}"
+      bindtap="onCheckin"
+    >
+      <text wx:if="{{allDone}}">✅ 今日已完成打卡</text>
+      <text wx:elif="{{completedCount > 0}}">📝 继续打卡（{{completedCount}}/{{totalCount}}）</text>
+      <text wx:else>📝 开始打卡</text>
+    </button>
+    <text class="footer-hint" wx:if="{{!allDone}}">完成所有词条学习后即可打卡</text>
+  </view>
+</view>
