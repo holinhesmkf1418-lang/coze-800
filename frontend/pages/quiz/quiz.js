@@ -161,20 +161,24 @@ Page({
   submitAnswer() {
     if (!this.data.selectedOption || this.data.submitted) return;
 
-    const { currentIndex, currentQuestion, selectedOption, userAnswers, correctCount } = this.data;
-    const isCorrect = selectedOption === currentQuestion.answerKey;
-
+    const { currentIndex, currentQuestion, selectedOption, userAnswers, correctCount, dataSource } = this.data;
     userAnswers[currentIndex] = selectedOption;
+
+    // API 模式：后端判分，逐题不即时判断对错，只记录选择
+    const isAPI = dataSource === 'api';
+    const isCorrect = isAPI
+      ? null  // API 模式：不即时判分
+      : (selectedOption === currentQuestion.answerKey);
 
     this.setData({
       submitted: true,
       lastCorrect: isCorrect,
-      correctCount: correctCount + (isCorrect ? 1 : 0),
+      correctCount: correctCount + (isCorrect === true ? 1 : 0),
       userAnswers
     });
 
-    // 收录错题
-    if (!isCorrect) {
+    // mock 模式收录错题到本地 storage
+    if (isCorrect === false) {
       this.saveWrongAnswer(currentQuestion, selectedOption);
     }
   },

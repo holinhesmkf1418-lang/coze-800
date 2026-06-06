@@ -40,8 +40,21 @@ Page({
       api.vocabs.getCategories()
     ]);
 
+    // 字段适配: accuracyRate → accuracy
+    const apiStats = statsRes || {};
+    const adaptedStats = {
+      totalWrong: apiStats.totalWrong || 0,
+      totalAnswered: apiStats.totalAnswered || 0,
+      accuracy: apiStats.accuracyRate || 0,    // accuracyRate → accuracy
+      categoryBreakdown: (apiStats.categoryBreakdown || []).map(cat => ({
+        category: cat.category,
+        count: cat.count || 0,
+        accuracy: (cat.count || 0) > 0 ? Math.round((1 - cat.count / Math.max(apiStats.totalWrong, 1)) * 100) : 100
+      }))
+    };
+
     this.setData({
-      wrongStats: statsRes || {},
+      wrongStats: adaptedStats,
       wrongList: (listRes?.list || []).map(item => ({
         ...item,
         wrongId: item.id || item.vocabId,
