@@ -62,7 +62,7 @@ Page({
 
     const data = await api.checkin.getToday();  // adapter 已映射 definition→meaning
 
-    const words = (data.vocabs || []).map(w => ({ ...w, _checked: !!data.completed, _hiding: false }));
+    const words = (data.vocabs || []).map(w => ({ ...w, _checked: !!data.completed, _hiding: false, _settling: false }));
     const completedCount = data.completed ? words.length : 0;
 
     // 同时获取连续打卡
@@ -88,7 +88,7 @@ Page({
    * Mock 兜底
    */
   loadFromMock() {
-    const words = mock.getTodayWords().map(w => ({ ...w, _checked: false, _hiding: false }));
+    const words = mock.getTodayWords().map(w => ({ ...w, _checked: false, _hiding: false, _settling: false }));
     const stats = mock.getCheckinStats();
 
     this.updateWordState(words, {
@@ -107,7 +107,8 @@ Page({
       const wordList = this.data.wordList.map(w => ({
         ...w,
         _checked: checkinData.checkedIds.includes(w.id),
-        _hiding: false
+        _hiding: false,
+        _settling: false
       }));
       const completedCount = wordList.filter(w => w._checked).length;
 
@@ -120,7 +121,7 @@ Page({
         allDone: completedCount === this.data.totalCount
       });
     } else {
-      const wordList = this.data.wordList.map(w => ({ ...w, _checked: false, _hiding: false }));
+      const wordList = this.data.wordList.map(w => ({ ...w, _checked: false, _hiding: false, _settling: false }));
       this.updateWordState(wordList, {
         wordList,
         completedCount: 0,
@@ -138,7 +139,7 @@ Page({
 
     const wordList = this.data.wordList.map(w => {
       if (String(w.id) !== String(id) || w._checked) return w;
-      return { ...w, _checked: true, _hiding: true };
+      return { ...w, _checked: true, _hiding: false, _settling: true };
     });
 
     const completedCount = wordList.filter(w => w._checked).length;
@@ -162,17 +163,24 @@ Page({
 
     setTimeout(() => {
       const nextList = this.data.wordList.map(w => (
-        String(w.id) === String(id) ? { ...w, _hiding: false } : w
+        String(w.id) === String(id) ? { ...w, _settling: false, _hiding: true } : w
       ));
       this.updateWordState(nextList, { wordList: nextList });
-    }, 220);
+
+      setTimeout(() => {
+        const settledList = this.data.wordList.map(w => (
+          String(w.id) === String(id) ? { ...w, _hiding: false, _settling: false } : w
+        ));
+        this.updateWordState(settledList, { wordList: settledList });
+      }, 430);
+    }, 360);
   },
 
   updateWordState(wordList, extra = {}) {
     const allDone = extra.allDone ?? (wordList.length > 0 && wordList.every(w => w._checked));
     const visibleWordList = allDone
-      ? wordList.map(w => ({ ...w, _checked: true, _hiding: false }))
-      : wordList.filter(w => !w._checked || w._hiding);
+      ? wordList.map(w => ({ ...w, _checked: true, _hiding: false, _settling: false }))
+      : wordList.filter(w => !w._checked || w._hiding || w._settling);
 
     this.setData({
       ...extra,
