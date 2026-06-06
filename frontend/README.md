@@ -137,9 +137,18 @@ huasheng800-words/
 
 所有接口统一响应格式 `{ code, message, data }`，认证用 Header `Authorization: Bearer <token>`。
 
-### ⚠️ 待对齐项（PM审查提出）
+### 前后端协议对齐状态（二审已闭环）
 
-- **随心测答题模型**：前端为 4 选项选择题（提交 optionIndex），后端当前为 `userAnswer: boolean` 判断题模式。需后端调整为返回 `options + answerIndex`，前端提交 `selectedOption`。详见 `server/docs/api.md` 中的 `POST /api/tests/start` 和 `POST /api/tests/submit`。
+| 项目 | 状态 |
+|------|------|
+| 登录 `/api/auth/login` | ✅ 已对齐 |
+| 打卡 `/api/check-in/*` | ✅ 已对齐 |
+| 错题 `/api/wrong-answers/*` | ✅ 已对齐 |
+| 随心测 `/api/tests/*` | ✅ v1.1 4-option 选择题协议，前后端均已适配 |
+| 数据导入 `/api/import/*` | ✅ 后端已兼容 OCR 字段映射 |
+| TabBar 图标 | ✅ 已生成 10 个 PNG |
+
+> 后端 v1.1 协议：`start` 返回 `options[{label,text}] + answerKey`，`submit` 提交 `selectedOption`（A/B/C/D/null）。前端 quiz.js / mock.js / quiz.wxml 已同步适配。
 
 ## 协作规则
 
