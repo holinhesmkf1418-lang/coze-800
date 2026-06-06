@@ -110,7 +110,7 @@ export interface TestQuestion {
   vocabId: number;
   word: string;
   options: TestOption[];    // 4 个选项（含 1 个正确答案 + 3 个干扰项）
-  answerKey: string;        // 正确答案的 label，如 "A"
+  // ⚠️ answerKey 不返回给前端——正确答案仅在后端存储用于判分
 }
 
 export interface TestOption {

@@ -124,7 +124,7 @@ export const testService = {
       vocabId: q.vocabId,
       word: q.word,
       options: q.options,
-      answerKey: q.answerKey,
+      // ⚠️ answerKey 不返回给前端，仅在后端生成选项时使用
     }));
 
     return {

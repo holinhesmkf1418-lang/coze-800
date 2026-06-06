@@ -268,8 +268,7 @@ Authorization: Bearer <token>
           { "label": "B", "text": "不落俗套" },
           { "label": "C", "text": "独创一格" },
           { "label": "D", "text": "长久坚持" }
-        ],
-        "answerKey": "A"
+        ]
       }
     ],
     "timeLimit": 1800,
@@ -277,7 +276,7 @@ Authorization: Bearer <token>
   }
 }
 ```
-> ⚠️ **answerKey 是正确答案，前端切勿展示给用户**。前端只需展示 word + options，等交卷后再对比。
+> ⚠️ **前端只需展示 word + options**。正确答案仅在后端存储，前端收发均不涉及。交卷后后端返回 `correctOption` 供成绩单展示。
 
 ### `POST /api/tests/submit`
 
