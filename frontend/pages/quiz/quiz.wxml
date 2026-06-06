@@ -97,33 +97,29 @@
         <view class="q-category">{{currentQuestion.category}}</view>
       </view>
 
-      <!-- 词条展示 -->
+      <!-- 词条展示（后端协议：只展示 word，选项是 4 个释义） -->
       <view class="q-word-display">
         <text class="q-word">{{currentQuestion.word}}</text>
-        <text class="q-pinyin">{{currentQuestion.pinyin}}</text>
       </view>
 
-      <!-- 释义 -->
-      <view class="q-meaning">{{currentQuestion.meaning}}</view>
-
       <!-- 问题提示 -->
-      <view class="q-prompt">以下哪个是「{{currentQuestion.word}}」的正确写法？</view>
+      <view class="q-prompt">请选择「{{currentQuestion.word}}」的正确释义：</view>
 
       <!-- 选项列表 -->
       <view class="options-list">
         <view
-          class="option-item {{selectedOption === index ? 'selected' : ''}} {{submitted ? (index === currentQuestion.answerIndex ? 'correct' : (selectedOption === index ? 'wrong' : '')) : ''}}"
+          class="option-item {{selectedOption === item.label ? 'selected' : ''}} {{submitted ? (item.label === currentQuestion.answerKey ? 'correct' : (selectedOption === item.label ? 'wrong' : '')) : ''}}"
           wx:for="{{currentQuestion.options}}"
-          wx:key="*this"
-          wx:for-index="index"
+          wx:key="label"
+          wx:for-item="item"
           bindtap="selectOption"
-          data-index="{{index}}"
+          data-label="{{item.label}}"
         >
-          <view class="option-badge">{{['A', 'B', 'C', 'D'][index]}}</view>
-          <text class="option-text">{{item}}</text>
+          <view class="option-badge">{{item.label}}</view>
+          <text class="option-text">{{item.text}}</text>
           <view class="option-result" wx:if="{{submitted}}">
-            <text wx:if="{{index === currentQuestion.answerIndex}}">✓</text>
-            <text wx:elif="{{selectedOption === index}}">✗</text>
+            <text wx:if="{{item.label === currentQuestion.answerKey}}">✓</text>
+            <text wx:elif="{{selectedOption === item.label}}">✗</text>
           </view>
         </view>
       </view>
@@ -133,7 +129,7 @@
         <button
           class="btn-primary submit-btn"
           bindtap="submitAnswer"
-          disabled="{{selectedOption === -1 || submitted}}"
+          disabled="{{selectedOption === '' || submitted}}"
           wx:if="{{!submitted}}"
         >
           提交答案
@@ -181,12 +177,12 @@
           </view>
           <view class="detail-options">
             <text
-              class="detail-opt {{optIdx === item.correctAnswer ? 'opt-correct' : ''}} {{optIdx === item.userChoice && !item.isCorrect ? 'opt-user-wrong' : ''}}"
+              class="detail-opt {{opt.label === item.correctOption ? 'opt-correct' : ''}} {{opt.label === item.selectedOption && !item.isCorrect ? 'opt-user-wrong' : ''}}"
               wx:for="{{item.options}}"
-              wx:for-index="optIdx"
-              wx:key="*this"
+              wx:key="label"
+              wx:for-item="opt"
             >
-              {{['A','B','C','D'][optIdx]}}. {{item}}
+              {{opt.label}}. {{opt.text}}
             </text>
           </view>
         </view>

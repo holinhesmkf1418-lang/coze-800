@@ -13,7 +13,7 @@ Page({
     questions: [],
     currentIndex: 0,
     currentQuestion: null,
-    selectedOption: -1,
+    selectedOption: '',    // 对齐后端 v1.1: A/B/C/D label 字符串，空=未选
     submitted: false,
     lastCorrect: false,
     correctCount: 0,
@@ -54,10 +54,10 @@ Page({
       questions,
       currentIndex: 0,
       currentQuestion: questions[0],
-      selectedOption: -1,
+      selectedOption: '',
       submitted: false,
       correctCount: 0,
-      userAnswers: new Array(questions.length).fill(-1),
+      userAnswers: new Array(questions.length).fill(null),  // null=超时未答
       remainingSeconds: this.data.duration,
       timeWarning: false,
       timeUrgent: false
@@ -125,15 +125,15 @@ Page({
   selectOption(e) {
     if (this.data.submitted) return;
 
-    const { index } = e.currentTarget.dataset;
-    this.setData({ selectedOption: index });
+    const { label } = e.currentTarget.dataset;
+    this.setData({ selectedOption: label });
   },
 
   submitAnswer() {
-    if (this.data.selectedOption === -1 || this.data.submitted) return;
+    if (!this.data.selectedOption || this.data.submitted) return;
 
     const { currentIndex, currentQuestion, selectedOption, userAnswers, correctCount } = this.data;
-    const isCorrect = selectedOption === currentQuestion.answerIndex;
+    const isCorrect = selectedOption === currentQuestion.answerKey;
 
     userAnswers[currentIndex] = selectedOption;
 
@@ -159,7 +159,7 @@ Page({
       this.setData({
         currentIndex: nextIndex,
         currentQuestion: questions[nextIndex],
-        selectedOption: -1,
+        selectedOption: '',
         submitted: false,
         lastCorrect: false
       });
@@ -173,21 +173,24 @@ Page({
     let wrongBook = wx.getStorageSync('wrongBook') || [];
     const exists = wrongBook.find(w => w.id === question.id);
 
+    // 根据 label 找到选项文本
+    const selectedOpt = question.options.find(o => o.label === userChoice);
+    const correctOpt = question.options.find(o => o.label === question.answerKey);
+    const userAnswerText = selectedOpt ? selectedOpt.text : '(未作答)';
+    const correctAnswerText = correctOpt ? correctOpt.text : '';
+
     if (exists) {
       exists.wrongCount = (exists.wrongCount || 1) + 1;
-      exists.userAnswer = question.options[userChoice];
+      exists.userAnswer = userAnswerText;
     } else {
       wrongBook.push({
         id: question.id,
         word: question.word,
-        pinyin: question.pinyin,
-        meaning: question.meaning,
-        example: question.example || '',
         category: question.category,
         wrongCount: 1,
         wrongDate: new Date().toISOString().split('T')[0],
-        userAnswer: question.options[userChoice],
-        correctAnswer: question.options[question.answerIndex]
+        userAnswer: userAnswerText,
+        correctAnswer: correctAnswerText
       });
     }
 
@@ -205,8 +208,8 @@ Page({
   showResult() {
     this.clearTimer();
 
-    // 补齐未答题的答案
-    const userAnswers = this.data.userAnswers.map(a => a === -1 ? 0 : a);
+    // 未答题保持 null（对齐后端超时未答协议）
+    const userAnswers = [...this.data.userAnswers];
     const result = mock.calculateScore(userAnswers, this.data.questions);
     result.duration = this.data.duration > 0
       ? this.data.duration - this.data.remainingSeconds

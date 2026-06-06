@@ -100,34 +100,41 @@ function getWrongStats() {
 }
 
 /**
- * 生成随心测试卷（随机抽 100 题）
+ * 生成随心测试卷（对齐后端 v1.1 4-option 选择题协议）
+ *
+ * 后端返回模型:
+ *   { word, options: [{label, text}], answerKey }
+ * 前端不展示 answerKey，交卷后对比 correctOption vs selectedOption
  */
 function generateQuiz(customCount = 100) {
-  // 模拟：从词库中循环生成指定数量的题目
   const questions = [];
   const pool = [...wordBank];
-  const count = Math.min(customCount, pool.length * 4); // 保证不溢出
+  const LABELS = ['A', 'B', 'C', 'D'];
+  const count = Math.min(customCount, pool.length * 3);
 
   for (let i = 0; i < count; i++) {
     const correct = pool[i % pool.length];
-    // 生成 3 个干扰选项（随机选其他词条）
+    // 随机抽 3 个其他词的释义作为干扰项
     const distractors = pool
       .filter(w => w.id !== correct.id)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3)
-      .map(w => w.word);
+      .map(w => w.meaning);
 
-    // 选项顺序随机
-    const options = [correct.word, ...distractors].sort(() => Math.random() - 0.5);
-    const answerIndex = options.indexOf(correct.word);
+    // 构造 4 个选项并随机排列，分配 A/B/C/D label
+    const optionTexts = [correct.meaning, ...distractors].sort(() => Math.random() - 0.5);
+    const options = optionTexts.map((text, idx) => ({
+      label: LABELS[idx],
+      text
+    }));
+    const answerKey = options.find(o => o.text === correct.meaning).label;
 
     questions.push({
       id: i + 1,
+      sortNo: i + 1,      // 对齐后端 sortNo
       word: correct.word,
-      pinyin: correct.pinyin,
-      meaning: correct.meaning,
       options,
-      answerIndex,
+      answerKey,          // 正确答案 label (A/B/C/D)，前端不展示
       category: correct.category
     });
   }
@@ -136,24 +143,26 @@ function generateQuiz(customCount = 100) {
 }
 
 /**
- * 计算测试成绩
+ * 计算测试成绩（对齐后端 v1.1 协议）
+ * answers: ["A", "B", null, "D", ...] — selectedOption，null=超时未答
+ * 返回: { score, correct, incorrect, details[{ selectedOption, correctOption, isCorrect }] }
  */
 function calculateScore(answers, questions) {
   let correctCount = 0;
   const details = [];
 
   questions.forEach((q, idx) => {
-    const userChoice = answers[idx];
-    const isCorrect = userChoice === q.answerIndex;
+    const selectedOption = answers[idx] || null;  // null = 超时未答
+    const isCorrect = selectedOption === q.answerKey;
     if (isCorrect) correctCount++;
 
     details.push({
-      questionId: q.id,
+      sortNo: q.sortNo || idx + 1,
       word: q.word,
-      userChoice,
-      correctAnswer: q.answerIndex,
+      selectedOption,
+      correctOption: q.answerKey,
       isCorrect,
-      options: q.options
+      options: q.options   // [{label, text}]
     });
   });
 
@@ -162,7 +171,7 @@ function calculateScore(answers, questions) {
     correct: correctCount,
     incorrect: questions.length - correctCount,
     score: Math.round((correctCount / questions.length) * 100),
-    duration: 0, // 实际项目中从后端获取
+    duration: 0,
     details,
     categoryBreakdown: getCategoryBreakdown(details, questions)
   };
