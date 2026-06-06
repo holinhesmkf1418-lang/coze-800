@@ -206,18 +206,19 @@ CREATE TABLE test_records (
 
 -- 7. 测试答题明细表
 CREATE TABLE test_answers (
-  id             INT     AUTO_INCREMENT PRIMARY KEY,
-  test_record_id INT     NOT NULL,
-  vocab_id       INT     NOT NULL,
-  sort_no        INT     NOT NULL DEFAULT 0 COMMENT '题号',
-  user_answer    TINYINT NOT NULL DEFAULT 0 COMMENT '用户答案',
-  is_correct     TINYINT NOT NULL DEFAULT 0 COMMENT '是否正确',
+  id              INT          AUTO_INCREMENT PRIMARY KEY,
+  test_record_id  INT          NOT NULL,
+  vocab_id        INT          NOT NULL,
+  sort_no         INT          NOT NULL DEFAULT 0 COMMENT '题号',
+  selected_option VARCHAR(1)   DEFAULT NULL COMMENT '用户选择的选项 A/B/C/D',
+  correct_option  VARCHAR(1)   NOT NULL DEFAULT 'A' COMMENT '正确答案 label',
+  is_correct      TINYINT      NOT NULL DEFAULT 0 COMMENT '是否正确',
 
   INDEX idx_test_record_id (test_record_id),
   FOREIGN KEY (test_record_id) REFERENCES test_records(id),
   FOREIGN KEY (vocab_id) REFERENCES vocabularies(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-  COMMENT='测试答题明细';
+  COMMENT='测试答题明细（4-option 选择题）';
 
 -- 8. 导入批次表
 CREATE TABLE import_batches (

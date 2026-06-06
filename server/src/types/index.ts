@@ -109,9 +109,13 @@ export interface TestQuestion {
   sortNo: number;
   vocabId: number;
   word: string;
-  // 释义和选项由前端决定展示方式
-  // 这里返回词汇信息，前端自己加干扰项（释义判断题模式）
-  definition: string;
+  options: TestOption[];    // 4 个选项（含 1 个正确答案 + 3 个干扰项）
+  answerKey: string;        // 正确答案的 label，如 "A"
+}
+
+export interface TestOption {
+  label: string;            // "A" | "B" | "C" | "D"
+  text: string;             // 选项释义文本
 }
 
 export interface SubmitTestRequest {
@@ -122,8 +126,7 @@ export interface SubmitTestRequest {
 
 export interface TestAnswerInput {
   sortNo: number;
-  vocabId: number;
-  userAnswer: boolean;
+  selectedOption: string;               // 用户选择的选项 label，如 "A"
 }
 
 export interface TestResultResponse {
@@ -142,7 +145,9 @@ export interface TestResultDetail {
   sortNo: number;
   word: string;
   definition: string;
-  userAnswer: boolean;
+  options: TestOption[];          // 完整选项
+  selectedOption: string | null;  // 用户选择的 label
+  correctOption: string;          // 正确答案 label
   isCorrect: boolean;
 }
 

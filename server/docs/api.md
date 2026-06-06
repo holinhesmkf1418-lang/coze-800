@@ -229,7 +229,9 @@ Authorization: Bearer <token>
 
 ---
 
-## 五、随心测
+## 五、随心测（4-option 选择题模式）
+
+> 🆕 v1.1 答题模型已改为 **4 选项选择题**：后端生成选项+正确答案，前端展示 4 个释义选项供用户选，提交 `selectedOption`。
 
 ### `POST /api/tests/start`
 
@@ -261,7 +263,13 @@ Authorization: Bearer <token>
         "sortNo": 1,
         "vocabId": 77,
         "word": "举一反三",
-        "definition": "比喻从一件事情类推而知道其他许多事情..."
+        "options": [
+          { "label": "A", "text": "比喻从一件事情类推而知道其他许多事情" },
+          { "label": "B", "text": "不落俗套" },
+          { "label": "C", "text": "独创一格" },
+          { "label": "D", "text": "长久坚持" }
+        ],
+        "answerKey": "A"
       }
     ],
     "timeLimit": 1800,
@@ -269,6 +277,7 @@ Authorization: Bearer <token>
   }
 }
 ```
+> ⚠️ **answerKey 是正确答案，前端切勿展示给用户**。前端只需展示 word + options，等交卷后再对比。
 
 ### `POST /api/tests/submit`
 
@@ -279,8 +288,8 @@ Authorization: Bearer <token>
 {
   "testId": 88,
   "answers": [
-    { "sortNo": 1, "vocabId": 77, "userAnswer": true },
-    { "sortNo": 2, "vocabId": 12, "userAnswer": false }
+    { "sortNo": 1, "selectedOption": "A" },
+    { "sortNo": 2, "selectedOption": "C" }
   ],
   "duration": 1745
 }
@@ -304,7 +313,9 @@ Authorization: Bearer <token>
         "sortNo": 1,
         "word": "举一反三",
         "definition": "比喻从一件事情...",
-        "userAnswer": true,
+        "options": [],
+        "selectedOption": "A",
+        "correctOption": "A",
         "isCorrect": true
       }
     ],
@@ -314,8 +325,9 @@ Authorization: Bearer <token>
   }
 }
 ```
-> status: `COMPLETED` = 正常交卷, `TIMEOUT` = 超时自动交卷
-> wrongVocabs: 做错的词，前端可一键收录到错题本（后端已自动收录）
+> - `selectedOption`: 用户选择的 label (A/B/C/D)，超时未答的题为 null
+> - `correctOption`: 正确答案 label
+> - `options` 在 submit 响应中为空数组（前端已有）；查看详情用 `GET /api/tests/:id`
 
 ### **倒计时逻辑说明**
 

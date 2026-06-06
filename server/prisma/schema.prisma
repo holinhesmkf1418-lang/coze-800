@@ -143,12 +143,13 @@ enum TestStatus {
 // ---------- 测试答题明细表 ----------
 // 每题的用户答案和判分
 model TestAnswer {
-  id           Int     @id @default(autoincrement())
-  testRecordId Int
-  vocabId      Int
-  sortNo       Int     @default(0)                // 题号
-  userAnswer   Boolean @default(false)            // 用户的判断（对/错/选A/选B，这里简化为是否正确）
-  isCorrect    Boolean @default(false)            // 是否答对
+  id             Int     @id @default(autoincrement())
+  testRecordId   Int
+  vocabId        Int
+  sortNo         Int     @default(0)                // 题号
+  selectedOption String? @db.VarChar(1)             // 用户选择的选项 label (A/B/C/D)
+  correctOption  String  @default("A") @db.VarChar(1) // 正确答案 label
+  isCorrect      Boolean @default(false)            // 是否答对
 
   testRecord TestRecord @relation(fields: [testRecordId], references: [id])
   vocab      Vocabulary @relation(fields: [vocabId], references: [id])

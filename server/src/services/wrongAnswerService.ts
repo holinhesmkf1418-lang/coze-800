@@ -35,7 +35,7 @@ export const wrongAnswerService = {
       id: record.id,
       word: vocab?.word ?? '',
       definition: vocab?.definition ?? '',
-      category: vocab?.category,
+      category: vocab?.category ?? null,
       wrongCount: record.wrongCount,
       sourceType: record.sourceType as 'DAILY' | 'SPRINT',
       createdAt: record.createdAt.toISOString(),
