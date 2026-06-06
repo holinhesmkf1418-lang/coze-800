@@ -94,6 +94,13 @@ const quiz = {
    */
   submit: (params) => request.post('/api/tests/submit', params),
 
+  /**
+   * 校验单题答案
+   * 只返回 isCorrect，不返回 correctOption，避免提前泄露答案。
+   * @param {object} params - { testId, sortNo, selectedOption }
+   */
+  checkAnswer: (params) => request.post('/api/tests/check-answer', params),
+
   /** 测试历史 */
   getHistory: (page = 1, pageSize = 20) =>
     request.get('/api/tests/history', { page, pageSize }),

@@ -124,6 +124,19 @@ export interface SubmitTestRequest {
   duration: number;                     // 实际用时秒数（用于服务端校验）
 }
 
+export interface CheckTestAnswerRequest {
+  testId: number;
+  sortNo: number;
+  selectedOption: string;
+}
+
+export interface CheckTestAnswerResponse {
+  testId: number;
+  sortNo: number;
+  selectedOption: string;
+  isCorrect: boolean;
+}
+
 export interface TestAnswerInput {
   sortNo: number;
   selectedOption: string;               // 用户选择的选项 label，如 "A"

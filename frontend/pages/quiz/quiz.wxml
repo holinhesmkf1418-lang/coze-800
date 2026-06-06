@@ -107,6 +107,9 @@
       <!-- 词条展示（后端协议：只展示 word，选项是 4 个释义） -->
       <view class="q-word-display">
         <text class="q-word">{{currentQuestion.word}}</text>
+        <view class="quick-correct-badge" wx:if="{{autoAdvancing}}">
+          <text>答对啦</text>
+        </view>
       </view>
 
       <!-- 问题提示 -->
@@ -115,7 +118,7 @@
       <!-- 选项列表 -->
       <view class="options-list">
         <view
-          class="option-item {{selectedOption === item.label ? 'selected' : ''}} {{submitted && dataSource !== 'api' ? (item.label === currentQuestion.answerKey ? 'correct' : (selectedOption === item.label ? 'wrong' : '')) : ''}}"
+          class="option-item {{selectedOption === item.label ? 'selected' : ''}} {{submitted && dataSource === 'api' && lastCorrect && selectedOption === item.label ? 'correct' : ''}} {{submitted && dataSource !== 'api' ? (item.label === currentQuestion.answerKey ? 'correct' : (selectedOption === item.label ? 'wrong' : '')) : ''}}"
           wx:for="{{currentQuestion.options}}"
           wx:key="label"
           wx:for-item="item"
@@ -125,7 +128,8 @@
           <view class="option-badge">{{item.label}}</view>
           <text class="option-text">{{item.text}}</text>
           <view class="option-result" wx:if="{{submitted}}">
-            <text wx:if="{{dataSource === 'api' && selectedOption === item.label}}">●</text>
+            <text wx:if="{{dataSource === 'api' && selectedOption === item.label && lastCorrect}}">✓</text>
+            <text wx:elif="{{dataSource === 'api' && selectedOption === item.label}}">●</text>
             <text wx:elif="{{dataSource !== 'api' && item.label === currentQuestion.answerKey}}">✓</text>
             <text wx:elif="{{dataSource !== 'api' && selectedOption === item.label}}">✗</text>
           </view>
@@ -145,18 +149,20 @@
         <button
           class="btn-primary next-btn"
           bindtap="nextQuestion"
-          wx:if="{{submitted}}"
+          wx:if="{{submitted && !autoAdvancing}}"
         >
           {{currentIndex < questions.length - 1 ? '下一题' : '查看成绩'}}
         </button>
       </view>
 
       <!-- 正确/错误提示 -->
-      <view class="answer-feedback {{dataSource === 'api' ? '' : (lastCorrect ? 'feedback-correct' : 'feedback-wrong')}}" wx:if="{{submitted}}">
-        <text class="feedback-icon" wx:if="{{dataSource === 'api'}}">📝</text>
+      <view class="answer-feedback {{lastCorrect ? 'feedback-correct' : (dataSource === 'api' ? '' : 'feedback-wrong')}}" wx:if="{{submitted}}">
+        <text class="feedback-icon" wx:if="{{dataSource === 'api' && lastCorrect}}">✅</text>
+        <text class="feedback-icon" wx:elif="{{dataSource === 'api'}}">📝</text>
         <text class="feedback-icon" wx:elif="{{lastCorrect}}">✅</text>
         <text class="feedback-icon" wx:else>❌</text>
-        <text class="feedback-text" wx:if="{{dataSource === 'api'}}">已选择，最终成绩由后端判分</text>
+        <text class="feedback-text" wx:if="{{dataSource === 'api' && lastCorrect}}">答对啦，自动进入下一题</text>
+        <text class="feedback-text" wx:elif="{{dataSource === 'api'}}">已选择，最终成绩由后端判分</text>
         <text class="feedback-text" wx:elif="{{lastCorrect}}">回答正确！</text>
         <text class="feedback-text" wx:else>回答错误，请记住正确答案</text>
       </view>

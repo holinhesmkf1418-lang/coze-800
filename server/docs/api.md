@@ -278,6 +278,35 @@ Authorization: Bearer <token>
 ```
 > ⚠️ **前端只需展示 word + options**。正确答案仅在后端存储，前端收发均不涉及。交卷后后端返回 `correctOption` 供成绩单展示。
 
+### `POST /api/tests/check-answer`
+
+🔒 需认证。校验单题答案，用于答对后短暂提示并自动进入下一题。
+
+**Request：**
+```json
+{
+  "testId": 88,
+  "sortNo": 1,
+  "selectedOption": "A"
+}
+```
+
+**Response：**
+```json
+{
+  "code": 0,
+  "message": "ok",
+  "data": {
+    "testId": 88,
+    "sortNo": 1,
+    "selectedOption": "A",
+    "isCorrect": true
+  }
+}
+```
+
+> 🔒 该接口只返回 `isCorrect`，不返回 `correctOption` / `answerKey`，避免提前泄露正确答案。答错时前端仍按原交互展示“下一题”按钮，最终成绩以 `POST /api/tests/submit` 为准。
+
 ### `POST /api/tests/submit`
 
 🔒 需认证。提交答案 / 超时自动交卷。
@@ -438,6 +467,7 @@ POST   /api/wrong-answers             收录错题
 DELETE /api/wrong-answers/:vocabId    移除错题
 
 POST   /api/tests/start               开始随心测
+POST   /api/tests/check-answer        校验单题答案
 POST   /api/tests/submit              提交答案
 GET    /api/tests/history             测试历史
 GET    /api/tests/:id                 测试详情

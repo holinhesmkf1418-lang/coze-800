@@ -29,6 +29,38 @@ router.post('/start', async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/tests/check-answer
+ * 校验单题答案
+ *
+ * Request: {
+ *   testId: number,
+ *   sortNo: number,
+ *   selectedOption: "A" | "B" | "C" | "D"
+ * }
+ *
+ * Response 不返回 correctOption，避免提前泄露答案。
+ */
+router.post('/check-answer', async (req: Request, res: Response) => {
+  try {
+    const { testId, sortNo, selectedOption } = req.body;
+
+    if (!testId || !sortNo || !selectedOption) {
+      res.status(400).json({ code: 400, message: '缺少必填参数 testId/sortNo/selectedOption', data: null });
+      return;
+    }
+
+    const data = await testService.checkAnswer(req.userId!, {
+      testId: Number(testId),
+      sortNo: Number(sortNo),
+      selectedOption,
+    });
+    res.json({ code: 0, message: 'ok', data });
+  } catch (err: any) {
+    res.status(err.statusCode || 400).json({ code: err.statusCode || 400, message: err.message, data: null });
+  }
+});
+
+/**
  * POST /api/tests/submit
  * 提交答案 / 超时自动交卷
  *

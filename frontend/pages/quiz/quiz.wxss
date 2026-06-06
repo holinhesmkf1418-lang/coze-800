@@ -261,7 +261,7 @@
 
 .q-word-display {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 16rpx;
   margin-bottom: 16rpx;
   padding-bottom: 20rpx;
@@ -272,6 +272,38 @@
   font-size: 52rpx;
   font-weight: 800;
   color: var(--color-text-primary);
+}
+
+.quick-correct-badge {
+  display: flex;
+  align-items: center;
+  height: 48rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  background: rgba(52, 199, 89, 0.12);
+  color: var(--color-success);
+  font-size: var(--font-xs);
+  font-weight: 700;
+  animation: quickCorrectPop 0.72s ease both;
+}
+
+@keyframes quickCorrectPop {
+  0% {
+    opacity: 0;
+    transform: translateY(8rpx) scale(0.96);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6rpx) scale(0.98);
+  }
 }
 
 .q-pinyin {

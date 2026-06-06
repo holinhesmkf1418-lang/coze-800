@@ -3,6 +3,8 @@ import { config } from '../config';
 import {
   StartTestRequest,
   StartTestResponse,
+  CheckTestAnswerRequest,
+  CheckTestAnswerResponse,
   SubmitTestRequest,
   TestResultResponse,
   TestHistoryItem,
@@ -132,6 +134,42 @@ export const testService = {
       questions,
       timeLimit,
       serverTime: new Date().toISOString(),
+    };
+  },
+
+  /**
+   * 校验单题答案
+   *
+   * 只返回本题是否答对，不返回 correctOption，避免提前泄露正确答案。
+   */
+  async checkAnswer(userId: number, req: CheckTestAnswerRequest): Promise<CheckTestAnswerResponse> {
+    const testRecord = await prisma.testRecord.findUnique({
+      where: { id: req.testId },
+      include: { answers: true },
+    });
+
+    if (!testRecord) {
+      throw new AppError('测试记录不存在', 404);
+    }
+
+    if (testRecord.userId !== userId) {
+      throw new AppError('无权操作此测试', 403);
+    }
+
+    if (testRecord.status !== 'IN_PROGRESS') {
+      throw new AppError('此测试已结束', 400);
+    }
+
+    const answer = testRecord.answers.find((a: { sortNo: number }) => a.sortNo === req.sortNo);
+    if (!answer) {
+      throw new AppError('题目不存在', 404);
+    }
+
+    return {
+      testId: req.testId,
+      sortNo: req.sortNo,
+      selectedOption: req.selectedOption,
+      isCorrect: req.selectedOption === answer.correctOption,
     };
   },
 

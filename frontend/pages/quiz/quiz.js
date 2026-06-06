@@ -19,6 +19,7 @@ Page({
     selectedOption: '',    // 对齐后端 v1.1: A/B/C/D label 字符串，空=未选
     submitted: false,
     lastCorrect: false,
+    autoAdvancing: false,
     correctCount: 0,
     testId: null,          // 后端返回的 testId，API 模式使用
 
@@ -106,6 +107,7 @@ Page({
       currentQuestion: questions[0],
       selectedOption: '',
       submitted: false,
+      autoAdvancing: false,
       correctCount: 0,
       userAnswers: new Array(questions.length).fill(null),
       remainingSeconds: requestedDuration,
@@ -180,28 +182,48 @@ Page({
     this.setData({ selectedOption: label });
   },
 
-  submitAnswer() {
+  async submitAnswer() {
     if (!this.data.selectedOption || this.data.submitted) return;
 
-    const { currentIndex, currentQuestion, selectedOption, userAnswers, correctCount, dataSource } = this.data;
+    const { currentIndex, currentQuestion, selectedOption, userAnswers, correctCount, dataSource, testId } = this.data;
     userAnswers[currentIndex] = selectedOption;
 
-    // API 模式：后端判分，逐题不即时判断对错，只记录选择
+    // API 模式：调用后端单题校验，只返回 isCorrect，不泄露正确答案
     const isAPI = dataSource === 'api';
-    const isCorrect = isAPI
-      ? null  // API 模式：不即时判分
-      : (selectedOption === currentQuestion.answerKey);
+    let isCorrect = isAPI ? null : (selectedOption === currentQuestion.answerKey);
+
+    if (isAPI && testId) {
+      try {
+        const checked = await api.quiz.checkAnswer({
+          testId,
+          sortNo: currentQuestion.sortNo,
+          selectedOption
+        });
+        isCorrect = !!checked.isCorrect;
+      } catch (e) {
+        console.warn('[quiz] 单题校验失败，保留后端最终判分:', e.message);
+      }
+    }
+
+    const shouldAutoAdvance = isCorrect === true;
 
     this.setData({
       submitted: true,
       lastCorrect: isCorrect,
       correctCount: correctCount + (isCorrect === true ? 1 : 0),
-      userAnswers
+      userAnswers,
+      autoAdvancing: shouldAutoAdvance
     });
 
-    // mock 模式收录错题到本地 storage
-    if (isCorrect === false) {
+    // mock 模式收录错题到本地 storage；API 模式由后端交卷时沉淀错题
+    if (!isAPI && isCorrect === false) {
       this.saveWrongAnswer(currentQuestion, selectedOption);
+    }
+
+    if (shouldAutoAdvance) {
+      setTimeout(() => {
+        this.nextQuestion();
+      }, 720);
     }
   },
 
@@ -216,7 +238,8 @@ Page({
         currentQuestion: questions[nextIndex],
         selectedOption: '',
         submitted: false,
-        lastCorrect: false
+        lastCorrect: false,
+        autoAdvancing: false
       });
     } else {
       // 全部答完 → 显示成绩

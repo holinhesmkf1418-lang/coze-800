@@ -19,6 +19,7 @@
  *   GET  /api/vocabs/categories
  *   GET  /api/vocabs/:id
  *   POST /api/tests/start
+ *   POST /api/tests/check-answer
  *   POST /api/tests/submit
  *   GET  /api/tests/history
  */
@@ -258,6 +259,28 @@ app.post('/api/tests/start', auth, (req, res) => {
   res.json({
     code: 0, message: '测试已开始，祝好运！📝',
     data: { testId: testCounter, questions: questionsForClient, timeLimit: testRecord.timeLimit, serverTime: new Date().toISOString() }
+  });
+});
+
+// 校验单题答案：只返回是否正确，不泄露正确答案
+app.post('/api/tests/check-answer', auth, (req, res) => {
+  const { testId, sortNo, selectedOption } = req.body;
+  const record = tests.get(Number(testId));
+  if (!record) return res.status(404).json({ code: 404, message: '测试不存在', data: null });
+  if (record.userId !== (req as any).userId) return res.status(403).json({ code: 403, message: '无权操作此测试', data: null });
+  if (record.status !== 'IN_PROGRESS') return res.status(400).json({ code: 400, message: '此测试已结束', data: null });
+
+  const question = record.questions.find((q: any) => q.sortNo === Number(sortNo));
+  if (!question) return res.status(404).json({ code: 404, message: '题目不存在', data: null });
+
+  res.json({
+    code: 0, message: 'ok',
+    data: {
+      testId: Number(testId),
+      sortNo: Number(sortNo),
+      selectedOption,
+      isCorrect: selectedOption === question.answerKey
+    }
   });
 });
 
