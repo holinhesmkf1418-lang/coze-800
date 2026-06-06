@@ -31,26 +31,33 @@
   <g transform="translate(60,130)">
     <rect class="phone" x="0" y="0" width="260" height="500" rx="24"/>
     <rect class="bar" x="0" y="0" width="260" height="58" rx="24"/>
-    <text class="h white" x="96" y="36">首页</text>
-    <rect class="soft" x="18" y="82" width="224" height="78" rx="12"/>
-    <text class="h" x="34" y="114">今日任务</text>
-    <text class="t" x="34" y="140">已学 12/20 · 连续 7 天</text>
-    <rect class="card" x="18" y="180" width="104" height="76" rx="10"/>
-    <text class="h blue" x="42" y="214">打卡</text>
-    <text class="s" x="37" y="236">今日词汇</text>
-    <rect class="card" x="138" y="180" width="104" height="76" rx="10"/>
-    <text class="h blue" x="164" y="214">测验</text>
-    <text class="s" x="154" y="236">随机100题</text>
-    <rect class="card" x="18" y="276" width="104" height="76" rx="10"/>
-    <text class="h blue" x="36" y="310">错题本</text>
-    <text class="s" x="42" y="332">37 道</text>
-    <rect class="card" x="138" y="276" width="104" height="76" rx="10"/>
-    <text class="h blue" x="160" y="310">我的</text>
-    <text class="s" x="154" y="332">学习概览</text>
-    <rect class="card" x="18" y="376" width="224" height="70" rx="10"/>
-    <text class="t" x="34" y="405">最近测验：82 分</text>
-    <rect class="soft" x="34" y="420" width="178" height="8" rx="4"/>
-    <rect class="bar" x="34" y="420" width="130" height="8" rx="4"/>
+    <text class="h white" x="72" y="36">公考花生800词</text>
+    <rect class="soft" x="18" y="76" width="224" height="102" rx="14"/>
+    <circle class="white" cx="48" cy="110" r="18"/>
+    <text class="h blue" x="39" y="117">花</text>
+    <text class="h" x="74" y="104">公考高频成语</text>
+    <text class="t" x="74" y="128">行测言语 · 800词冲刺</text>
+    <text class="s" x="34" y="158">今日20词 + 随机100题 + 错题薄弱项</text>
+    <rect class="card" x="18" y="196" width="68" height="62" rx="10"/>
+    <text class="h blue" x="34" y="224">20</text>
+    <text class="s" x="30" y="244">今日词</text>
+    <rect class="card" x="96" y="196" width="68" height="62" rx="10"/>
+    <text class="h blue" x="111" y="224">755</text>
+    <text class="s" x="105" y="244">已入库</text>
+    <rect class="card" x="174" y="196" width="68" height="62" rx="10"/>
+    <text class="h red" x="193" y="224">37</text>
+    <text class="s" x="184" y="244">错题</text>
+    <rect class="card" x="18" y="278" width="104" height="66" rx="10"/>
+    <text class="h blue" x="42" y="306">打卡</text>
+    <text class="s" x="31" y="326">今日成语</text>
+    <rect class="card" x="138" y="278" width="104" height="66" rx="10"/>
+    <text class="h blue" x="164" y="306">冲刺</text>
+    <text class="s" x="151" y="326">随机100题</text>
+    <rect class="card" x="18" y="360" width="224" height="66" rx="10"/>
+    <text class="t" x="34" y="388">薄弱项：警示告诫、逻辑关系</text>
+    <text class="s" x="34" y="410">先复盘错题，再做随心测</text>
+    <rect class="soft" x="34" y="438" width="178" height="8" rx="4"/>
+    <rect class="bar" x="34" y="438" width="130" height="8" rx="4"/>
     <rect class="soft" x="0" y="454" width="260" height="46" rx="0"/>
     <text class="s" x="28" y="483">首页</text>
     <text class="s" x="78" y="483">打卡</text>
