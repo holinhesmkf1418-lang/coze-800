@@ -104,7 +104,56 @@ huasheng800-words/
 - **随心测**：`generateQuiz(count)` 生成随机试卷，`calculateScore()` 计算成绩
 - **打卡统计**：`getCheckinStats()` 返回总进度和本周数据
 
-对接真实 API 时，只需替换 mock 模块中的函数实现，页面代码无需修改。
+## API 请求层（阶段 0 完成 ✅）
+
+`utils/request.js` — 统一请求封装，支持：
+
+- Promise 封装 `wx.request`，支持 GET/POST/PUT/DELETE
+- 自动注入 `Authorization: Bearer <token>`
+- 统一解析 `{ code, message, data }` 响应信封
+- 401 自动清除登录态，触发重新登录
+- JWT token 存取（内存 + Storage 双缓存）
+
+`utils/api.js` — 按模块组织的接口集合：
+
+```js
+const api = require('../../utils/api');
+
+// 认证
+api.auth.login()            // 微信登录
+api.auth.getProfile()       // 用户信息
+
+// 打卡
+api.checkin.getToday()      // 今日打卡词汇+状态
+api.checkin.submit(date)    // 提交打卡
+api.checkin.getStreak()     // 连续天数
+
+// 错题
+api.wrongAnswers.getList(page, pageSize, category)
+api.wrongAnswers.getStats()
+api.wrongAnswers.add(vocabId, sourceType)
+api.wrongAnswers.remove(vocabId)
+
+// 随心测
+api.quiz.start({ timeLimit, questionCount, categoryFilter })
+api.quiz.submit({ testId, answers, duration })
+api.quiz.getHistory(page, pageSize)
+
+// 词汇
+api.vocabs.getCategories()
+```
+
+对接真实 API 时，只需将页面中的 mock 调用替换为 `api.xxx()` 即可。
+
+## 登录态管理（阶段 1）
+
+`app.js` 中集成：
+- `onLaunch` 自动恢复 token 和用户信息
+- `app.login()` 触发微信登录流程
+- `app.logout()` 清除登录态
+- 401 自动回调，跳转登录
+
+配置后端地址：修改 `wx.getStorageSync('api_base_url')` 或在 `app.js` 中改默认值。
 
 ## 启动方式
 

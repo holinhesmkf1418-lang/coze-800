@@ -5,6 +5,8 @@
  * 全局 App 实例
  */
 
+const api = require('./utils/request');
+
 App({
   onLaunch() {
     // 获取系统信息
@@ -12,24 +14,86 @@ App({
     this.globalData.systemInfo = systemInfo;
     this.globalData.statusBarHeight = systemInfo.statusBarHeight;
 
+    // 初始化请求层
+    this.initRequest();
+
     // 初始化本地存储
     this.initStorage();
+
+    // 恢复登录态
+    this.restoreLoginState();
+  },
+
+  /**
+   * 初始化 API 请求层
+   */
+  initRequest() {
+    // 设置后端 baseURL（联调时修改为实际地址）
+    const baseURL = wx.getStorageSync('api_base_url') || 'http://localhost:3000';
+    api.setBaseURL(baseURL);
+
+    // 设置 token 过期回调 → 清除状态，等待下次登录
+    api.onUnauthorized(() => {
+      this.globalData.isLoggedIn = false;
+      this.globalData.userInfo = null;
+      wx.showToast({ title: '登录已过期，请重新登录', icon: 'none' });
+    });
+  },
+
+  /**
+   * 恢复登录态
+   */
+  restoreLoginState() {
+    const token = api.getToken();
+    const userInfo = api.getUserInfo();
+
+    if (token && userInfo) {
+      this.globalData.isLoggedIn = true;
+      this.globalData.userInfo = userInfo;
+    }
+  },
+
+  /**
+   * 微信登录
+   */
+  async login() {
+    try {
+      wx.showLoading({ title: '登录中...', mask: true });
+      const data = await api.wxLogin();
+      wx.hideLoading();
+
+      this.globalData.isLoggedIn = true;
+      this.globalData.userInfo = data.user || api.getUserInfo();
+
+      wx.showToast({ title: '登录成功', icon: 'success' });
+      return data;
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: err.message || '登录失败', icon: 'none' });
+      throw err;
+    }
+  },
+
+  /**
+   * 退出登录
+   */
+  logout() {
+    api.clearToken();
+    this.globalData.isLoggedIn = false;
+    this.globalData.userInfo = null;
   },
 
   initStorage() {
-    // 首次启动初始化打卡记录
     const checkinHistory = wx.getStorageSync('checkinHistory');
     if (!checkinHistory) {
       wx.setStorageSync('checkinHistory', []);
     }
 
-    // 首次启动初始化错题本
     const wrongBook = wx.getStorageSync('wrongBook');
     if (!wrongBook) {
       wx.setStorageSync('wrongBook', []);
     }
 
-    // 首次启动初始化测试记录
     const quizHistory = wx.getStorageSync('quizHistory');
     if (!quizHistory) {
       wx.setStorageSync('quizHistory', []);
@@ -40,6 +104,9 @@ App({
     systemInfo: null,
     statusBarHeight: 0,
     userInfo: null,
+    isLoggedIn: false,
+    // API 实例，页面可通过 getApp().api 调用
+    api: null,
     // 主题色
     themeColor: '#4F6EF7',
     // 每日打卡词汇数
