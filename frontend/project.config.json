@@ -1,5 +1,5 @@
 {
-  "description": "公考花生800词背诵工具",
+  "description": "搞定公考800词背诵工具",
   "packOptions": {
     "ignore": [
       { "type": "file", "value": ".eslintrc.js" }

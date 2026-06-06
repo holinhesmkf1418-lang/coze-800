@@ -63,7 +63,7 @@
     </view>
     <view class="menu-item">
       <text class="menu-icon">📖</text>
-      <text class="menu-text">关于花生800词</text>
+      <text class="menu-text">关于搞定公考800词</text>
       <text class="menu-value">v1.0.0 MVP</text>
       <text class="menu-arrow">›</text>
     </view>
