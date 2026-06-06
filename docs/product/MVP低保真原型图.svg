@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1180" viewBox="0 0 1600 1180">
+  <defs>
+    <style>
+      .bg { fill: #f5f7fa; }
+      .phone { fill: #ffffff; stroke: #d7dce8; stroke-width: 2; }
+      .bar { fill: #4f6ef7; }
+      .soft { fill: #eef1fe; }
+      .card { fill: #ffffff; stroke: #e4e8f0; stroke-width: 1.5; }
+      .line { stroke: #aab3c5; stroke-width: 2; fill: none; }
+      .arrow { stroke: #4f6ef7; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .title { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 24px; font-weight: 700; fill: #1a1a2e; }
+      .h { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 18px; font-weight: 700; fill: #1a1a2e; }
+      .t { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 14px; fill: #4b5563; }
+      .s { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; font-size: 12px; fill: #6b7280; }
+      .white { fill: #ffffff; }
+      .blue { fill: #4f6ef7; }
+      .green { fill: #34c759; }
+      .orange { fill: #ff9500; }
+      .red { fill: #ff3b30; }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4f6ef7"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1180"/>
+  <text class="title" x="60" y="56">搞定800词 · MVP 低保真原型图</text>
+  <text class="t" x="60" y="86">核心闭环：每日打卡 → 随心测 → 错题沉淀 → 复盘提升</text>
+
+  <!-- Home -->
+  <g transform="translate(60,130)">
+    <rect class="phone" x="0" y="0" width="260" height="500" rx="24"/>
+    <rect class="bar" x="0" y="0" width="260" height="58" rx="24"/>
+    <text class="h white" x="96" y="36">首页</text>
+    <rect class="soft" x="18" y="82" width="224" height="78" rx="12"/>
+    <text class="h" x="34" y="114">今日任务</text>
+    <text class="t" x="34" y="140">已学 12/20 · 连续 7 天</text>
+    <rect class="card" x="18" y="180" width="104" height="76" rx="10"/>
+    <text class="h blue" x="42" y="214">打卡</text>
+    <text class="s" x="37" y="236">今日词汇</text>
+    <rect class="card" x="138" y="180" width="104" height="76" rx="10"/>
+    <text class="h blue" x="164" y="214">测验</text>
+    <text class="s" x="154" y="236">随机100题</text>
+    <rect class="card" x="18" y="276" width="104" height="76" rx="10"/>
+    <text class="h blue" x="36" y="310">错题本</text>
+    <text class="s" x="42" y="332">37 道</text>
+    <rect class="card" x="138" y="276" width="104" height="76" rx="10"/>
+    <text class="h blue" x="160" y="310">我的</text>
+    <text class="s" x="154" y="332">学习概览</text>
+    <rect class="card" x="18" y="376" width="224" height="70" rx="10"/>
+    <text class="t" x="34" y="405">最近测验：82 分</text>
+    <rect class="soft" x="34" y="420" width="178" height="8" rx="4"/>
+    <rect class="bar" x="34" y="420" width="130" height="8" rx="4"/>
+    <rect class="soft" x="0" y="454" width="260" height="46" rx="0"/>
+    <text class="s" x="28" y="483">首页</text>
+    <text class="s" x="78" y="483">打卡</text>
+    <text class="s" x="124" y="483">错题</text>
+    <text class="s" x="174" y="483">测验</text>
+    <text class="s" x="224" y="483">我的</text>
+  </g>
+
+  <!-- Checkin -->
+  <g transform="translate(370,130)">
+    <rect class="phone" x="0" y="0" width="260" height="500" rx="24"/>
+    <rect class="bar" x="0" y="0" width="260" height="58" rx="24"/>
+    <text class="h white" x="86" y="36">每日打卡</text>
+    <text class="t" x="20" y="88">2026年6月6日 · 进度 12/20</text>
+    <rect class="soft" x="20" y="106" width="220" height="8" rx="4"/>
+    <rect class="bar" x="20" y="106" width="132" height="8" rx="4"/>
+    <g transform="translate(18,138)">
+      <rect class="card" x="0" y="0" width="224" height="86" rx="10"/>
+      <text class="h" x="16" y="30">源远流长</text>
+      <text class="s" x="16" y="52">第一组 · 中华文明传统文化</text>
+      <text class="s" x="16" y="72">比喻历史悠久。</text>
+      <circle class="green" cx="204" cy="28" r="10"/>
+    </g>
+    <g transform="translate(18,238)">
+      <rect class="card" x="0" y="0" width="224" height="86" rx="10"/>
+      <text class="h" x="16" y="30">博大精深</text>
+      <text class="s" x="16" y="52">第一组 · 中华文明传统文化</text>
+      <text class="s" x="16" y="72">学识、理论广博深刻。</text>
+      <circle class="green" cx="204" cy="28" r="10"/>
+    </g>
+    <g transform="translate(18,338)">
+      <rect class="card" x="0" y="0" width="224" height="64" rx="10"/>
+      <text class="t" x="16" y="26">还有 8 个词待完成</text>
+      <text class="s" x="16" y="46">完成全部词条后可提交打卡</text>
+    </g>
+    <rect class="bar" x="18" y="424" width="224" height="44" rx="22"/>
+    <text class="h white" x="92" y="452">提交打卡</text>
+  </g>
+
+  <!-- Wrong book -->
+  <g transform="translate(680,130)">
+    <rect class="phone" x="0" y="0" width="260" height="500" rx="24"/>
+    <rect class="bar" x="0" y="0" width="260" height="58" rx="24"/>
+    <text class="h white" x="94" y="36">错题本</text>
+    <rect class="soft" x="18" y="82" width="224" height="92" rx="12"/>
+    <text class="h" x="34" y="112">错题统计</text>
+    <text class="t" x="34" y="138">总错题 37 · 正确率 85.8%</text>
+    <text class="s red" x="34" y="158">薄弱项：警示告诫、逻辑关系</text>
+    <rect class="card" x="18" y="194" width="64" height="32" rx="16"/>
+    <text class="s blue" x="38" y="215">全部</text>
+    <rect class="card" x="92" y="194" width="78" height="32" rx="16"/>
+    <text class="s" x="105" y="215">警示告诫</text>
+    <rect class="card" x="180" y="194" width="62" height="32" rx="16"/>
+    <text class="s" x="194" y="215">逻辑</text>
+    <g transform="translate(18,246)">
+      <rect class="card" x="0" y="0" width="224" height="78" rx="10"/>
+      <text class="h" x="16" y="28">饮鸩止渴</text>
+      <text class="s" x="16" y="50">错误 3 次 · 警示告诫</text>
+      <text class="s" x="16" y="68">用错误方法解决眼前困难。</text>
+    </g>
+    <g transform="translate(18,340)">
+      <rect class="card" x="0" y="0" width="224" height="78" rx="10"/>
+      <text class="h" x="16" y="28">南辕北辙</text>
+      <text class="s" x="16" y="50">错误 2 次 · 逻辑关系</text>
+      <text class="s" x="16" y="68">行动和目的相反。</text>
+    </g>
+  </g>
+
+  <!-- Quiz -->
+  <g transform="translate(990,130)">
+    <rect class="phone" x="0" y="0" width="260" height="500" rx="24"/>
+    <rect class="bar" x="0" y="0" width="260" height="58" rx="24"/>
+    <text class="h white" x="94" y="36">随心测</text>
+    <rect class="card" x="18" y="82" width="224" height="76" rx="10"/>
+    <text class="h" x="34" y="112">测试设置</text>
+    <text class="t" x="34" y="138">100 题 · 30 分钟</text>
+    <rect class="soft" x="18" y="178" width="224" height="48" rx="10"/>
+    <text class="h blue" x="34" y="208">开始测试</text>
+    <rect class="card" x="18" y="250" width="224" height="202" rx="12"/>
+    <text class="s orange" x="34" y="278">倒计时 29:42 · 12/100</text>
+    <text class="h" x="34" y="314">锲而不舍</text>
+    <text class="s" x="34" y="336">请选择正确释义</text>
+    <rect class="soft" x="34" y="354" width="188" height="28" rx="8"/>
+    <text class="s" x="44" y="373">A. 做事有恒心</text>
+    <rect class="card" x="34" y="390" width="188" height="28" rx="8"/>
+    <text class="s" x="44" y="409">B. 事先做好准备</text>
+    <rect class="card" x="34" y="426" width="188" height="28" rx="8"/>
+    <text class="s" x="44" y="445">C. 行动与目的相反</text>
+  </g>
+
+  <!-- Profile -->
+  <g transform="translate(1300,130)">
+    <rect class="phone" x="0" y="0" width="260" height="500" rx="24"/>
+    <rect class="bar" x="0" y="0" width="260" height="58" rx="24"/>
+    <text class="h white" x="94" y="36">个人中心</text>
+    <circle class="soft" cx="62" cy="112" r="30"/>
+    <text class="h" x="104" y="106">备考用户</text>
+    <text class="s" x="104" y="130">连续打卡 7 天</text>
+    <rect class="card" x="18" y="170" width="224" height="88" rx="10"/>
+    <text class="h" x="34" y="200">学习概览</text>
+    <text class="t" x="34" y="226">已学 246 / 800</text>
+    <text class="t" x="34" y="246">最近测验 82 分</text>
+    <rect class="card" x="18" y="278" width="224" height="48" rx="10"/>
+    <text class="t" x="34" y="308">打卡记录</text>
+    <rect class="card" x="18" y="342" width="224" height="48" rx="10"/>
+    <text class="t" x="34" y="372">测试历史</text>
+    <rect class="card" x="18" y="406" width="224" height="48" rx="10"/>
+    <text class="t" x="34" y="436">提醒设置</text>
+  </g>
+
+  <!-- Flow -->
+  <g transform="translate(80,720)">
+    <text class="title" x="0" y="0">核心流程</text>
+    <rect class="card" x="0" y="40" width="170" height="78" rx="12"/>
+    <text class="h" x="50" y="72">登录</text>
+    <text class="s" x="28" y="96">POST /api/auth/login</text>
+    <path class="arrow" d="M180 79 H260"/>
+    <rect class="card" x="270" y="40" width="170" height="78" rx="12"/>
+    <text class="h" x="322" y="72">打卡</text>
+    <text class="s" x="286" y="96">today / submit</text>
+    <path class="arrow" d="M450 79 H530"/>
+    <rect class="card" x="540" y="40" width="170" height="78" rx="12"/>
+    <text class="h" x="594" y="72">测验</text>
+    <text class="s" x="566" y="96">start / submit</text>
+    <path class="arrow" d="M720 79 H800"/>
+    <rect class="card" x="810" y="40" width="170" height="78" rx="12"/>
+    <text class="h" x="864" y="72">错题</text>
+    <text class="s" x="842" y="96">list / stats</text>
+    <path class="arrow" d="M990 79 H1070"/>
+    <rect class="card" x="1080" y="40" width="170" height="78" rx="12"/>
+    <text class="h" x="1128" y="72">复盘</text>
+    <text class="s" x="1108" y="96">薄弱分类优先</text>
+  </g>
+
+  <!-- API mapping -->
+  <g transform="translate(80,910)">
+    <text class="title" x="0" y="0">页面与接口映射</text>
+    <rect class="card" x="0" y="35" width="1450" height="120" rx="14"/>
+    <text class="h blue" x="30" y="72">首页</text>
+    <text class="s" x="30" y="98">/check-in/streak · /tests/history</text>
+    <text class="h blue" x="310" y="72">打卡页</text>
+    <text class="s" x="310" y="98">/check-in/today · /check-in/submit</text>
+    <text class="h blue" x="620" y="72">随心测</text>
+    <text class="s" x="620" y="98">/tests/start · /tests/submit</text>
+    <text class="h blue" x="900" y="72">错题本</text>
+    <text class="s" x="900" y="98">/wrong-answers · /wrong-answers/stats</text>
+    <text class="h blue" x="1220" y="72">个人中心</text>
+    <text class="s" x="1220" y="98">/auth/profile · /tests/history</text>
+  </g>
+
+  <text class="s" x="80" y="1120">说明：此图为低保真信息架构原型，用于确定 MVP 页面关系和接口联调顺序；视觉细节以微信小程序现有静态页面为准。</text>
+</svg>
