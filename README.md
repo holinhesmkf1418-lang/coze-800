@@ -1,6 +1,18 @@
 # 搞定公考800词 · 公考成语背诵工具
 
-> 微信小程序 MVP 项目 | 前后端协作仓库
+> 微信小程序 MVP 项目 | 前后端协作仓库 | MVP 收口 ✅
+
+## 🚀 快速启动
+
+```bash
+# 1. 启动后端（无需 MySQL）
+cd server && npm install && npm run dev:standalone
+# → http://localhost:3000, 30条词库, 内存存储
+
+# 2. 打开前端
+# 微信开发者工具 → 导入项目 → 选择 frontend/ 目录
+# 自动 devLogin → 首页/打卡/随心测/错题本 均可使用
+```
 
 ## 项目结构
 
