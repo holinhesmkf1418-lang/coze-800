@@ -55,6 +55,51 @@
   color: rgba(255, 255, 255, 0.7);
 }
 
+/* ===== 分区标题 ===== */
+.profile-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20rpx;
+  margin: 34rpx 24rpx 16rpx;
+}
+
+.profile-section-head.compact {
+  margin-top: 28rpx;
+}
+
+.section-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  min-width: 0;
+}
+
+.section-title {
+  font-size: 34rpx;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: 0;
+}
+
+.section-subtitle {
+  font-size: 22rpx;
+  line-height: 1.35;
+  color: var(--color-text-hint);
+}
+
+.section-tag {
+  flex-shrink: 0;
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 22rpx;
+  line-height: 1.25;
+  font-weight: 600;
+}
+
 /* ===== 菜单区域 ===== */
 .menu-section {
   margin: 0 24rpx 24rpx;
@@ -67,8 +112,11 @@
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 28rpx 32rpx;
+  justify-content: space-between;
+  min-height: 104rpx;
+  padding: 22rpx 28rpx;
   border-bottom: 2rpx solid var(--color-divider);
+  box-sizing: border-box;
 }
 
 .menu-item:last-child {
@@ -79,24 +127,56 @@
   background: #F9FAFB;
 }
 
+.menu-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  min-width: 0;
+  flex: 1;
+}
+
 .menu-icon {
-  font-size: 32rpx;
-  margin-right: 20rpx;
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  background: #F5F7FA;
+  font-size: 28rpx;
 }
 
 .menu-text {
-  flex: 1;
   font-size: var(--font-md);
+  line-height: 1.35;
+  font-weight: 600;
   color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-right {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+  margin-left: 20rpx;
 }
 
 .menu-value {
   font-size: var(--font-sm);
   color: var(--color-text-hint);
-  margin-right: 8rpx;
+  line-height: 1.35;
+  max-width: 210rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .menu-arrow {
-  font-size: 36rpx;
+  font-size: 34rpx;
+  line-height: 1;
   color: var(--color-text-hint);
 }
