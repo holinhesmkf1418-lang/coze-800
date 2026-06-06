@@ -40,6 +40,7 @@ interface Vocab  { id: number; word: string; definition: string; category: strin
 const users: Map<number, User> = new Map();
 const vocabs: Vocab[] = [];
 const checkIns: Map<string, { date: string; completed: boolean; vocabCount: number; totalCount: number; checkedAt: string | null }> = new Map();
+const wrongAnswers: Map<string, { vocabId: number; word: string; definition: string; category: string | null; wrongCount: number; sourceType: string; createdAt: string }> = new Map();
 let testCounter = 0;
 const tests: Map<number, any> = new Map();
 
@@ -173,13 +174,38 @@ app.get('/api/check-in/history', auth, (_req, res) => {
 });
 
 // 错题列表
-app.get('/api/wrong-answers', auth, (_req, res) => {
-  res.json({ code: 0, message: 'ok', data: { list: [], total: 0, page: 1, pageSize: 20 } });
+app.get('/api/wrong-answers', auth, (req, res) => {
+  const userId = (req as any).userId;
+  const list = Array.from(wrongAnswers.values()).filter(w => {
+    // 简化：所有用户共用同一份错题数据（dev server 通常只有一个用户）
+    const category = (req.query.category as string);
+    return !category || w.category === category;
+  });
+  res.json({ code: 0, message: 'ok', data: { list, total: list.length, page: 1, pageSize: 20 } });
 });
 
 // 错题统计
 app.get('/api/wrong-answers/stats', auth, (_req, res) => {
-  res.json({ code: 0, message: 'ok', data: { totalWrong: 0, categoryBreakdown: [], accuracyRate: 100 } });
+  const all = Array.from(wrongAnswers.values());
+  const totalWrong = all.length;
+
+  // 按分类汇总
+  const catMap = new Map<string, number>();
+  for (const w of all) {
+    const cat = w.category || '未分类';
+    catMap.set(cat, (catMap.get(cat) || 0) + w.wrongCount);
+  }
+  const categoryBreakdown = Array.from(catMap.entries())
+    .map(([category, count]) => ({ category, count }))
+    .sort((a, b) => b.count - a.count);
+
+  // 正确率 = 1 - (错题词汇数 / 总词库数)
+  const totalVocabCount = vocabs.length;
+  const accuracyRate = totalVocabCount > 0
+    ? Math.round((1 - totalWrong / totalVocabCount) * 10000) / 100
+    : 100;
+
+  res.json({ code: 0, message: 'ok', data: { totalWrong, categoryBreakdown, accuracyRate } });
 });
 
 // 词汇分类
@@ -258,6 +284,22 @@ app.post('/api/tests/submit', auth, (req, res) => {
   record.status = isTimeout ? 'TIMEOUT' : 'COMPLETED';
   record.score = correctCount;
   record.duration = duration;
+
+  // 沉淀错题到内存（实现"随心测 → 错题本"闭环）
+  for (const w of wrongVocabs) {
+    const key = `${w.vocabId}`;
+    const existing = wrongAnswers.get(key);
+    const vocab = vocabs.find(v => v.id === w.vocabId);
+    if (existing) {
+      existing.wrongCount++;
+    } else {
+      wrongAnswers.set(key, {
+        vocabId: w.vocabId, word: w.word,
+        definition: vocab?.definition ?? '', category: vocab?.category ?? null,
+        wrongCount: 1, sourceType: 'SPRINT', createdAt: new Date().toISOString()
+      });
+    }
+  }
 
   res.json({
     code: 0, message: '交卷成功！',
