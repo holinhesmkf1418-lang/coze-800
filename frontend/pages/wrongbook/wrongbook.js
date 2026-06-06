@@ -1,4 +1,5 @@
 const mock = require('../../utils/mock');
+const api = require('../../utils/api');
 
 Page({
   data: {
@@ -6,8 +7,9 @@ Page({
     categories: [],
     activeCategory: 'all',
     sortBy: 'date',
-    wrongList: [],       // 全部错题
-    filteredList: []     // 筛选后的错题
+    wrongList: [],
+    filteredList: [],
+    dataSource: 'mock'
   },
 
   onLoad() {
@@ -18,7 +20,47 @@ Page({
     this.loadData();
   },
 
-  loadData() {
+  async loadData() {
+    await getApp().globalData.loginReady;
+
+    try {
+      await this.loadFromAPI();
+      this.setData({ dataSource: 'api' });
+    } catch (e) {
+      console.warn('[wrongbook] API 不可用，fallback mock:', e.message);
+      this.loadFromMock();
+      this.setData({ dataSource: 'mock' });
+    }
+  },
+
+  async loadFromAPI() {
+    const [statsRes, listRes, categoriesRes] = await Promise.all([
+      api.wrongAnswers.getStats(),
+      api.wrongAnswers.getList(1, 200),
+      api.vocabs.getCategories()
+    ]);
+
+    this.setData({
+      wrongStats: statsRes || {},
+      wrongList: (listRes?.list || []).map(item => ({
+        ...item,
+        wrongId: item.id || item.vocabId,
+        wrongCount: item.wrongCount || 1,
+        wrongDate: item.createdAt?.split('T')[0] || '',
+        userAnswer: item.userAnswer || '',
+        correctAnswer: item.correctAnswer || item.word || ''
+      })),
+      categories: (categoriesRes || []).map(cat => ({
+        key: cat.key || cat.name,
+        name: cat.name || cat,
+        count: cat.count || 0
+      }))
+    });
+
+    this.applyFilter();
+  },
+
+  loadFromMock() {
     const stats = mock.getWrongStats();
     const list = mock.getWrongBook();
 

@@ -1,4 +1,5 @@
 const mock = require('../../utils/mock');
+const api = require('../../utils/api');
 
 Page({
   data: {
@@ -17,6 +18,7 @@ Page({
     submitted: false,
     lastCorrect: false,
     correctCount: 0,
+    testId: null,          // 后端返回的 testId，API 模式使用
 
     // 倒计时
     timerDisplay: '30:00',
@@ -27,7 +29,8 @@ Page({
 
     // 成绩
     resultStats: {},
-    userAnswers: []
+    userAnswers: [],
+    dataSource: 'mock'     // 'api' | 'mock'
   },
 
   onUnload() {
@@ -46,21 +49,47 @@ Page({
     this.setData({ duration: dur });
   },
 
-  startQuiz() {
-    const questions = mock.generateQuiz(this.data.questionCount);
+  async startQuiz() {
+    wx.showLoading({ title: '生成试卷...', mask: true });
+
+    let questions, testId = null, source = 'mock';
+
+    // 优先真实 API
+    try {
+      await getApp().globalData.loginReady;
+      const res = await api.quiz.start({
+        questionCount: this.data.questionCount,
+        timeLimit: this.data.duration
+      });
+      questions = (res.questions || []).map(q => ({
+        ...q,
+        id: q.sortNo || q.vocabId,
+        answerKey: q.answerKey  // 后端可能不返回，submit 时后端判
+      }));
+      testId = res.testId;
+      source = 'api';
+      console.log('[quiz] API start 成功, testId=', testId, '题目数=', questions.length);
+    } catch (e) {
+      console.warn('[quiz] API start 失败，fallback mock:', e.message);
+      questions = mock.generateQuiz(this.data.questionCount);
+    }
+
+    wx.hideLoading();
 
     this.setData({
       quizState: 'active',
       questions,
+      testId,
       currentIndex: 0,
       currentQuestion: questions[0],
       selectedOption: '',
       submitted: false,
       correctCount: 0,
-      userAnswers: new Array(questions.length).fill(null),  // null=超时未答
+      userAnswers: new Array(questions.length).fill(null),
       remainingSeconds: this.data.duration,
       timeWarning: false,
-      timeUrgent: false
+      timeUrgent: false,
+      dataSource: source
     });
 
     this.updateTimerDisplay();
@@ -205,15 +234,50 @@ Page({
 
   // ===== 成绩结果 =====
 
-  showResult() {
+  async showResult() {
     this.clearTimer();
 
-    // 未答题保持 null（对齐后端超时未答协议）
     const userAnswers = [...this.data.userAnswers];
-    const result = mock.calculateScore(userAnswers, this.data.questions);
-    result.duration = this.data.duration > 0
+    const duration = this.data.duration > 0
       ? this.data.duration - this.data.remainingSeconds
       : 0;
+    let result;
+
+    // 优先真实 API submit
+    if (this.data.dataSource === 'api' && this.data.testId) {
+      try {
+        const answers = userAnswers.map((opt, i) => ({
+          sortNo: this.data.questions[i]?.sortNo || (i + 1),
+          selectedOption: opt
+        }));
+        const res = await api.quiz.submit({ testId: this.data.testId, answers, duration });
+        const correctCount = res.details?.filter(d => d.isCorrect).length || res.score || 0;
+        result = {
+          total: res.total || this.data.questions.length,
+          correct: correctCount,
+          incorrect: (res.total || this.data.questions.length) - correctCount,
+          score: Math.round((correctCount / (res.total || 1)) * 100),
+          duration,
+          details: (res.details || []).map(d => ({
+            sortNo: d.sortNo,
+            word: d.word,
+            selectedOption: d.selectedOption,
+            correctOption: d.correctOption,
+            isCorrect: d.isCorrect,
+            options: this.data.questions.find(q => q.sortNo === d.sortNo)?.options || []
+          })),
+          categoryBreakdown: []
+        };
+        console.log('[quiz] API submit 成功, score=', result.score);
+      } catch (e) {
+        console.warn('[quiz] API submit 失败，fallback mock:', e.message);
+        result = mock.calculateScore(userAnswers, this.data.questions);
+        result.duration = duration;
+      }
+    } else {
+      result = mock.calculateScore(userAnswers, this.data.questions);
+      result.duration = duration;
+    }
 
     this.setData({
       quizState: 'result',
