@@ -148,7 +148,7 @@ huasheng800-words/
 | 数据导入 `/api/import/*` | ✅ 后端已兼容 OCR 字段映射 |
 | TabBar 图标 | ✅ 已生成 10 个 PNG |
 
-> 后端 v1.1 协议：`start` 返回 `options[{label,text}] + answerKey`，`submit` 提交 `selectedOption`（A/B/C/D/null）。前端 quiz.js / mock.js / quiz.wxml 已同步适配。
+> 后端 v1.1 协议：`start` 返回 `options[{label,text}]`，不返回正确答案；`submit` 提交 `selectedOption`（A/B/C/D/null）。前端 quiz.js / mock.js / quiz.wxml 已同步适配。
 
 ## 协作规则
 

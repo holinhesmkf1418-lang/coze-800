@@ -31,10 +31,10 @@
   <g transform="translate(60,130)">
     <rect class="phone" x="0" y="0" width="260" height="500" rx="24"/>
     <rect class="bar" x="0" y="0" width="260" height="58" rx="24"/>
-    <text class="h white" x="72" y="36">公考花生800词</text>
+    <text class="h white" x="72" y="36">搞定公考800词</text>
     <rect class="soft" x="18" y="76" width="224" height="102" rx="14"/>
     <circle class="white" cx="48" cy="110" r="18"/>
-    <text class="h blue" x="39" y="117">花</text>
+    <text class="h blue" x="39" y="117">考</text>
     <text class="h" x="74" y="104">公考高频成语</text>
     <text class="t" x="74" y="128">行测言语 · 800词冲刺</text>
     <text class="s" x="34" y="158">今日20词 + 随机100题 + 错题薄弱项</text>
