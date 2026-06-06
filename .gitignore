@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Environment
+.env
+
+# Uploads
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Coverage
+coverage/
+
+# Python
+__pycache__/
+*.pyc
