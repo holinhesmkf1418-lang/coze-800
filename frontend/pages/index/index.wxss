@@ -1,161 +1,373 @@
-/* 首页样式 */
+/* 首页样式 — 公考花生800词 */
 
-/* ===== 顶部 Hero 区域 ===== */
-.hero-section {
-  position: relative;
-  margin: 24rpx;
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-}
-
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #4F6EF7 0%, #7B93FF 50%, #A5B4FF 100%);
-}
-
-.hero-content {
-  position: relative;
-  padding: 40rpx 36rpx;
-  z-index: 1;
-}
-
-.greeting {
-  margin-bottom: 32rpx;
-}
-
-.greeting-text {
-  display: block;
-  font-size: var(--font-xxl);
-  font-weight: 700;
-  color: #FFFFFF;
-  margin-bottom: 6rpx;
-}
-
-.greeting-sub {
-  font-size: var(--font-sm);
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.hero-stats {
+/* ===== 品牌头部 ===== */
+.brand-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 28rpx 32rpx 8rpx;
 }
 
-.hero-stat-item {
+.brand-row {
   display: flex;
-  flex-direction: column;
-  gap: 4rpx;
-}
-
-.hero-stat-num {
-  font-size: var(--font-xl);
-  font-weight: 700;
-  color: #FFFFFF;
-}
-
-.hero-stat-label {
-  font-size: var(--font-xs);
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.hero-stat-divider {
-  width: 2rpx;
-  height: 40rpx;
-  background: rgba(255, 255, 255, 0.2);
-  margin: 0 48rpx;
-}
-
-/* ===== 快捷入口 ===== */
-.quick-actions {
-  padding: 0 24rpx;
-  display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 16rpx;
-  margin-bottom: 32rpx;
 }
 
-.action-card {
-  display: flex;
-  align-items: center;
-  background: var(--color-bg-card);
-  border-radius: var(--radius-lg);
-  padding: 28rpx 28rpx;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.2s ease;
-}
-
-.action-card:active {
-  transform: scale(0.98);
-  box-shadow: var(--shadow-md);
-}
-
-.action-icon-wrap {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: var(--radius-md);
+.brand-icon {
+  width: 68rpx;
+  height: 68rpx;
+  border-radius: 20rpx;
+  background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 24rpx;
-  flex-shrink: 0;
 }
 
-.checkin-icon { background: rgba(79, 110, 247, 0.1); }
-.quiz-icon { background: rgba(255, 149, 0, 0.1); }
-.wrong-icon { background: rgba(255, 59, 48, 0.08); }
-
-.action-emoji {
+.brand-emoji {
   font-size: 36rpx;
 }
 
-.action-info {
+.brand-name {
+  font-size: var(--font-xl);
+  font-weight: 800;
+  color: var(--color-text-primary);
+  display: block;
+  letter-spacing: 2rpx;
+}
+
+.brand-tagline {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+  display: block;
+  margin-top: 4rpx;
+}
+
+.brand-badge {
+  background: var(--color-primary-light);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.badge-text {
+  font-size: 20rpx;
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: 2rpx;
+}
+
+/* ===== 800词总进度 Hero 卡片 ===== */
+.hero-card {
+  margin: 20rpx 24rpx;
+  background: linear-gradient(135deg, #4F6EF7 0%, #5B7CF7 40%, #7B93FF 100%);
+  border-radius: var(--radius-xl);
+  padding: 36rpx 32rpx 28rpx;
+  box-shadow: 0 12rpx 40rpx rgba(79, 110, 247, 0.25);
+}
+
+.hero-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.hero-label {
+  font-size: var(--font-sm);
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+.hero-sub {
+  font-size: var(--font-xs);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hero-progress-big {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 16rpx;
+}
+
+.hero-num-mastered {
+  font-size: 80rpx;
+  font-weight: 900;
+  color: #FFFFFF;
+  line-height: 1;
+}
+
+.hero-num-sep {
+  font-size: 48rpx;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0 8rpx;
+}
+
+.hero-num-total {
+  font-size: 52rpx;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hero-bar-wrap {
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 100rpx;
+  overflow: hidden;
+  margin-bottom: 10rpx;
+}
+
+.hero-bar-fill {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 100rpx;
+  transition: width 0.6s ease;
+}
+
+.hero-percent {
+  font-size: var(--font-xs);
+  color: rgba(255, 255, 255, 0.6);
+  text-align: right;
+  margin-bottom: 24rpx;
+}
+
+/* Hero 卡片内三指标 */
+.hero-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-top: 20rpx;
+  border-top: 2rpx solid rgba(255, 255, 255, 0.12);
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rpx;
+}
+
+.hs-num {
+  font-size: var(--font-lg);
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
+.hs-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.hero-stat-div {
+  width: 2rpx;
+  height: 36rpx;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== 区块标签 ===== */
+.section-label {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  padding: 28rpx 40rpx 12rpx;
+  letter-spacing: 2rpx;
+}
+
+/* ===== 主入口：每日打卡 ===== */
+.main-action {
+  margin: 0 24rpx;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28rpx;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-left: 6rpx solid var(--color-primary);
+}
+
+.main-action:active {
+  transform: scale(0.99);
+}
+
+.main-action-left {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
   flex: 1;
   min-width: 0;
 }
 
-.action-title {
-  display: block;
-  font-size: var(--font-md);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 4rpx;
+.main-action-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
-.action-desc {
+.mai-emoji {
+  font-size: 32rpx;
+}
+
+.main-action-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mai-title {
+  font-size: var(--font-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  display: block;
+}
+
+.mai-desc {
   font-size: var(--font-xs);
   color: var(--color-text-hint);
+  display: block;
+  margin-top: 4rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.action-arrow {
-  font-size: 36rpx;
-  color: var(--color-text-hint);
-  margin-left: 12rpx;
+.main-action-right {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex-shrink: 0;
 }
 
-/* ===== 区块标题 ===== */
-.section-header {
-  padding: 16rpx 48rpx 12rpx;
-}
-
-.section-title {
-  font-size: var(--font-sm);
+.mai-badge {
+  font-size: 20rpx;
+  color: var(--color-warning);
+  background: rgba(255, 149, 0, 0.1);
+  padding: 4rpx 14rpx;
+  border-radius: 20rpx;
   font-weight: 600;
-  color: var(--color-text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 2rpx;
 }
 
-/* ===== 周打卡柱状图 ===== */
+.mai-badge.done {
+  color: var(--color-success);
+  background: rgba(52, 199, 89, 0.1);
+}
+
+.mai-arrow {
+  font-size: 40rpx;
+  color: var(--color-text-hint);
+}
+
+/* ===== 双列入口：随心测 + 错题本 ===== */
+.dual-actions {
+  display: flex;
+  gap: 16rpx;
+  padding: 16rpx 24rpx 0;
+}
+
+.dual-card {
+  flex: 1;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: 28rpx 20rpx;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.dual-card:active {
+  transform: scale(0.98);
+}
+
+.dual-icon {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-bg { background: rgba(255, 149, 0, 0.1); }
+.wrong-bg { background: rgba(255, 59, 48, 0.08); }
+
+.dual-emoji {
+  font-size: 28rpx;
+}
+
+.dual-title {
+  font-size: var(--font-sm);
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.dual-desc {
+  font-size: 20rpx;
+  color: var(--color-text-hint);
+}
+
+/* ===== 分类掌握度 ===== */
+.category-mastery {
+  margin: 0 24rpx;
+  padding: 28rpx 32rpx;
+}
+
+.cm-item {
+  margin-bottom: 20rpx;
+}
+
+.cm-item:last-child {
+  margin-bottom: 0;
+}
+
+.cm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.cm-name {
+  font-size: var(--font-sm);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.cm-percent {
+  font-size: var(--font-sm);
+  font-weight: 700;
+}
+
+.cm-bar-track {
+  height: 8rpx;
+  background: #E5E7EB;
+  border-radius: 100rpx;
+  overflow: hidden;
+}
+
+.cm-bar-fill {
+  height: 100%;
+  border-radius: 100rpx;
+  transition: width 0.4s ease;
+}
+
+/* ===== 本周打卡柱状图 ===== */
 .week-chart {
-  padding: 36rpx 24rpx;
+  margin: 0 24rpx;
+  padding: 28rpx 20rpx 20rpx;
 }
 
 .week-bars {
   display: flex;
   align-items: flex-end;
   justify-content: space-around;
-  height: 160rpx;
+  height: 130rpx;
 }
 
 .week-bar-item {
@@ -167,7 +379,7 @@
 }
 
 .bar-wrap {
-  height: 120rpx;
+  height: 100rpx;
   display: flex;
   align-items: flex-end;
 }
@@ -177,7 +389,6 @@
   background: linear-gradient(180deg, #4F6EF7 0%, #A5B4FF 100%);
   border-radius: 100rpx 100rpx 0 0;
   min-height: 8rpx;
-  transition: height 0.5s ease;
 }
 
 .bar-fill.bar-empty {
@@ -192,10 +403,4 @@
 .bar-label {
   font-size: 20rpx;
   color: var(--color-text-hint);
-}
-
-.bar-value {
-  font-size: 20rpx;
-  color: var(--color-text-secondary);
-  font-weight: 500;
 }

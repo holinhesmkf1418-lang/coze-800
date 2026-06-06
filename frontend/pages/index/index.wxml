@@ -1,77 +1,121 @@
 <!--
   首页 - 花生800词
   ---
-  功能：今日任务概览、快捷入口、学习统计
+  设计重点：突出"公考花生800词"品牌特色
+  - 花生品牌标识 + 公考定位
+  - 800词总进度为核心指标
+  - 分类掌握度展示学习深度
 -->
 <view class="page-container">
-  <!-- 顶部问候区域 -->
-  <view class="hero-section">
-    <view class="hero-bg"></view>
-    <view class="hero-content">
-      <view class="greeting">
-        <text class="greeting-text">今日学习</text>
-        <text class="greeting-sub">坚持就是胜利 💪</text>
+
+  <!-- ===== 品牌头部 ===== -->
+  <view class="brand-header">
+    <view class="brand-row">
+      <view class="brand-icon">
+        <text class="brand-emoji">🥜</text>
       </view>
-      <view class="hero-stats">
-        <view class="hero-stat-item">
-          <text class="hero-stat-num">{{continuousDays}}</text>
-          <text class="hero-stat-label">连续打卡</text>
+      <view class="brand-info">
+        <text class="brand-name">花生800词</text>
+        <text class="brand-tagline">公考高频成语 · 科学背诵</text>
+      </view>
+    </view>
+    <view class="brand-badge">
+      <text class="badge-text">MVP</text>
+    </view>
+  </view>
+
+  <!-- ===== 800词总进度 Hero 卡片 ===== -->
+  <view class="hero-card">
+    <view class="hero-top">
+      <text class="hero-label">已掌握词汇</text>
+      <text class="hero-sub">共 800 个公考高频成语</text>
+    </view>
+    <view class="hero-progress-big">
+      <text class="hero-num-mastered">{{overviewStats.masteredWords}}</text>
+      <text class="hero-num-sep">/</text>
+      <text class="hero-num-total">800</text>
+    </view>
+    <view class="hero-bar-wrap">
+      <view class="hero-bar-fill" style="width: {{(overviewStats.masteredWords / 800) * 100}}%;"></view>
+    </view>
+    <view class="hero-percent">{{Math.round((overviewStats.masteredWords / 800) * 100)}}% 掌握率</view>
+
+    <!-- 三指标 -->
+    <view class="hero-stats-row">
+      <view class="hero-stat">
+        <text class="hs-num">{{continuousDays}}</text>
+        <text class="hs-label">连续打卡</text>
+      </view>
+      <view class="hero-stat-div"></view>
+      <view class="hero-stat">
+        <text class="hs-num text-success">{{overviewStats.accuracy}}%</text>
+        <text class="hs-label">正确率</text>
+      </view>
+      <view class="hero-stat-div"></view>
+      <view class="hero-stat">
+        <text class="hs-num">{{todayProgress.completed}}/{{todayProgress.total}}</text>
+        <text class="hs-label">今日进度</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ===== 快捷入口 ===== -->
+  <view class="section-label">开始学习</view>
+
+  <!-- 打卡 — 主入口，单行突出 -->
+  <view class="main-action" bindtap="goToCheckin">
+    <view class="main-action-left">
+      <view class="main-action-icon">
+        <text class="mai-emoji">📝</text>
+      </view>
+      <view class="main-action-info">
+        <text class="mai-title">每日打卡</text>
+        <text class="mai-desc">今日 {{todayProgress.completed}}/{{todayProgress.total}} 词 · 逐个学习，确认掌握</text>
+      </view>
+    </view>
+    <view class="main-action-right">
+      <text class="mai-badge" wx:if="{{todayProgress.completed < todayProgress.total}}">待完成</text>
+      <text class="mai-badge done" wx:else>已完成</text>
+      <text class="mai-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- 测验 + 错题 双列 -->
+  <view class="dual-actions">
+    <view class="dual-card" bindtap="goToQuiz">
+      <view class="dual-icon quiz-bg">
+        <text class="dual-emoji">🎯</text>
+      </view>
+      <text class="dual-title">随心测</text>
+      <text class="dual-desc">模拟实战 · 随机100题</text>
+    </view>
+    <view class="dual-card" bindtap="goToWrongBook">
+      <view class="dual-icon wrong-bg">
+        <text class="dual-emoji">📊</text>
+      </view>
+      <text class="dual-title">错题本</text>
+      <text class="dual-desc">{{wrongCount}} 道待复习</text>
+    </view>
+  </view>
+
+  <!-- ===== 分类掌握度 ===== -->
+  <view class="section-label">分类掌握</view>
+  <view class="category-mastery card">
+    <view class="cm-item" wx:for="{{categoryMastery}}" wx:key="category">
+      <view class="cm-header">
+        <text class="cm-name">{{item.category}}</text>
+        <text class="cm-percent {{item.accuracy >= 90 ? 'text-success' : item.accuracy >= 70 ? 'text-warning' : 'text-danger'}}">{{item.accuracy}}%</text>
+      </view>
+      <view class="cm-bar-track">
+        <view class="cm-bar-fill"
+          style="width: {{item.accuracy}}%; background: {{item.accuracy >= 90 ? '#34C759' : item.accuracy >= 70 ? '#FF9500' : '#FF3B30'}};">
         </view>
-        <view class="hero-stat-divider"></view>
-        <view class="hero-stat-item">
-          <text class="hero-stat-num">{{todayProgress.completed}}/{{todayProgress.total}}</text>
-          <text class="hero-stat-label">今日进度</text>
-        </view>
       </view>
     </view>
   </view>
 
-  <!-- 快捷入口 -->
-  <view class="quick-actions">
-    <view class="action-card checkin-card" bindtap="goToCheckin">
-      <view class="action-icon-wrap checkin-icon">
-        <text class="action-emoji">📝</text>
-      </view>
-      <view class="action-info">
-        <text class="action-title">每日打卡</text>
-        <text class="action-desc">今日 {{todayProgress.completed}}/{{todayProgress.total}} 词</text>
-      </view>
-      <view class="action-arrow">›</view>
-    </view>
-
-    <view class="action-card quiz-card" bindtap="goToQuiz">
-      <view class="action-icon-wrap quiz-icon">
-        <text class="action-emoji">🎯</text>
-      </view>
-      <view class="action-info">
-        <text class="action-title">随心测</text>
-        <text class="action-desc">随机 100 题 · 模拟考试</text>
-      </view>
-      <view class="action-arrow">›</view>
-    </view>
-
-    <view class="action-card wrong-card" bindtap="goToWrongBook">
-      <view class="action-icon-wrap wrong-icon">
-        <text class="action-emoji">📊</text>
-      </view>
-      <view class="action-info">
-        <text class="action-title">错题本</text>
-        <text class="action-desc">{{wrongCount}} 道错题待复习</text>
-      </view>
-      <view class="action-arrow">›</view>
-    </view>
-  </view>
-
-  <!-- 学习统计 -->
-  <view class="section-header">
-    <text class="section-title">学习统计</text>
-  </view>
-  <stats-panel type="overview" stats="{{overviewStats}}" />
-
-  <!-- 本周打卡记录 -->
-  <view class="section-header">
-    <text class="section-title">本周打卡</text>
-  </view>
+  <!-- ===== 本周打卡 ===== -->
+  <view class="section-label">本周打卡</view>
   <view class="week-chart card">
     <view class="week-bars">
       <view class="week-bar-item" wx:for="{{weeklyStats}}" wx:key="day">
@@ -80,11 +124,9 @@
                 style="height: {{item.count * 2.8}}rpx;"></view>
         </view>
         <text class="bar-label">{{item.day}}</text>
-        <text class="bar-value">{{item.count}}</text>
       </view>
     </view>
   </view>
 
-  <!-- 底部安全区 -->
-  <view class="safe-bottom" style="height: 120rpx;"></view>
+  <view class="safe-bottom" style="height: 140rpx;"></view>
 </view>
