@@ -43,27 +43,29 @@ Page({
       throw new Error('未登录');
     }
 
-    // 并行请求
-    const [streakRes, wrongStats, categories] = await Promise.all([
+    // 独立请求：单个失败不影响其他
+    const checkinStats = mock.getCheckinStats();
+    const [streakRes, wrongStats] = await Promise.allSettled([
       api.checkin.getStreak(),
-      api.wrongAnswers.getStats(),
-      api.vocabs.getCategories()
+      api.wrongAnswers.getStats()
     ]);
 
-    const checkinStats = mock.getCheckinStats(); // 本周打卡暂用 mock
+    const streak = streakRes.status === 'fulfilled' ? streakRes.value : null;
+    const stats = wrongStats.status === 'fulfilled' ? wrongStats.value : null;
+
+    if (!streak && !stats) throw new Error('所有 API 均不可用');
 
     this.setData({
-      continuousDays: streakRes?.streak || 0,
-      wrongCount: wrongStats?.totalWrong || 0,
+      continuousDays: streak?.streak || 0,
+      wrongCount: stats?.totalWrong || 0,
       overviewStats: {
         totalWords: 800,
-        masteredWords: checkinStats.masteredWords, // TODO: 后续从真实接口获取
-        accuracy: wrongStats?.accuracyRate || 0
+        masteredWords: checkinStats.masteredWords,
+        accuracy: stats?.accuracyRate || 0
       },
-      // 分类掌握度从错题统计推算
-      categoryMastery: (wrongStats?.categoryBreakdown || []).map(cat => ({
+      categoryMastery: (stats?.categoryBreakdown || []).map(cat => ({
         category: cat.category,
-        accuracy: Math.round((1 - cat.count / (wrongStats.totalWrong || 1)) * 100),
+        accuracy: Math.round((1 - cat.count / Math.max(stats?.totalWrong || 0, 1)) * 100),
         count: cat.count
       })),
       weeklyStats: checkinStats.weeklyStats

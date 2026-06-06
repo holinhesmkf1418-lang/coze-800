@@ -44,25 +44,40 @@ Page({
   },
 
   async loadFromAPI() {
-    const [streakRes, wrongStats, quizHistory] = await Promise.all([
+    const checkinStats = mock.getCheckinStats(); // 800词总进度暂用 mock
+    let anySucceeded = false;
+
+    // 独立调用：单个失败不影响其他
+    const [streakRes, wrongStats, quizHistory] = await Promise.allSettled([
       api.checkin.getStreak(),
       api.wrongAnswers.getStats(),
       api.quiz.getHistory(1, 1)
     ]);
 
-    const checkinStats = mock.getCheckinStats(); // 800词总进度暂用 mock
+    const streak = streakRes.status === 'fulfilled' ? streakRes.value : null;
+    const stats = wrongStats.status === 'fulfilled' ? wrongStats.value : null;
+    const history = quizHistory.status === 'fulfilled' ? quizHistory.value : null;
 
-    this.setData({
-      continuousDays: streakRes?.streak || 0,
-      wrongCount: wrongStats?.totalWrong || 0,
-      quizCount: quizHistory?.total || 0,
-      overviewStats: {
-        totalWords: 800,
-        masteredWords: checkinStats.masteredWords,
-        continuousDays: streakRes?.streak || 0,
-        accuracy: wrongStats?.accuracyRate || 0
-      }
-    });
+    if (streak) anySucceeded = true;
+    if (stats) anySucceeded = true;
+    if (history) anySucceeded = true;
+
+    // 任一成功则算 API 模式，失败的字段用兜底值
+    if (anySucceeded) {
+      this.setData({
+        continuousDays: streak?.streak || 0,
+        wrongCount: stats?.totalWrong || 0,
+        quizCount: history?.total || 0,
+        overviewStats: {
+          totalWords: 800,
+          masteredWords: checkinStats.masteredWords,
+          continuousDays: streak?.streak || 0,
+          accuracy: stats?.accuracyRate || 0
+        }
+      });
+    } else {
+      throw new Error('所有 API 均不可用');
+    }
   },
 
   loadFromMock() {
