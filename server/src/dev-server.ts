@@ -225,13 +225,14 @@ app.get('/api/vocabs/:id', (req, res) => {
 
 // 开始随心测
 app.post('/api/tests/start', auth, (req, res) => {
-  const questionCount = req.body.questionCount || 10;
+  const questionCount = Math.max(1, Math.min(Number(req.body.questionCount) || 10, 200));
 
-  // 随机选词
-  const shuffled = [...vocabs].sort(() => Math.random() - 0.5).slice(0, questionCount);
+  // 随机选词。standalone 只有 30 条演示词库，题量大于词库时循环取词以便本地验收 100 题流程。
+  const shuffled = [...vocabs].sort(() => Math.random() - 0.5);
 
   // 为每道题生成 4 个选项
-  const questions = shuffled.map((v, idx) => {
+  const questions = Array.from({ length: questionCount }, (_, idx) => {
+    const v = shuffled[idx % shuffled.length];
     const distractors = vocabs.filter(d => d.id !== v.id).sort(() => Math.random() - 0.5).slice(0, 3);
     const items = [{ label: '', text: v.definition, isCorrect: true }, ...distractors.map(d => ({ label: '', text: d.definition, isCorrect: false }))];
 

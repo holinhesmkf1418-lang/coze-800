@@ -15,8 +15,15 @@
         <view class="setup-icon-wrap">
           <text class="setup-icon">🎯</text>
         </view>
-        <text class="setup-title">随心测</text>
-        <text class="setup-desc">随机抽取词汇，模拟真实考试场景</text>
+        <view class="setup-title-block">
+          <text class="setup-title">随心测</text>
+          <text class="setup-desc">随机抽取词汇，模拟真实考试场景</text>
+        </view>
+        <view class="setup-summary">
+          <text class="summary-item">{{questionCount}} 题</text>
+          <text class="summary-divider"></text>
+          <text class="summary-item">{{duration === 0 ? '不限时' : timerDisplay}}</text>
+        </view>
       </view>
 
       <!-- 题目数量设置 -->

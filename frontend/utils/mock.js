@@ -110,7 +110,7 @@ function generateQuiz(customCount = 100) {
   const questions = [];
   const pool = [...wordBank];
   const LABELS = ['A', 'B', 'C', 'D'];
-  const count = Math.min(customCount, pool.length * 3);
+  const count = Math.max(1, Number(customCount) || 100);
 
   for (let i = 0; i < count; i++) {
     const correct = pool[i % pool.length];

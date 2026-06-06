@@ -9,6 +9,8 @@ Page({
     // 设置参数
     questionCount: 100,
     duration: 1800,     // 倒计时秒数，0=不限时
+    requestedQuestionCount: 100,
+    actualQuestionCount: 0,
 
     // 答题数据
     questions: [],
@@ -40,26 +42,31 @@ Page({
   // ===== 设置方法 =====
 
   setCount(e) {
-    const count = e.currentTarget.dataset.count;
+    const count = Number(e.currentTarget.dataset.count);
     this.setData({ questionCount: count });
   },
 
   setDuration(e) {
-    const dur = e.currentTarget.dataset.dur;
-    this.setData({ duration: dur });
+    const dur = Number(e.currentTarget.dataset.dur);
+    this.setData({
+      duration: dur,
+      remainingSeconds: dur
+    }, () => this.updateTimerDisplay());
   },
 
   async startQuiz() {
     wx.showLoading({ title: '生成试卷...', mask: true });
 
+    const requestedCount = Number(this.data.questionCount);
+    const requestedDuration = Number(this.data.duration);
     let questions, testId = null, source = 'mock';
 
     // 优先真实 API
     try {
       await getApp().globalData.loginReady;
       const res = await api.quiz.start({
-        questionCount: this.data.questionCount,
-        timeLimit: this.data.duration
+        questionCount: requestedCount,
+        timeLimit: requestedDuration
       });
       questions = (res.questions || []).map(q => ({
         ...q,
@@ -71,22 +78,37 @@ Page({
       console.log('[quiz] API start 成功, testId=', testId, '题目数=', questions.length);
     } catch (e) {
       console.warn('[quiz] API start 失败，fallback mock:', e.message);
-      questions = mock.generateQuiz(this.data.questionCount);
+      questions = mock.generateQuiz(requestedCount);
     }
 
     wx.hideLoading();
+
+    if (!questions || questions.length === 0) {
+      wx.showToast({ title: '题库暂无可用题目', icon: 'none' });
+      return;
+    }
+
+    if (questions.length < requestedCount) {
+      wx.showToast({
+        title: `当前题库仅生成 ${questions.length} 题`,
+        icon: 'none',
+        duration: 2000
+      });
+    }
 
     this.setData({
       quizState: 'active',
       questions,
       testId,
+      requestedQuestionCount: requestedCount,
+      actualQuestionCount: questions.length,
       currentIndex: 0,
       currentQuestion: questions[0],
       selectedOption: '',
       submitted: false,
       correctCount: 0,
       userAnswers: new Array(questions.length).fill(null),
-      remainingSeconds: this.data.duration,
+      remainingSeconds: requestedDuration,
       timeWarning: false,
       timeUrgent: false,
       dataSource: source
@@ -95,7 +117,7 @@ Page({
     this.updateTimerDisplay();
 
     // 启动倒计时
-    if (this.data.duration > 0) {
+    if (requestedDuration > 0) {
       this.startTimer();
     }
   },

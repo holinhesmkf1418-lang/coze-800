@@ -2,37 +2,44 @@
 
 /* ===== 设置页面 ===== */
 .setup-section {
-  padding: 24rpx;
+  padding: 20rpx 24rpx 96rpx;
 }
 
 .setup-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 60rpx 0 48rpx;
+  gap: 18rpx;
+  padding: 12rpx 0 22rpx;
+  flex-wrap: wrap;
 }
 
 .setup-icon-wrap {
-  width: 120rpx;
-  height: 120rpx;
+  width: 76rpx;
+  height: 76rpx;
   border-radius: 50%;
   background: linear-gradient(135deg, #4F6EF7 0%, #6B8AFF 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24rpx;
-  box-shadow: 0 12rpx 36rpx rgba(79, 110, 247, 0.25);
+  box-shadow: 0 8rpx 24rpx rgba(79, 110, 247, 0.18);
+  flex-shrink: 0;
 }
 
 .setup-icon {
-  font-size: 56rpx;
+  font-size: 38rpx;
+}
+
+.setup-title-block {
+  flex: 1;
+  min-width: 280rpx;
 }
 
 .setup-title {
-  font-size: var(--font-xxl);
+  display: block;
+  font-size: 40rpx;
   font-weight: 700;
   color: var(--color-text-primary);
-  margin-bottom: 12rpx;
+  margin-bottom: 6rpx;
 }
 
 .setup-desc {
@@ -40,8 +47,28 @@
   color: var(--color-text-hint);
 }
 
+.setup-summary {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  height: 52rpx;
+  padding: 0 18rpx;
+  background: #EEF2FF;
+  color: var(--color-primary);
+  border-radius: 999rpx;
+  font-size: var(--font-xs);
+  font-weight: 700;
+}
+
+.summary-divider {
+  width: 2rpx;
+  height: 22rpx;
+  background: rgba(79, 110, 247, 0.25);
+}
+
 .setup-card {
-  margin: 0 0 24rpx;
+  margin: 0 0 18rpx;
+  padding: 24rpx;
 }
 
 .setup-label {
@@ -49,18 +76,18 @@
   font-weight: 600;
   color: var(--color-text-primary);
   display: block;
-  margin-bottom: 24rpx;
+  margin-bottom: 16rpx;
 }
 
 /* 题目数量选择器 */
 .count-selector {
   display: flex;
-  gap: 16rpx;
+  gap: 12rpx;
 }
 
 .count-option {
   flex: 1;
-  height: 80rpx;
+  height: 70rpx;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -74,22 +101,24 @@
 }
 
 .count-option.active {
-  background: var(--color-primary-light);
+  background: #EEF2FF;
   color: var(--color-primary);
   border-color: var(--color-primary);
   font-weight: 600;
+  box-shadow: 0 8rpx 18rpx rgba(79, 110, 247, 0.12);
 }
 
 /* 倒计时选项 */
 .timer-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 12rpx;
 }
 
 .timer-option {
   width: calc(50% - 8rpx);
-  padding: 24rpx 20rpx;
+  min-height: 86rpx;
+  padding: 16rpx 18rpx;
   background: var(--color-bg-page);
   border-radius: var(--radius-md);
   text-align: center;
@@ -99,8 +128,9 @@
 }
 
 .timer-option.active {
-  background: var(--color-primary-light);
+  background: #EEF2FF;
   border-color: var(--color-primary);
+  box-shadow: 0 8rpx 18rpx rgba(79, 110, 247, 0.12);
 }
 
 .timer-opt-title {
@@ -108,7 +138,7 @@
   font-size: var(--font-md);
   font-weight: 600;
   color: var(--color-text-primary);
-  margin-bottom: 4rpx;
+  margin-bottom: 2rpx;
 }
 
 .timer-option.active .timer-opt-title {
@@ -121,8 +151,9 @@
 }
 
 .start-btn {
-  margin-top: 16rpx;
+  margin-top: 10rpx;
   width: 100%;
+  height: 84rpx;
 }
 
 /* ===== 答题界面 ===== */
