@@ -1,14 +1,15 @@
 const mock = require('../../utils/mock');
+const api = require('../../utils/api');
 
 Page({
   data: {
-    continuousDays: 12,
-    todayProgress: { completed: 15, total: 20 },
-    wrongCount: 37,
-    overviewStats: {},
+    continuousDays: 0,
+    todayProgress: { completed: 0, total: 20 },
+    wrongCount: 0,
+    overviewStats: { totalWords: 800, masteredWords: 0, accuracy: 0 },
     weeklyStats: [],
-    // 分类掌握度（突出800词学习深度）
-    categoryMastery: []
+    categoryMastery: [],
+    dataSource: 'mock'  // 'api' | 'mock'
   },
 
   onLoad() {
@@ -19,11 +20,60 @@ Page({
     this.loadStats();
   },
 
-  loadStats() {
+  async loadStats() {
+    try {
+      await this.loadFromAPI();
+      this.setData({ dataSource: 'api' });
+    } catch (e) {
+      console.warn('[index] API 不可用，fallback mock:', e.message);
+      this.loadFromMock();
+      this.setData({ dataSource: 'mock' });
+    }
+  },
+
+  /**
+   * 从真实 API 加载首页数据
+   */
+  async loadFromAPI() {
+    const app = getApp();
+    if (!app.globalData.isLoggedIn) {
+      throw new Error('未登录');
+    }
+
+    // 并行请求
+    const [streakRes, wrongStats, categories] = await Promise.all([
+      api.checkin.getStreak(),
+      api.wrongAnswers.getStats(),
+      api.vocabs.getCategories()
+    ]);
+
+    const checkinStats = mock.getCheckinStats(); // 本周打卡暂用 mock
+
+    this.setData({
+      continuousDays: streakRes?.streak || 0,
+      wrongCount: wrongStats?.totalWrong || 0,
+      overviewStats: {
+        totalWords: 800,
+        masteredWords: checkinStats.masteredWords, // TODO: 后续从真实接口获取
+        accuracy: wrongStats?.accuracyRate || 0
+      },
+      // 分类掌握度从错题统计推算
+      categoryMastery: (wrongStats?.categoryBreakdown || []).map(cat => ({
+        category: cat.category,
+        accuracy: Math.round((1 - cat.count / (wrongStats.totalWrong || 1)) * 100),
+        count: cat.count
+      })),
+      weeklyStats: checkinStats.weeklyStats
+    });
+  },
+
+  /**
+   * 从 mock 数据加载（兜底）
+   */
+  loadFromMock() {
     const checkinStats = mock.getCheckinStats();
     const wrongStats = mock.getWrongStats();
 
-    // 从错题统计推算分类掌握度
     const categoryMastery = (wrongStats.categoryBreakdown || []).map(cat => ({
       category: cat.category,
       accuracy: cat.accuracy,
@@ -35,9 +85,8 @@ Page({
       todayProgress: checkinStats.todayProgress,
       wrongCount: wrongStats.totalWrong,
       overviewStats: {
-        totalWords: checkinStats.totalWords,    // 800
-        masteredWords: checkinStats.masteredWords, // 246
-        continuousDays: checkinStats.continuousDays,
+        totalWords: checkinStats.totalWords,
+        masteredWords: checkinStats.masteredWords,
         accuracy: wrongStats.accuracy
       },
       weeklyStats: checkinStats.weeklyStats,

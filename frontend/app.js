@@ -41,15 +41,28 @@ App({
   },
 
   /**
-   * 恢复登录态
+   * 恢复登录态 — 无 token 时自动 devLogin
    */
-  restoreLoginState() {
+  async restoreLoginState() {
     const token = api.getToken();
     const userInfo = api.getUserInfo();
 
     if (token && userInfo) {
       this.globalData.isLoggedIn = true;
       this.globalData.userInfo = userInfo;
+      return;
+    }
+
+    // 本地联调：自动 devLogin，无需微信 code
+    try {
+      const apiMod = require('./utils/api');
+      await apiMod.auth.devLogin('备考同学');
+      this.globalData.isLoggedIn = true;
+      this.globalData.userInfo = api.getUserInfo();
+      console.log('[app] devLogin 成功，已就绪');
+    } catch (e) {
+      console.warn('[app] devLogin 失败，保持未登录状态:', e.message);
+      this.globalData.isLoggedIn = false;
     }
   },
 

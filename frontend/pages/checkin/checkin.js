@@ -1,4 +1,5 @@
 const mock = require('../../utils/mock');
+const api = require('../../utils/api');
 
 Page({
   data: {
@@ -10,7 +11,8 @@ Page({
     incompleteCount: 0,
     progressPercent: 0,
     allDone: false,
-    continuousDays: 0
+    continuousDays: 0,
+    dataSource: 'mock'  // 'api' | 'mock'
   },
 
   onLoad() {
@@ -18,36 +20,76 @@ Page({
   },
 
   onShow() {
-    // 刷新打卡状态
     this.loadCheckinState();
   },
 
-  initPage() {
-    // 格式化今日日期
+  async initPage() {
     const now = new Date();
     const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
     const dateStr = `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 星期${weekDays[now.getDay()]}`;
 
-    // 获取今日词条
-    const words = mock.getTodayWords().map(w => ({ ...w, _checked: false }));
+    this.setData({ todayDate: dateStr });
+
+    // 优先真实 API
+    try {
+      await this.loadFromAPI();
+      this.setData({ dataSource: 'api' });
+    } catch (e) {
+      console.warn('[checkin] API 不可用，fallback mock:', e.message);
+      this.loadFromMock();
+      this.setData({ dataSource: 'mock' });
+    }
+
+    this.loadCheckinState();
+  },
+
+  /**
+   * 从真实 API 加载今日打卡数据
+   */
+  async loadFromAPI() {
+    const app = getApp();
+    if (!app.globalData.isLoggedIn) throw new Error('未登录');
+
+    const data = await api.checkin.getToday();  // adapter 已映射 definition→meaning
+
+    const words = (data.vocabs || []).map(w => ({ ...w, _checked: !!data.completed }));
+    const completedCount = data.completed ? words.length : 0;
+
+    // 同时获取连续打卡
+    let streak = 0;
+    try {
+      const streakData = await api.checkin.getStreak();
+      streak = streakData?.streak || 0;
+    } catch (_) {}
 
     this.setData({
-      todayDate: dateStr,
       wordList: words,
       totalCount: words.length,
-      incompleteCount: words.length
+      completedCount,
+      remainingCount: words.length - completedCount,
+      incompleteCount: words.length - completedCount,
+      progressPercent: data.completed ? 100 : 0,
+      allDone: !!data.completed,
+      continuousDays: streak
     });
+  },
 
-    // 加载打卡状态
-    this.loadCheckinState();
-
-    // 加载统计
+  /**
+   * Mock 兜底
+   */
+  loadFromMock() {
+    const words = mock.getTodayWords().map(w => ({ ...w, _checked: false }));
     const stats = mock.getCheckinStats();
-    this.setData({ continuousDays: stats.continuousDays });
+
+    this.setData({
+      wordList: words,
+      totalCount: words.length,
+      incompleteCount: words.length,
+      continuousDays: stats.continuousDays
+    });
   },
 
   loadCheckinState() {
-    // 从本地存储读取今日打卡状态
     const today = new Date().toDateString();
     const checkinData = wx.getStorageSync('checkin_' + today) || {};
 
@@ -67,7 +109,6 @@ Page({
         allDone: completedCount === this.data.totalCount
       });
     } else {
-      // 无记录 = 全部未完成
       this.setData({
         completedCount: 0,
         remainingCount: this.data.totalCount,
@@ -78,9 +119,6 @@ Page({
     }
   },
 
-  /**
-   * 点击词条 - 切换打卡状态
-   */
   onWordTap(e) {
     const { index } = e.currentTarget.dataset;
     const wordList = [...this.data.wordList];
@@ -97,31 +135,33 @@ Page({
       allDone: completedCount === this.data.totalCount
     });
 
-    // 实时保存到本地存储
     this.saveCheckinState();
   },
 
   /**
-   * 点击打卡按钮 — 完成今日打卡
+   * 提交打卡 — 真实 API 优先
    */
-  onCheckin() {
+  async onCheckin() {
     if (!this.data.allDone) {
       wx.showToast({
         title: `还有 ${this.data.remainingCount} 个词条未完成`,
-        icon: 'none',
-        duration: 2000
+        icon: 'none', duration: 2000
       });
       return;
     }
 
-    wx.showToast({
-      title: '🎉 打卡成功！',
-      icon: 'success',
-      duration: 2000
-    });
-
-    // 更新本地存储
+    // 先存本地
     this.saveCheckinState();
+
+    // 尝试调用真实 API
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await api.checkin.submit(today);
+      wx.showToast({ title: '🎉 打卡成功！（已同步后端）', icon: 'success', duration: 2000 });
+    } catch (e) {
+      console.warn('[checkin] API submit 失败:', e.message);
+      wx.showToast({ title: '🎉 打卡成功！（本地记录）', icon: 'success', duration: 2000 });
+    }
   },
 
   saveCheckinState() {
@@ -136,7 +176,6 @@ Page({
       completedAt: this.data.allDone ? Date.now() : null
     });
 
-    // 更新打卡历史
     let history = wx.getStorageSync('checkinHistory') || [];
     const todayEntry = history.find(h => h.date === today);
     if (todayEntry) {
