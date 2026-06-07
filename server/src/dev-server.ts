@@ -48,6 +48,15 @@ const testHistory: any[] = [];
 let testCounter = 0;
 const tests: Map<number, any> = new Map();
 
+// 激活码内存存储
+const activationCodes: Map<string, { code: string; planType: string; durationDays: number; maxUses: number; usedCount: number; expiresAt: string | null; status: string }> = new Map();
+const activationRedemptions: Set<string> = new Set(); // "userId_codeId"
+const userMemberships: Map<number, { planType: string; expiresAt: string; status: string }> = new Map();
+
+// 预置测试激活码
+activationCodes.set('TEST2026', { code: 'TEST2026', planType: 'SPRINT_30', durationDays: 30, maxUses: 100, usedCount: 0, expiresAt: '2027-12-31', status: 'ACTIVE' });
+activationCodes.set('GK800-ABCD-0001', { code: 'GK800-ABCD-0001', planType: 'SPRINT_30', durationDays: 30, maxUses: 1, usedCount: 0, expiresAt: '2027-12-31', status: 'ACTIVE' });
+
 // 加载 OCR 词库数据
 function loadVocabs() {
   // 内嵌 30 条真实数据（来自 OCR），够联调用
@@ -355,6 +364,79 @@ app.get('/api/tests/history', auth, (req, res) => {
   res.json({
     code: 0, message: 'ok',
     data: { list: testHistory.slice(start, start + pageSize), total: testHistory.length, page, pageSize }
+  });
+});
+
+// 激活码兑换
+app.post('/api/activation/redeem', auth, (req, res) => {
+  const userId = (req as any).userId;
+  const { code } = req.body;
+
+  if (!code || !code.trim()) {
+    return res.status(400).json({ code: 400, message: '请输入激活码', data: null });
+  }
+
+  const normalized = code.trim().toUpperCase();
+  const activationCode = activationCodes.get(normalized);
+
+  if (!activationCode || activationCode.status === 'DISABLED') {
+    return res.status(400).json({ code: 400, message: '激活码无效', data: null });
+  }
+
+  if (activationCode.expiresAt && new Date() > new Date(activationCode.expiresAt)) {
+    return res.status(400).json({ code: 400, message: '激活码已过期', data: null });
+  }
+
+  if (activationCode.usedCount >= activationCode.maxUses) {
+    return res.status(400).json({ code: 400, message: '激活码已被使用', data: null });
+  }
+
+  // 检查重复兑换
+  if (activationRedemptions.has(`${userId}_${normalized}`)) {
+    return res.status(400).json({ code: 400, message: '你已兑换过该激活码', data: null });
+  }
+
+  // 计算到期时间
+  const now = new Date();
+  const existing = userMemberships.get(userId);
+  let expiresAt: Date;
+
+  if (existing && existing.status === 'ACTIVE' && new Date(existing.expiresAt) > now) {
+    expiresAt = new Date(new Date(existing.expiresAt).getTime() + activationCode.durationDays * 86400000);
+  } else {
+    expiresAt = new Date(now.getTime() + activationCode.durationDays * 86400000);
+  }
+
+  // 更新状态
+  activationCode.usedCount++;
+  activationRedemptions.add(`${userId}_${normalized}`);
+  userMemberships.set(userId, {
+    planType: activationCode.planType,
+    expiresAt: expiresAt.toISOString(),
+    status: 'ACTIVE',
+  });
+
+  res.json({
+    code: 0, message: '激活成功 🎉',
+    data: { planType: activationCode.planType, expiresAt: expiresAt.toISOString() }
+  });
+});
+
+// 会员状态
+app.get('/api/membership/status', auth, (req, res) => {
+  const userId = (req as any).userId;
+  const membership = userMemberships.get(userId);
+
+  if (!membership || membership.status !== 'ACTIVE' || new Date() >= new Date(membership.expiresAt)) {
+    return res.json({ code: 0, message: 'ok', data: { isMember: false, planType: null, expiresAt: null, remainingDays: 0 } });
+  }
+
+  const remainingMs = new Date(membership.expiresAt).getTime() - Date.now();
+  const remainingDays = Math.ceil(remainingMs / 86400000);
+
+  res.json({
+    code: 0, message: 'ok',
+    data: { isMember: true, planType: membership.planType, expiresAt: membership.expiresAt, remainingDays }
   });
 });
 

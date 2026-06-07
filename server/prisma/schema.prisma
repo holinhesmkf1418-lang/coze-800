@@ -171,3 +171,57 @@ model ImportBatch {
 
   @@map("import_batches")
 }
+
+// ---------- 激活码表 ----------
+model ActivationCode {
+  id           Int       @id @default(autoincrement())
+  code         String    @unique @db.VarChar(50)    // 激活码，唯一
+  planType     String    @default("SPRINT_30") @db.VarChar(30) // 会员类型
+  durationDays Int       @default(30)               // 有效期天数
+  maxUses      Int       @default(1)                // 最大使用次数
+  usedCount    Int       @default(0)                // 已使用次数
+  startsAt     DateTime?                            // 生效开始时间（null=立即生效）
+  expiresAt    DateTime?                            // 激活码过期时间（null=永不过期）
+  status       String    @default("ACTIVE") @db.VarChar(20) // ACTIVE / DISABLED
+  note         String?   @db.VarChar(255)           // 备注
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  redemptions ActivationRedemption[]
+
+  @@index([status])
+  @@map("activation_codes")
+}
+
+// ---------- 激活码兑换记录表 ----------
+model ActivationRedemption {
+  id         Int       @id @default(autoincrement())
+  codeId     Int                                   // 激活码ID
+  userId     Int                                   // 兑换用户ID
+  redeemedAt DateTime  @default(now())
+
+  code ActivationCode @relation(fields: [codeId], references: [id])
+
+  @@unique([codeId, userId])                       // 同一用户不能重复兑换同一个码
+  @@index([userId])
+  @@map("activation_redemptions")
+}
+
+// ---------- 用户会员表 ----------
+model UserMembership {
+  id           Int       @id @default(autoincrement())
+  userId       Int       @unique                  // 一个用户一条会员记录
+  planType     String    @default("SPRINT_30") @db.VarChar(30)
+  startsAt     DateTime  @default(now())
+  expiresAt    DateTime                           // 会员到期时间
+  source       String    @default("ACTIVATION_CODE") @db.VarChar(30) // ACTIVATION_CODE / PURCHASE / GIFT
+  sourceCodeId Int?                               // 来源激活码ID
+  status       String    @default("ACTIVE") @db.VarChar(20) // ACTIVE / EXPIRED
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("user_memberships")
+}

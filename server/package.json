@@ -11,6 +11,7 @@
     "db:migrate": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
     "db:studio": "npx prisma studio",
+    "activation:generate": "ts-node scripts/generate-activation-codes.ts",
     "db:seed": "ts-node prisma/seed.ts",
     "lint": "eslint src --ext .ts",
     "test": "jest --passWithNoTests"

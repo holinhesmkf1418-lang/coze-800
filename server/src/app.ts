@@ -11,6 +11,7 @@ import checkInRoutes from './routes/checkIn';
 import wrongAnswerRoutes from './routes/wrongAnswer';
 import testRoutes from './routes/test';
 import importRoutes from './routes/import';
+import activationRoutes from './routes/activation';
 
 const app = express();
 
@@ -28,6 +29,8 @@ app.use('/api/check-in', checkInRoutes);       // 打卡
 app.use('/api/wrong-answers', wrongAnswerRoutes); // 错题
 app.use('/api/tests', testRoutes);             // 随心测
 app.use('/api/import', importRoutes);          // 数据导入
+app.use('/api/activation', activationRoutes);   // 激活码兑换
+app.use('/api/membership', activationRoutes);   // 会员状态（复用同路由文件）
 
 // ---------- 全局错误处理 ----------
 app.use(errorHandler);
