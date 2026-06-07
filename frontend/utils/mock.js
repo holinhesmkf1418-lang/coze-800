@@ -108,15 +108,19 @@ function getWrongStats() {
  */
 function generateQuiz(customCount = 100) {
   const questions = [];
-  const pool = [...wordBank];
+  const uniqueByWord = new Map();
+  wordBank.forEach(item => {
+    if (!uniqueByWord.has(item.word)) uniqueByWord.set(item.word, item);
+  });
+  const pool = [...uniqueByWord.values()].sort(() => Math.random() - 0.5);
   const LABELS = ['A', 'B', 'C', 'D'];
-  const count = Math.max(1, Number(customCount) || 100);
+  const count = Math.min(Math.max(1, Number(customCount) || 100), pool.length);
 
   for (let i = 0; i < count; i++) {
-    const correct = pool[i % pool.length];
+    const correct = pool[i];
     // 随机抽 3 个其他词的释义作为干扰项
     const distractors = pool
-      .filter(w => w.id !== correct.id)
+      .filter(w => w.word !== correct.word)
       .sort(() => Math.random() - 0.5)
       .slice(0, 3)
       .map(w => w.meaning);

@@ -26,12 +26,12 @@ const OPTION_LABELS = ['A', 'B', 'C', 'D'] as const;
  * @returns 打乱后的 4 个选项 + 正确答案 label
  */
 function generateOptions(
-  correctVocab: { id: number; definition: string },
-  allVocabs: { id: number; definition: string }[]
+  correctVocab: { id: number; word: string; definition: string },
+  allVocabs: { id: number; word: string; definition: string }[]
 ): { options: TestOption[]; answerKey: string } {
   // 从不同词中选取 3 个干扰项
   const distractors = allVocabs
-    .filter((v) => v.id !== correctVocab.id)
+    .filter((v) => v.word !== correctVocab.word)
     .sort(() => Math.random() - 0.5)
     .slice(0, 3);
 
@@ -84,7 +84,7 @@ export const testService = {
 
     // 获取全部词汇（用于生成干扰项）
     const allVocabs = await prisma.vocabulary.findMany({
-      select: { id: true, definition: true },
+      select: { id: true, word: true, definition: true },
     });
 
     // 为每道题生成 4 个选项
@@ -327,13 +327,13 @@ export const testService = {
 
     // 获取全部词汇用于重建选项
     const allVocabs = await prisma.vocabulary.findMany({
-      select: { id: true, definition: true },
+      select: { id: true, word: true, definition: true },
     });
 
     const details = testRecord.answers.map((a: { sortNo: number; vocabId: number; vocab: { word: string; definition: string }; selectedOption: string | null; correctOption: string; isCorrect: boolean }) => {
       // 重建 4 个选项
       const { options } = generateOptions(
-        { id: a.vocabId, definition: a.vocab.definition },
+        { id: a.vocabId, word: a.vocab.word, definition: a.vocab.definition },
         allVocabs
       );
 

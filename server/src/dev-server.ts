@@ -26,6 +26,8 @@
 import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import path from 'path';
 
 const app = express();
 app.use(cors());
@@ -53,13 +55,51 @@ const activationCodes: Map<string, { code: string; planType: string; durationDay
 const activationRedemptions: Set<string> = new Set(); // "userId_codeId"
 const userMemberships: Map<number, { planType: string; expiresAt: string; status: string }> = new Map();
 
+function shuffle<T>(items: T[]): T[] {
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  return items;
+}
+
 // 预置测试激活码
 activationCodes.set('TEST2026', { code: 'TEST2026', planType: 'SPRINT_30', durationDays: 30, maxUses: 100, usedCount: 0, expiresAt: '2027-12-31', status: 'ACTIVE' });
 activationCodes.set('GK800-ABCD-0001', { code: 'GK800-ABCD-0001', planType: 'SPRINT_30', durationDays: 30, maxUses: 1, usedCount: 0, expiresAt: '2027-12-31', status: 'ACTIVE' });
 
 // 加载 OCR 词库数据
 function loadVocabs() {
-  // 内嵌 30 条真实数据（来自 OCR），够联调用
+  const ocrPath = path.resolve(__dirname, '../../data/vocab/gaoding_800_words_ocr.json');
+  if (fs.existsSync(ocrPath)) {
+    const rows = JSON.parse(fs.readFileSync(ocrPath, 'utf8')) as Array<{
+      sort_no?: number;
+      term?: string;
+      definition?: string;
+      category?: string;
+      example?: string;
+    }>;
+
+    const uniqueByWord = new Map<string, Vocab>();
+    for (const row of rows) {
+      const word = String(row.term || '').trim();
+      const definition = String(row.definition || '').trim();
+      if (!word || !definition || uniqueByWord.has(word)) continue;
+      uniqueByWord.set(word, {
+        id: row.sort_no || uniqueByWord.size + 1,
+        word,
+        definition,
+        category: row.category || null,
+        seqNo: row.sort_no || null,
+        example: row.example || null,
+      });
+    }
+
+    vocabs.length = 0;
+    vocabs.push(...uniqueByWord.values());
+    return;
+  }
+
+  // 兜底：如果 OCR 文件不存在，使用内嵌 30 条数据，仍按词条去重。
   const sample: Vocab[] = [
     { id:1, word:'源远流长', definition:'源头远，水流长。也比喻历史悠久。', category:'第一组 中华文明传统文化', seqNo:1, example:null },
     { id:2, word:'连绵不绝', definition:'意思是连续而不中断。', category:'第一组 中华文明传统文化', seqNo:2, example:null },
@@ -92,8 +132,15 @@ function loadVocabs() {
     { id:29, word:'潜移默化', definition:'指人的思想、性格和习惯等在不知不觉中受到外界影响而逐渐发生变化。', category:'教育类', seqNo:29, example:null },
     { id:30, word:'潜移默化', definition:'指人的思想、性格和习惯等在不知不觉中受到外界影响而逐渐发生变化。', category:'教育类', seqNo:30, example:null },
   ];
+  const uniqueByWord = new Map<string, Vocab>();
+  for (const vocab of sample) {
+    if (!uniqueByWord.has(vocab.word)) {
+      uniqueByWord.set(vocab.word, vocab);
+    }
+  }
+
   vocabs.length = 0;
-  vocabs.push(...sample);
+  vocabs.push(...uniqueByWord.values());
 }
 loadVocabs();
 
@@ -236,15 +283,17 @@ app.get('/api/vocabs/:id', (req, res) => {
 
 // 开始随心测
 app.post('/api/tests/start', auth, (req, res) => {
-  const questionCount = Math.max(1, Math.min(Number(req.body.questionCount) || 10, 200));
+  const requestedCount = Math.max(1, Math.min(Number(req.body.questionCount) || 10, 200));
+  const uniqueVocabs = Array.from(new Map(vocabs.map(v => [v.word, v])).values());
+  const questionCount = Math.min(requestedCount, uniqueVocabs.length);
 
-  // 随机选词。standalone 只有 30 条演示词库，题量大于词库时循环取词以便本地验收 100 题流程。
-  const shuffled = [...vocabs].sort(() => Math.random() - 0.5);
+  // 随机不放回抽题，同一场测试内不重复出现同一个词条。
+  const selectedVocabs = shuffle([...uniqueVocabs]).slice(0, questionCount);
 
   // 为每道题生成 4 个选项
   const questions = Array.from({ length: questionCount }, (_, idx) => {
-    const v = shuffled[idx % shuffled.length];
-    const distractors = vocabs.filter(d => d.id !== v.id).sort(() => Math.random() - 0.5).slice(0, 3);
+    const v = selectedVocabs[idx];
+    const distractors = vocabs.filter(d => d.word !== v.word).sort(() => Math.random() - 0.5).slice(0, 3);
     const items = [{ label: '', text: v.definition, isCorrect: true }, ...distractors.map(d => ({ label: '', text: d.definition, isCorrect: false }))];
 
     // 随机排列

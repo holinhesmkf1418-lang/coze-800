@@ -54,23 +54,30 @@ export const vocabService = {
       ? { category: { in: categoryFilter } }
       : {};
 
-    const total = await prisma.vocabulary.count({ where });
-    const actualCount = Math.min(count, total);
-
-    // MySQL 随机排序
+    // 取出候选词后在内存中洗牌，确保同一场测试内不重复抽取词条。
+    // 当前词库规模约 800，内存洗牌比 MySQL RAND 更可控，也便于按 word 去重。
     const vocabs = await prisma.vocabulary.findMany({
       where,
-      take: actualCount,
       orderBy: { id: 'asc' },
     });
 
-    // Fisher-Yates 洗牌
-    for (let i = vocabs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [vocabs[i], vocabs[j]] = [vocabs[j], vocabs[i]];
+    const uniqueByWord = new Map<string, typeof vocabs[number]>();
+    for (const vocab of vocabs) {
+      if (!uniqueByWord.has(vocab.word)) {
+        uniqueByWord.set(vocab.word, vocab);
+      }
     }
 
-    return vocabs.slice(0, actualCount).map((v: { id: number; word: string; definition: string; category: string | null; seqNo: number | null; example: string | null }, _idx: number) => ({
+    const uniqueVocabs = Array.from(uniqueByWord.values());
+    const actualCount = Math.min(count, uniqueVocabs.length);
+
+    // Fisher-Yates 洗牌
+    for (let i = uniqueVocabs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [uniqueVocabs[i], uniqueVocabs[j]] = [uniqueVocabs[j], uniqueVocabs[i]];
+    }
+
+    return uniqueVocabs.slice(0, actualCount).map((v: { id: number; word: string; definition: string; category: string | null; seqNo: number | null; example: string | null }, _idx: number) => ({
       id: v.id,
       word: v.word,
       definition: v.definition,
