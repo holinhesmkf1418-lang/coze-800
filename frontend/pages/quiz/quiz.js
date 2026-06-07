@@ -18,7 +18,7 @@ Page({
     currentQuestion: null,
     selectedOption: '',    // 对齐后端 v1.1: A/B/C/D label 字符串，空=未选
     submitted: false,
-    lastCorrect: false,
+    lastCorrect: null,
     autoAdvancing: false,
     correctCount: 0,
     testId: null,          // 后端返回的 testId，API 模式使用
@@ -107,6 +107,7 @@ Page({
       currentQuestion: questions[0],
       selectedOption: '',
       submitted: false,
+      lastCorrect: null,
       autoAdvancing: false,
       correctCount: 0,
       userAnswers: new Array(questions.length).fill(null),
@@ -238,7 +239,7 @@ Page({
         currentQuestion: questions[nextIndex],
         selectedOption: '',
         submitted: false,
-        lastCorrect: false,
+        lastCorrect: null,
         autoAdvancing: false
       });
     } else {
