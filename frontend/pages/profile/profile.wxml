@@ -22,8 +22,9 @@
     <view class="member-left">
       <text class="member-icon">🌟</text>
       <view class="member-info">
-        <text class="member-plan">{{memberInfo.planType || '冲刺会员'}}</text>
-        <text class="member-days">剩余 {{memberInfo.daysLeft}} 天</text>
+        <text class="member-plan">{{memberInfo.planType === 'PERMANENT' ? '永久会员' : '冲刺会员'}}</text>
+        <text class="member-days" wx:if="{{memberInfo.planType === 'PERMANENT'}}">无限期</text>
+        <text class="member-days" wx:else>剩余 {{memberInfo.daysLeft}} 天</text>
       </view>
     </view>
     <view class="member-badge">

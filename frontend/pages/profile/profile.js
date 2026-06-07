@@ -55,12 +55,14 @@ Page({
     try {
       const res = await api.membership.getStatus();
       if (res && res.planType) {
-        const expiresAt = new Date(res.expiresAt);
-        const daysLeft = Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
+        const isPermanent = res.planType === 'PERMANENT';
+        const expiresAt = res.expiresAt ? new Date(res.expiresAt) : null;
+        const daysLeft = isPermanent ? -1
+          : (expiresAt ? Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000)) : res.remainingDays || 0);
         this.setData({ memberInfo: { ...res, daysLeft } });
       }
     } catch (e) {
-      // membership 接口暂不可用，不阻塞
+      // membership 接口暂不可用
     }
   },
 
@@ -159,19 +161,20 @@ Page({
 
     try {
       const res = await api.activation.redeem(code);
-      wx.showToast({ title: '🎉 兑换成功！', icon: 'success' });
+
+      const isPermanent = res.planType === 'PERMANENT';
+      wx.showToast({ title: isPermanent ? '🎉 永久会员已开通！' : '🎉 兑换成功！', icon: 'success' });
 
       const expiresAt = res.expiresAt ? new Date(res.expiresAt) : null;
-      const daysLeft = expiresAt
-        ? Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000))
-        : (res.durationDays || 30);
+      const daysLeft = isPermanent ? Infinity
+        : (expiresAt ? Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000)) : (res.durationDays || 30));
 
       this.setData({
         showDialog: false,
         inputCode: '',
         memberInfo: {
-          planType: res.planType || '冲刺会员',
-          daysLeft,
+          planType: res.planType || 'SPRINT_30',
+          daysLeft: isPermanent ? -1 : daysLeft,
           expiresAt: res.expiresAt
         }
       });
