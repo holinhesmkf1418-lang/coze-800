@@ -1,6 +1,8 @@
 const mock = require('../../utils/mock');
 const api = require('../../utils/api');
 
+const BACKEND_UNAVAILABLE_MESSAGE = '后端服务未连接，请先启动本地服务后再开始随心测';
+
 Page({
   data: {
     // 页面状态: setup | active | result
@@ -60,7 +62,7 @@ Page({
 
     const requestedCount = Number(this.data.questionCount);
     const requestedDuration = Number(this.data.duration);
-    let questions, testId = null, source = 'mock';
+    let questions, testId = null, source = 'api';
 
     // 优先真实 API
     try {
@@ -78,8 +80,15 @@ Page({
       source = 'api';
       console.log('[quiz] API start 成功, testId=', testId, '题目数=', questions.length);
     } catch (e) {
-      console.warn('[quiz] API start 失败，fallback mock:', e.message);
-      questions = mock.generateQuiz(requestedCount);
+      console.warn('[quiz] API start 失败:', e.message);
+      wx.hideLoading();
+      wx.showModal({
+        title: '后端未连接',
+        content: `${BACKEND_UNAVAILABLE_MESSAGE}\n\n终端执行：cd server && npm run dev:standalone`,
+        showCancel: false,
+        confirmText: '知道了'
+      });
+      return;
     }
 
     wx.hideLoading();
