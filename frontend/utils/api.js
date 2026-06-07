@@ -169,12 +169,25 @@ const imports = {
   getHistory: () => request.get('/api/import/history')
 };
 
+// ===== 激活码 =====
+const activation = {
+  /**
+   * 兑换激活码
+   * @param {string} code - 激活码
+   * @returns {Promise<{success, planType, durationDays, expiresAt}>}
+   */
+  redeem: (code) => request.post('/api/activation/redeem', { code })
+};
+
+// ===== 会员 =====
+const membership = {
+  /** 获取当前会员状态 */
+  getStatus: () => request.get('/api/membership/status')
+};
+
 // ===== 通用 =====
 const common = {
-  /** 健康检查 */
   health: () => request.get('/api/health'),
-
-  /** 设置后端地址 */
   setBaseURL: (url) => request.setBaseURL(url)
 };
 
@@ -185,5 +198,7 @@ module.exports = {
   quiz,
   vocabs,
   imports,
+  activation,
+  membership,
   common
 };

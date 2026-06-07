@@ -13,7 +13,13 @@ Page({
     quizCount: 0,
     overviewStats: {},
     defaultDuration: 30,
-    dataSource: 'mock'
+    dataSource: 'mock',
+    // 激活码
+    memberInfo: null,
+    showDialog: false,
+    inputCode: '',
+    errorMsg: '',
+    loading: false
   },
 
   onLoad() {
@@ -25,7 +31,6 @@ Page({
   },
 
   async loadData() {
-    // 从 app 全局态获取用户信息
     const user = app.globalData.userInfo;
     if (user) {
       this.setData({ userInfo: { nickName: user.nickname || '备考同学', avatarUrl: user.avatarUrl || '' } });
@@ -36,10 +41,26 @@ Page({
     try {
       await this.loadFromAPI();
       this.setData({ dataSource: 'api' });
+      // 加载会员状态
+      await this.loadMembership();
     } catch (e) {
       console.warn('[profile] API 不可用，fallback mock:', e.message);
       this.loadFromMock();
       this.setData({ dataSource: 'mock' });
+    }
+  },
+
+  /** 加载会员状态 */
+  async loadMembership() {
+    try {
+      const res = await api.membership.getStatus();
+      if (res && res.planType) {
+        const expiresAt = new Date(res.expiresAt);
+        const daysLeft = Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
+        this.setData({ memberInfo: { ...res, daysLeft } });
+      }
+    } catch (e) {
+      // membership 接口暂不可用，不阻塞
     }
   },
 
@@ -107,5 +128,60 @@ Page({
 
   goToQuizHistory() {
     wx.switchTab({ url: '/pages/quiz/quiz' });
+  },
+
+  // ===== 激活码 =====
+
+  showRedeemDialog() {
+    this.setData({ showDialog: true, inputCode: '', errorMsg: '' });
+  },
+
+  hideRedeemDialog() {
+    this.setData({ showDialog: false, inputCode: '', errorMsg: '' });
+  },
+
+  onCodeInput(e) {
+    this.setData({ inputCode: e.detail.value.trim(), errorMsg: '' });
+  },
+
+  async redeemCode() {
+    const code = this.data.inputCode;
+    if (!code) {
+      this.setData({ errorMsg: '请输入激活码' });
+      return;
+    }
+    if (code.length < 4) {
+      this.setData({ errorMsg: '激活码格式不正确' });
+      return;
+    }
+
+    this.setData({ loading: true, errorMsg: '' });
+
+    try {
+      const res = await api.activation.redeem(code);
+      wx.showToast({ title: '🎉 兑换成功！', icon: 'success' });
+
+      const expiresAt = res.expiresAt ? new Date(res.expiresAt) : null;
+      const daysLeft = expiresAt
+        ? Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000))
+        : (res.durationDays || 30);
+
+      this.setData({
+        showDialog: false,
+        inputCode: '',
+        memberInfo: {
+          planType: res.planType || '冲刺会员',
+          daysLeft,
+          expiresAt: res.expiresAt
+        }
+      });
+    } catch (e) {
+      const msg = e.code === 400 ? '激活码无效或已过期' :
+                  e.code === 409 ? '该激活码已被使用' :
+                  '兑换失败，请检查激活码';
+      this.setData({ errorMsg: msg });
+    } finally {
+      this.setData({ loading: false });
+    }
   }
 });

@@ -1,7 +1,8 @@
 <!--
-  个人中心 - 用户信息、学习数据总览
+  个人中心 - 用户信息、会员状态、激活码兑换
 -->
 <view class="page-container">
+
   <!-- 用户信息卡片 -->
   <view class="profile-header">
     <view class="profile-bg"></view>
@@ -16,95 +17,89 @@
     </view>
   </view>
 
+  <!-- 会员状态卡片 -->
+  <view class="member-card" wx:if="{{memberInfo}}">
+    <view class="member-left">
+      <text class="member-icon">🌟</text>
+      <view class="member-info">
+        <text class="member-plan">{{memberInfo.planType || '冲刺会员'}}</text>
+        <text class="member-days">剩余 {{memberInfo.daysLeft}} 天</text>
+      </view>
+    </view>
+    <view class="member-badge">
+      <text class="member-badge-text">已激活</text>
+    </view>
+  </view>
+
+  <!-- 非会员：激活提示 -->
+  <view class="activate-banner" wx:if="{{!memberInfo}}" bindtap="showRedeemDialog">
+    <text class="activate-icon">🎁</text>
+    <view class="activate-info">
+      <text class="activate-title">激活冲刺会员</text>
+      <text class="activate-desc">输入激活码，解锁完整800词·无限随心测</text>
+    </view>
+    <text class="activate-arrow">›</text>
+  </view>
+
   <!-- 学习概览 -->
   <view class="profile-section-head">
     <view class="section-title-group">
       <text class="section-title">学习概览</text>
-      <text class="section-subtitle">今日进度、连续打卡与正确率</text>
     </view>
-    <text class="section-tag">{{dataSource === 'api' ? '实时数据' : '本地数据'}}</text>
   </view>
   <stats-panel type="overview" stats="{{overviewStats}}" />
 
   <!-- 学习记录 -->
   <view class="profile-section-head compact">
-    <view class="section-title-group">
-      <text class="section-title">学习记录</text>
-    </view>
+    <text class="section-title">学习记录</text>
   </view>
   <view class="menu-section">
     <view class="menu-item" bindtap="goToCheckinHistory">
-      <view class="menu-left">
-        <view class="menu-icon">📅</view>
-        <text class="menu-text">打卡记录</text>
-      </view>
-      <view class="menu-right">
-        <text class="menu-value">{{continuousDays}} 天连续</text>
-        <text class="menu-arrow">›</text>
-      </view>
+      <view class="menu-left"><view class="menu-icon">📅</view><text class="menu-text">打卡记录</text></view>
+      <view class="menu-right"><text class="menu-value">{{continuousDays}} 天连续</text><text class="menu-arrow">›</text></view>
     </view>
     <view class="menu-item" bindtap="goToWrongBook">
-      <view class="menu-left">
-        <view class="menu-icon">📊</view>
-        <text class="menu-text">错题本</text>
-      </view>
-      <view class="menu-right">
-        <text class="menu-value">{{wrongCount}} 道</text>
-        <text class="menu-arrow">›</text>
-      </view>
+      <view class="menu-left"><view class="menu-icon">📊</view><text class="menu-text">错题本</text></view>
+      <view class="menu-right"><text class="menu-value">{{wrongCount}} 道</text><text class="menu-arrow">›</text></view>
     </view>
     <view class="menu-item" bindtap="goToQuizHistory">
-      <view class="menu-left">
-        <view class="menu-icon">🎯</view>
-        <text class="menu-text">测试记录</text>
-      </view>
-      <view class="menu-right">
-        <text class="menu-value">{{quizCount}} 次</text>
-        <text class="menu-arrow">›</text>
-      </view>
+      <view class="menu-left"><view class="menu-icon">🎯</view><text class="menu-text">测试记录</text></view>
+      <view class="menu-right"><text class="menu-value">{{quizCount}} 次</text><text class="menu-arrow">›</text></view>
     </view>
   </view>
 
   <!-- 设置 -->
   <view class="profile-section-head compact">
-    <view class="section-title-group">
-      <text class="section-title">设置</text>
-      <text class="section-subtitle">偏好配置与产品信息</text>
-    </view>
+    <text class="section-title">设置</text>
   </view>
   <view class="menu-section">
-    <view class="menu-item">
-      <view class="menu-left">
-        <view class="menu-icon">⏱️</view>
-        <text class="menu-text">默认倒计时</text>
-      </view>
-      <view class="menu-right">
-        <text class="menu-value">{{defaultDuration}} 分钟</text>
-        <text class="menu-arrow">›</text>
-      </view>
+    <view class="menu-item" bindtap="showRedeemDialog">
+      <view class="menu-left"><view class="menu-icon">🔑</view><text class="menu-text">激活码兑换</text></view>
+      <view class="menu-right"><text class="menu-value">{{memberInfo ? '已激活' : '去兑换'}}</text><text class="menu-arrow">›</text></view>
     </view>
     <view class="menu-item">
-      <view class="menu-left">
-        <view class="menu-icon">🔔</view>
-        <text class="menu-text">打卡提醒</text>
-      </view>
-      <view class="menu-right">
-        <text class="menu-value">已开启</text>
-        <text class="menu-arrow">›</text>
-      </view>
+      <view class="menu-left"><view class="menu-icon">⏱️</view><text class="menu-text">默认倒计时</text></view>
+      <view class="menu-right"><text class="menu-value">{{defaultDuration}} 分钟</text><text class="menu-arrow">›</text></view>
     </view>
     <view class="menu-item">
-      <view class="menu-left">
-        <view class="menu-icon">📖</view>
-        <text class="menu-text">关于搞定公考800词</text>
-      </view>
-      <view class="menu-right">
-        <text class="menu-value">v1.0.0 MVP</text>
-        <text class="menu-arrow">›</text>
-      </view>
+      <view class="menu-left"><view class="menu-icon">📖</view><text class="menu-text">关于搞定公考800词</text></view>
+      <view class="menu-right"><text class="menu-value">v1.0.0</text><text class="menu-arrow">›</text></view>
     </view>
   </view>
 
-  <!-- 底部安全区 -->
-  <view class="safe-bottom" style="height: 120rpx;"></view>
+  <view class="safe-bottom" style="height: 140rpx;"></view>
+
+  <!-- 激活码兑换弹窗 -->
+  <view class="dialog-mask" wx:if="{{showDialog}}" bindtap="hideRedeemDialog">
+    <view class="dialog-card" catchtap>
+      <text class="dialog-title">输入激活码</text>
+      <text class="dialog-desc">激活后解锁完整 800 词库和无限随心测</text>
+      <input class="dialog-input" value="{{inputCode}}" bindinput="onCodeInput" maxlength="20" placeholder="请输入激活码"/>
+      <text class="dialog-error" wx:if="{{errorMsg}}">{{errorMsg}}</text>
+      <view class="dialog-btns">
+        <button class="dialog-btn cancel" bindtap="hideRedeemDialog">取消</button>
+        <button class="dialog-btn confirm" bindtap="redeemCode" disabled="{{!inputCode}}" loading="{{loading}}">立即兑换</button>
+      </view>
+    </view>
+  </view>
 </view>
