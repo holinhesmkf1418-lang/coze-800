@@ -27,6 +27,7 @@ function generateCode(prefix: string): string {
 interface Args {
   prefix: string;
   count: number;
+  plan: string;       // SPRINT_30 | PERMANENT
   days: number;
   maxUses: number;
   expiresAt: string;
@@ -42,6 +43,7 @@ function parseArgs(): Args {
   return {
     prefix: get('prefix', 'GK800'),
     count: parseInt(get('count', '100'), 10),
+    plan: get('plan', 'SPRINT_30'),
     days: parseInt(get('days', '30'), 10),
     maxUses: parseInt(get('maxUses', '1'), 10),
     expiresAt: get('expiresAt', '2027-12-31'),
@@ -49,10 +51,11 @@ function parseArgs(): Args {
 }
 
 function main() {
-  const { prefix, count, days, maxUses, expiresAt } = parseArgs();
+  const { prefix, count, plan, days, maxUses, expiresAt } = parseArgs();
 
+  const planLabel = plan === 'PERMANENT' ? '永久会员' : `${days}天会员`;
   console.log(`🔑 生成 ${count} 个激活码`);
-  console.log(`   前缀: ${prefix}, 天数: ${days}, 最大使用次数: ${maxUses}, 过期: ${expiresAt}`);
+  console.log(`   类型: ${planLabel}, 前缀: ${prefix}, 最大使用次数: ${maxUses}, 过期: ${expiresAt}`);
   console.log('');
 
   const codes: string[] = [];
@@ -69,7 +72,7 @@ function main() {
 
   // 输出 CSV
   const header = 'code,planType,durationDays,maxUses,expiresAt';
-  const rows = codes.map((code) => `${code},SPRINT_30,${days},${maxUses},${expiresAt}`);
+  const rows = codes.map((code) => `${code},${plan},${days},${maxUses},${expiresAt}`);
 
   const csv = [header, ...rows].join('\n');
   const filename = `activation_codes_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`;
@@ -80,7 +83,7 @@ function main() {
   // 打印前 5 个示例
   console.log('\n📋 示例:');
   for (const code of codes.slice(0, 5)) {
-    console.log(`   ${code} → ${days}天会员, 可用${maxUses}次, 过期${expiresAt}`);
+    console.log(`   ${code} → ${planLabel}, 可用${maxUses}次, 过期${expiresAt}`);
   }
 }
 

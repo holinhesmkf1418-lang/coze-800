@@ -46,8 +46,11 @@ export const activationService = {
       where: { userId },
     });
 
+    const isPermanent = activationCode.planType === 'PERMANENT';
     let expiresAt: Date;
-    if (existingMembership && existingMembership.status === 'ACTIVE' && existingMembership.expiresAt > now) {
+    if (isPermanent) {
+      expiresAt = new Date('2099-12-31T23:59:59Z');
+    } else if (existingMembership && existingMembership.status === 'ACTIVE' && existingMembership.expiresAt > now) {
       // 已有有效会员 → 从当前到期时间顺延
       expiresAt = new Date(existingMembership.expiresAt.getTime() + activationCode.durationDays * 86400000);
     } else {

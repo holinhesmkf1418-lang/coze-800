@@ -473,9 +473,13 @@ app.post('/api/activation/redeem', auth, (req, res) => {
   // 计算到期时间
   const now = new Date();
   const existing = userMemberships.get(userId);
+  const isPermanent = activationCode.planType === 'PERMANENT';
   let expiresAt: Date;
 
-  if (existing && existing.status === 'ACTIVE' && new Date(existing.expiresAt) > now) {
+  if (isPermanent) {
+    // 永久会员：2099-12-31
+    expiresAt = new Date('2099-12-31T23:59:59Z');
+  } else if (existing && existing.status === 'ACTIVE' && new Date(existing.expiresAt) > now) {
     expiresAt = new Date(new Date(existing.expiresAt).getTime() + activationCode.durationDays * 86400000);
   } else {
     expiresAt = new Date(now.getTime() + activationCode.durationDays * 86400000);
@@ -505,8 +509,9 @@ app.get('/api/membership/status', auth, (req, res) => {
     return res.json({ code: 0, message: 'ok', data: { isMember: false, planType: null, expiresAt: null, remainingDays: 0 } });
   }
 
+  const isPermanent = membership.planType === 'PERMANENT';
   const remainingMs = new Date(membership.expiresAt).getTime() - Date.now();
-  const remainingDays = Math.ceil(remainingMs / 86400000);
+  const remainingDays = isPermanent ? -1 : Math.ceil(remainingMs / 86400000); // -1 表示永久
 
   res.json({
     code: 0, message: 'ok',
