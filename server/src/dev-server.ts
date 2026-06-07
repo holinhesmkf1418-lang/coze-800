@@ -499,5 +499,19 @@ app.listen(PORT, () => {
   console.log(` 📊 词库数量: ${vocabs.length} 条`);
   console.log(` 🔧 开发登录: POST /api/auth/dev-login`);
   console.log(' ⚠️  无需 MySQL，所有数据存在内存中');
+  console.log(' 💚 心跳日志每30秒输出一次，看到心跳=服务存活');
   console.log('═══════════════════════════════════════════');
+
+  // 心跳日志
+  setInterval(() => {
+    console.log(`💚 [${new Date().toLocaleTimeString()}] OK — vocab=${vocabs.length}, users=${users.size}, tests=${testHistory.length}`);
+  }, 30000);
+});
+
+// 防崩溃：捕获未处理异常，避免进程无声退出
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException] 服务继续运行:', err.message);
+});
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection] 服务继续运行:', reason);
 });
