@@ -62,8 +62,17 @@ Page({
 
     const data = await api.checkin.getToday();  // adapter 已映射 definition→meaning
 
-    const words = (data.vocabs || []).map(w => ({ ...w, _checked: !!data.completed, _hiding: false, _settling: false }));
-    const completedCount = data.completed ? words.length : 0;
+    const today = new Date().toDateString();
+    const localState = wx.getStorageSync('checkin_' + today) || {};
+    const localCheckedIds = Array.isArray(localState.checkedIds) ? localState.checkedIds : [];
+
+    const words = (data.vocabs || []).map(w => ({
+      ...w,
+      _checked: !!data.completed || localCheckedIds.includes(w.id),
+      _hiding: false,
+      _settling: false
+    }));
+    const completedCount = data.completed ? words.length : words.filter(w => w._checked).length;
 
     // 同时获取连续打卡
     let streak = 0;
@@ -78,8 +87,8 @@ Page({
       completedCount,
       remainingCount: words.length - completedCount,
       incompleteCount: words.length - completedCount,
-      progressPercent: data.completed ? 100 : 0,
-      allDone: !!data.completed,
+      progressPercent: words.length > 0 ? Math.round((completedCount / words.length) * 100) : 0,
+      allDone: !!data.completed || completedCount === words.length,
       continuousDays: streak
     });
   },

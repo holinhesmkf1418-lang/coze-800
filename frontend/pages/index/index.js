@@ -47,18 +47,23 @@ Page({
 
     // 独立请求：单个失败不影响其他
     const checkinStats = mock.getCheckinStats();
-    const [streakRes, wrongStats] = await Promise.allSettled([
+    const [streakRes, wrongStats, todayRes] = await Promise.allSettled([
       api.checkin.getStreak(),
-      api.wrongAnswers.getStats()
+      api.wrongAnswers.getStats(),
+      api.checkin.getToday()
     ]);
 
     const streak = streakRes.status === 'fulfilled' ? streakRes.value : null;
     const stats = wrongStats.status === 'fulfilled' ? wrongStats.value : null;
+    const today = todayRes.status === 'fulfilled' ? todayRes.value : null;
 
-    if (!streak && !stats) throw new Error('所有 API 均不可用');
+    if (!streak && !stats && !today) throw new Error('所有 API 均不可用');
+
+    const todayProgress = this.getTodayProgress(today);
 
     this.setData({
       continuousDays: streak?.streak || 0,
+      todayProgress,
       wrongCount: stats?.totalWrong || 0,
       overviewStats: {
         totalWords: 800,
@@ -72,6 +77,21 @@ Page({
       })),
       weeklyStats: checkinStats.weeklyStats
     });
+  },
+
+  getTodayProgress(todayData) {
+    const total = todayData?.totalCount || todayData?.vocabs?.length || 30;
+    if (todayData?.completed) {
+      return { completed: total, total };
+    }
+
+    const todayKey = new Date().toDateString();
+    const localState = wx.getStorageSync('checkin_' + todayKey) || {};
+    const checkedIds = Array.isArray(localState.checkedIds) ? localState.checkedIds : [];
+    return {
+      completed: Math.min(checkedIds.length, total),
+      total
+    };
   },
 
   /**

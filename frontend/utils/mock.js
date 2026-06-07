@@ -201,7 +201,7 @@ function getCheckinStats() {
     totalWords: 800,
     masteredWords: 246,
     continuousDays: 12,
-    todayProgress: { completed: 15, total: 20 },
+    todayProgress: { completed: 15, total: 30 },
     weeklyStats: [
       { day: '周一', count: 20 },
       { day: '周二', count: 20 },
