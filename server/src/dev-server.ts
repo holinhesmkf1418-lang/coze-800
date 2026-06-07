@@ -67,6 +67,31 @@ function shuffle<T>(items: T[]): T[] {
 activationCodes.set('TEST2026', { code: 'TEST2026', planType: 'SPRINT_30', durationDays: 30, maxUses: 100, usedCount: 0, expiresAt: '2027-12-31', status: 'ACTIVE' });
 activationCodes.set('GK800-ABCD-0001', { code: 'GK800-ABCD-0001', planType: 'SPRINT_30', durationDays: 30, maxUses: 1, usedCount: 0, expiresAt: '2027-12-31', status: 'ACTIVE' });
 
+// 自动加载生成的激活码 CSV 文件 (activation_codes_*.csv)
+function loadActivationCodesFromCSV() {
+  const csvDir = path.resolve(__dirname, '../..');
+  try {
+    const files = fs.readdirSync(csvDir).filter(f => f.startsWith('activation_codes_') && f.endsWith('.csv'));
+    for (const file of files) {
+      const raw = fs.readFileSync(path.join(csvDir, file), 'utf-8');
+      const lines = raw.trim().split('\n').slice(1); // skip header
+      for (const line of lines) {
+        const [code, planType, durationDays, maxUses, expiresAt] = line.split(',');
+        if (code && !activationCodes.has(code.trim())) {
+          activationCodes.set(code.trim(), {
+            code: code.trim(), planType: planType || 'SPRINT_30',
+            durationDays: parseInt(durationDays || '30', 10),
+            maxUses: parseInt(maxUses || '1', 10), usedCount: 0,
+            expiresAt: expiresAt || null, status: 'ACTIVE'
+          });
+        }
+      }
+      console.log(` 📥 已加载 ${file}`);
+    }
+  } catch { /* 无 CSV 文件则跳过 */ }
+}
+loadActivationCodesFromCSV();
+
 // 加载 OCR 词库数据
 function loadVocabs() {
   const ocrPath = path.resolve(__dirname, '../../data/vocab/gaoding_800_words_ocr.json');
