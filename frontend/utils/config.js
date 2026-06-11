@@ -18,7 +18,7 @@ const CONFIG = {
     loginMode: 'dev',       // 'dev' = devLogin(免微信) | 'wechat' = wx.login()
   },
   production: {
-    baseURL: 'https://api.example.com',  // TODO: 替换为正式 HTTPS 域名
+    baseURL: 'http://api.gdgk800.cn',  // 生产 API 域名 (HTTPS 待 Nginx+证书)
     loginMode: 'wechat',
   }
 };
