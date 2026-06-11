@@ -162,12 +162,12 @@ model TestAnswer {
 // 记录800词导入历史
 model ImportBatch {
   id         Int       @id @default(autoincrement())
-  fileName   String    @db.VarChar(255)           // 导入文件名
-  format     String    @db.VarChar(10)            // CSV / JSON
-  totalCount Int                                  // 总条数
-  successCount Int                                // 成功导入数
-  failCount   Int       @default(0)               // 失败数
-  importedAt DateTime  @default(now())
+  fileName   String    @map("file_name") @db.VarChar(255)  // 导入文件名
+  format     String    @map("format") @db.VarChar(10)      // CSV / JSON
+  totalCount Int       @map("total_count")                 // 总条数
+  successCount Int     @map("success_count")               // 成功导入数
+  failCount   Int      @default(0) @map("fail_count")      // 失败数
+  importedAt DateTime  @default(now()) @map("imported_at")
 
   @@map("import_batches")
 }
