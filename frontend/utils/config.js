@@ -12,13 +12,16 @@
 const isProduction = false;  // true = 生产, false = 本地联调
 
 const CONFIG = {
-  // API 地址
   dev: {
     baseURL: 'http://localhost:3000',
-    loginMode: 'dev',       // 'dev' = devLogin(免微信) | 'wechat' = wx.login()
+    loginMode: 'dev',
+  },
+  remote: {
+    baseURL: 'http://api.gdgk800.cn:3000',   // 腾讯云服务器 (HTTPS 配好后去掉 :3000)
+    loginMode: 'dev',                         // 微信登录配好后改为 'wechat'
   },
   production: {
-    baseURL: 'http://api.gdgk800.cn',  // 生产 API 域名 (HTTPS 待 Nginx+证书)
+    baseURL: 'https://api.gdgk800.cn',        // Nginx HTTPS 反代后使用
     loginMode: 'wechat',
   }
 };
