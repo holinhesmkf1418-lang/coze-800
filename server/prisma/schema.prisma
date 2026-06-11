@@ -13,18 +13,16 @@ datasource db {
 }
 
 // ---------- 词汇表 ----------
-// 存储800个成语/词汇，支持分类，预留例句字段
 model Vocabulary {
   id         Int       @id @default(autoincrement())
-  word       String    @db.VarChar(50)       // 词条（成语）
-  definition String    @db.Text               // 释义
-  category   String?   @db.VarChar(50)       // 分类（如：政治、经济、文化...）
-  seqNo      Int?                             // 序号（原始排序）
-  example    String?   @db.Text               // 例句
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  word       String    @db.VarChar(50)
+  definition String    @db.Text
+  category   String?   @db.VarChar(50)
+  seqNo      Int?      @map("seq_no")
+  example    String?   @db.Text
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-  // 关联
   wrongAnswers  WrongAnswerRecord[]
   testAnswers   TestAnswer[]
   dailyVocabs   DailyVocab[]
@@ -35,17 +33,15 @@ model Vocabulary {
 }
 
 // ---------- 用户表 ----------
-// 微信登录用户，openid 唯一标识
 model User {
   id          Int       @id @default(autoincrement())
-  openid      String    @unique @db.VarChar(64)  // 微信 openid
-  unionId     String?   @db.VarChar(64)           // 微信 unionid（可选）
-  nickname    String?   @db.VarChar(64)           // 微信昵称
-  avatarUrl   String?   @db.VarChar(512)          // 头像URL
-  createdAt   DateTime  @default(now())
-  lastLoginAt DateTime  @updatedAt
+  openid      String    @unique @db.VarChar(64)
+  unionId     String?   @map("union_id") @db.VarChar(64)
+  nickname    String?   @db.VarChar(64)
+  avatarUrl   String?   @map("avatar_url") @db.VarChar(512)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  lastLoginAt DateTime  @updatedAt @map("last_login_at")
 
-  // 关联
   checkInRecords  CheckInRecord[]
   wrongAnswers    WrongAnswerRecord[]
   testRecords     TestRecord[]
@@ -54,12 +50,11 @@ model User {
 }
 
 // ---------- 每日打卡词汇配置表 ----------
-// 每日推送哪些词汇（可预配置，如每日10词）
 model DailyVocab {
   id       Int        @id @default(autoincrement())
-  date     DateTime   @db.Date                    // 打卡日期
-  vocabId  Int                                    // 词汇ID
-  sortNo   Int        @default(0)                 // 当日排序
+  date     DateTime   @db.Date
+  vocabId  Int        @map("vocab_id")
+  sortNo   Int        @default(0) @map("sort_no")
 
   vocab    Vocabulary @relation(fields: [vocabId], references: [id])
 
@@ -69,15 +64,14 @@ model DailyVocab {
 }
 
 // ---------- 打卡记录表 ----------
-// 用户每日打卡状态
 model CheckInRecord {
   id         Int       @id @default(autoincrement())
-  userId     Int
-  date       DateTime  @db.Date                   // 打卡日期
-  completed  Boolean   @default(false)             // 是否完成当日全部
-  vocabCount Int       @default(0)                // 当日已学词汇数
-  totalCount Int       @default(10)               // 当日总词汇数
-  checkedAt  DateTime?                            // 完成打卡时间
+  userId     Int       @map("user_id")
+  date       DateTime  @db.Date
+  completed  Boolean   @default(false)
+  vocabCount Int       @default(0) @map("vocab_count")
+  totalCount Int       @default(10) @map("total_count")
+  checkedAt  DateTime? @map("checked_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -88,15 +82,14 @@ model CheckInRecord {
 }
 
 // ---------- 错题记录表 ----------
-// 收录用户做错的每一题，支持来源分类（每日打卡/随心测）
 model WrongAnswerRecord {
-  id         Int       @id @default(autoincrement())
-  userId     Int
-  vocabId    Int
-  sourceType SourceType @default(DAILY)           // DAILY=每日打卡, SPRINT=随心测
-  wrongCount Int       @default(1)                // 累计错误次数（同一用户同一词可重复错）
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  id         Int        @id @default(autoincrement())
+  userId     Int        @map("user_id")
+  vocabId    Int        @map("vocab_id")
+  sourceType SourceType @default(DAILY) @map("source_type")
+  wrongCount Int        @default(1) @map("wrong_count")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
 
   user User       @relation(fields: [userId], references: [id])
   vocab Vocabulary @relation(fields: [vocabId], references: [id])
@@ -114,17 +107,16 @@ enum SourceType {
 }
 
 // ---------- 测试记录表 ----------
-// 随心测的完整记录
 model TestRecord {
-  id         Int       @id @default(autoincrement())
-  userId     Int
-  score      Int                                  // 得分（正确数）
-  total      Int       @default(100)              // 总题数
-  timeLimit  Int       @default(0)                // 倒计时秒数（0=不限时）
-  duration   Int       @default(0)                // 实际用时秒数
-  status     TestStatus @default(IN_PROGRESS)     // IN_PROGRESS / COMPLETED / TIMEOUT
-  autoSubmit Boolean   @default(false)            // 是否超时自动交卷
-  createdAt  DateTime  @default(now())
+  id         Int        @id @default(autoincrement())
+  userId     Int        @map("user_id")
+  score      Int
+  total      Int        @default(100)
+  timeLimit  Int        @default(0) @map("time_limit")
+  duration   Int        @default(0)
+  status     TestStatus @default(IN_PROGRESS)
+  autoSubmit Boolean    @default(false) @map("auto_submit")
+  createdAt  DateTime   @default(now()) @map("created_at")
 
   user    User          @relation(fields: [userId], references: [id])
   answers TestAnswer[]
@@ -141,15 +133,14 @@ enum TestStatus {
 }
 
 // ---------- 测试答题明细表 ----------
-// 每题的用户答案和判分
 model TestAnswer {
-  id             Int     @id @default(autoincrement())
-  testRecordId   Int
-  vocabId        Int
-  sortNo         Int     @default(0)                // 题号
-  selectedOption String? @db.VarChar(1)             // 用户选择的选项 label (A/B/C/D)
-  correctOption  String  @default("A") @db.VarChar(1) // 正确答案 label
-  isCorrect      Boolean @default(false)            // 是否答对
+  id             Int      @id @default(autoincrement())
+  testRecordId   Int      @map("test_record_id")
+  vocabId        Int      @map("vocab_id")
+  sortNo         Int      @default(0) @map("sort_no")
+  selectedOption String?  @map("selected_option") @db.VarChar(1)
+  correctOption  String   @default("A") @map("correct_option") @db.VarChar(1)
+  isCorrect      Boolean  @default(false) @map("is_correct")
 
   testRecord TestRecord @relation(fields: [testRecordId], references: [id])
   vocab      Vocabulary @relation(fields: [vocabId], references: [id])
@@ -159,15 +150,14 @@ model TestAnswer {
 }
 
 // ---------- 词汇导入批次表 ----------
-// 记录800词导入历史
 model ImportBatch {
-  id         Int       @id @default(autoincrement())
-  fileName   String    @map("file_name") @db.VarChar(255)  // 导入文件名
-  format     String    @map("format") @db.VarChar(10)      // CSV / JSON
-  totalCount Int       @map("total_count")                 // 总条数
-  successCount Int     @map("success_count")               // 成功导入数
-  failCount   Int      @default(0) @map("fail_count")      // 失败数
-  importedAt DateTime  @default(now()) @map("imported_at")
+  id           Int      @id @default(autoincrement())
+  fileName     String   @map("file_name") @db.VarChar(255)
+  format       String   @map("format") @db.VarChar(10)
+  totalCount   Int      @map("total_count")
+  successCount Int      @map("success_count")
+  failCount    Int      @default(0) @map("fail_count")
+  importedAt   DateTime @default(now()) @map("imported_at")
 
   @@map("import_batches")
 }
@@ -175,17 +165,17 @@ model ImportBatch {
 // ---------- 激活码表 ----------
 model ActivationCode {
   id           Int       @id @default(autoincrement())
-  code         String    @unique @db.VarChar(50)    // 激活码，唯一
-  planType     String    @default("SPRINT_30") @db.VarChar(30) // 会员类型
-  durationDays Int       @default(30)               // 有效期天数
-  maxUses      Int       @default(1)                // 最大使用次数
-  usedCount    Int       @default(0)                // 已使用次数
-  startsAt     DateTime?                            // 生效开始时间（null=立即生效）
-  expiresAt    DateTime?                            // 激活码过期时间（null=永不过期）
-  status       String    @default("ACTIVE") @db.VarChar(20) // ACTIVE / DISABLED
-  note         String?   @db.VarChar(255)           // 备注
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  code         String    @unique @db.VarChar(50)
+  planType     String    @default("SPRINT_30") @map("plan_type") @db.VarChar(30)
+  durationDays Int       @default(30) @map("duration_days")
+  maxUses      Int       @default(1) @map("max_uses")
+  usedCount    Int       @default(0) @map("used_count")
+  startsAt     DateTime? @map("starts_at")
+  expiresAt    DateTime? @map("expires_at")
+  status       String    @default("ACTIVE") @db.VarChar(20)
+  note         String?   @db.VarChar(255)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
 
   redemptions ActivationRedemption[]
 
@@ -195,31 +185,31 @@ model ActivationCode {
 
 // ---------- 激活码兑换记录表 ----------
 model ActivationRedemption {
-  id         Int       @id @default(autoincrement())
-  codeId     Int                                   // 激活码ID
-  userId     Int                                   // 兑换用户ID
-  redeemedAt DateTime  @default(now())
+  id         Int      @id @default(autoincrement())
+  codeId     Int      @map("code_id")
+  userId     Int      @map("user_id")
+  redeemedAt DateTime @default(now()) @map("redeemed_at")
 
   code ActivationCode @relation(fields: [codeId], references: [id])
 
-  @@unique([codeId, userId])                       // 同一用户不能重复兑换同一个码
+  @@unique([codeId, userId])
   @@index([userId])
   @@map("activation_redemptions")
 }
 
 // ---------- 用户会员表 ----------
 model UserMembership {
-  id           Int       @id @default(autoincrement())
-  userId       Int       @unique                  // 一个用户一条会员记录
-  planType     String    @default("SPRINT_30") @db.VarChar(30)
-  startsAt     DateTime  @default(now())
-  expiresAt    DateTime                           // 会员到期时间
-  source       String    @default("ACTIVATION_CODE") @db.VarChar(30) // ACTIVATION_CODE / PURCHASE / GIFT
-  sourceCodeId Int?                               // 来源激活码ID
-  status       String    @default("ACTIVE") @db.VarChar(20) // ACTIVE / EXPIRED
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique @map("user_id")
+  planType     String   @default("SPRINT_30") @map("plan_type") @db.VarChar(30)
+  startsAt     DateTime @default(now()) @map("starts_at")
+  expiresAt    DateTime @map("expires_at")
+  source       String   @default("ACTIVATION_CODE") @db.VarChar(30)
+  sourceCodeId Int?     @map("source_code_id")
+  status       String   @default("ACTIVE") @db.VarChar(20)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([userId])
   @@index([expiresAt])
