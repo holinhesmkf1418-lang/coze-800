@@ -10,15 +10,21 @@ Page({
     weeklyStats: [],
     categoryMastery: [],
     dataSource: 'mock',  // 'api' | 'mock'
-    isProduction: false
+    isProduction: false,
+    isLoggedIn: false
   },
 
   onLoad() {
-    this.setData({ isProduction: getApp().globalData.isProduction });
+    const app = getApp();
+    this.setData({
+      isProduction: app.globalData.isProduction,
+      isLoggedIn: app.globalData.isLoggedIn
+    });
     this.loadStats();
   },
 
   onShow() {
+    this.setData({ isLoggedIn: getApp().globalData.isLoggedIn });
     this.loadStats();
   },
 
@@ -131,5 +137,16 @@ Page({
 
   goToQuiz() {
     wx.switchTab({ url: '/pages/quiz/quiz' });
+  },
+
+  async onLogin() {
+    const app = getApp();
+    try {
+      await app.login();
+      // 登录成功 → 重新加载数据
+      this.loadStats();
+    } catch (_) {
+      // 登录失败，继续保持 mock
+    }
   }
 });

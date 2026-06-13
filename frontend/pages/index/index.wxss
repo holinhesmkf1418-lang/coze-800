@@ -1,5 +1,24 @@
 /* 首页样式 — 搞定公考800词 */
 
+/* ===== 未登录提示 ===== */
+.login-hint {
+  margin: 8rpx 24rpx 0;
+  padding: 14rpx 24rpx;
+  background: #FFF8E1;
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.login-hint:active {
+  opacity: 0.8;
+}
+
+.login-hint-text {
+  font-size: var(--font-xs);
+  color: #F57F17;
+  font-weight: 500;
+}
+
 /* ===== 品牌头部 ===== */
 .brand-header {
   display: flex;

@@ -157,15 +157,17 @@ function del(path, data) {
 // ===== Token 过期处理 =====
 
 function handleTokenExpired() {
+  const hadToken = !!TOKEN;
   clearToken();
 
   if (typeof onTokenExpired === 'function') {
     onTokenExpired();
-  } else {
-    // 默认行为：跳回首页，由首页触发登录
+  } else if (hadToken) {
+    // 曾有 token 才提示过期，避免未登录时误弹
     wx.showToast({ title: '登录已过期，请重新登录', icon: 'none', duration: 2000 });
     wx.switchTab({ url: '/pages/index/index' });
   }
+  // 无 token → 未登录状态，静默走 mock
 }
 
 // ===== 微信登录 =====
