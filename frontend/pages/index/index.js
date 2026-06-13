@@ -66,14 +66,16 @@ Page({
     if (!streak && !stats && !today) throw new Error('所有 API 均不可用');
 
     const todayProgress = this.getTodayProgress(today);
+    // API 模式不展示假 masteredWords，用真实连续天数
+    const continuousDays = streak?.streak || 0;
 
     this.setData({
-      continuousDays: streak?.streak || 0,
+      continuousDays,
       todayProgress,
       wrongCount: stats?.totalWrong || 0,
       overviewStats: {
         totalWords: 800,
-        masteredWords: checkinStats.masteredWords,
+        masteredWords: 0,      // API模式无此数据，后端补 mastery 统计后替换
         accuracy: stats?.accuracyRate || 0
       },
       categoryMastery: (stats?.categoryBreakdown || []).map(cat => ({
