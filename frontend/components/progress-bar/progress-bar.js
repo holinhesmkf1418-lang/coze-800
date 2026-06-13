@@ -4,7 +4,8 @@ Component({
       type: Number,
       value: 0,
       observer(newVal) {
-        this.setData({ _percent: Math.min(100, Math.max(0, newVal)) });
+        const v = Number.isFinite(newVal) ? newVal : 0;
+        this.setData({ _percent: Math.min(100, Math.max(0, v)) });
       }
     },
     showText: {
@@ -31,7 +32,8 @@ Component({
 
   lifetimes: {
     attached() {
-      this.setData({ _percent: Math.min(100, Math.max(0, this.properties.percent)) });
+      const v = Number.isFinite(this.properties.percent) ? this.properties.percent : 0;
+      this.setData({ _percent: Math.min(100, Math.max(0, v)) });
     }
   }
 });

@@ -8,7 +8,10 @@
     <view class="profile-bg"></view>
     <view class="profile-content">
       <view class="avatar-wrap">
-        <image class="avatar" src="{{userInfo.avatarUrl || '/assets/icons/default-avatar.png'}}" mode="aspectFill" />
+        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
+        <view class="avatar avatar-placeholder" wx:else>
+          <text class="avatar-text">{{(userInfo.nickName || '备')[0]}}</text>
+        </view>
       </view>
       <view class="profile-info">
         <text class="profile-name">{{userInfo.nickName || '备考同学'}}</text>

@@ -38,6 +38,19 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
+.avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.25);
+}
+
+.avatar-text {
+  font-size: 48rpx;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+}
+
 .profile-info {
   display: flex;
   flex-direction: column;
