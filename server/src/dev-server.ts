@@ -340,7 +340,8 @@ app.post('/api/tests/start', auth, (req, res) => {
   }
   // 免费限次+限题数
   if (!isMember) {
-    const freeCount = testHistory.filter((t: any) => t.userId === userId).length;
+    // 创建即计数，不管是否交卷，避免绕过限制
+    const freeCount = Array.from(tests.values()).filter((t: any) => t.userId === userId).length;
     if (freeCount >= 3) {
       return res.status(403).json({
         code: 403,

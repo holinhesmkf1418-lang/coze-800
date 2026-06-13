@@ -50,8 +50,9 @@ export async function quizLimitGuard(req: Request, res: Response, next: NextFunc
 
   // 次数限制：免费 3 次
   try {
+    // 开始测试就算一次，不管是否交卷，避免绕过限制
     const freeCount = await prisma.testRecord.count({
-      where: { userId, status: { not: 'IN_PROGRESS' } },
+      where: { userId },
     });
 
     if (freeCount >= 3) {
