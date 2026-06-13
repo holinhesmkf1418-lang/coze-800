@@ -15,7 +15,7 @@
  */
 
 // ===== 配置 =====
-let BASE_URL = 'http://localhost:3000';  // 默认本地开发地址，联调时替换
+let BASE_URL = '';  // 由 app.js initRequest() 通过 config 设置，不硬编码默认值
 
 let TOKEN = '';           // 内存中缓存的 JWT token
 let onTokenExpired = null; // token 过期回调
@@ -69,6 +69,13 @@ function onUnauthorized(fn) {
  */
 function request(path, options = {}) {
   const { method = 'GET', data, header = {} } = options;
+
+  // 安全兜底：baseURL 未设置时明确报错
+  if (!BASE_URL) {
+    const err = { code: -1, message: 'API baseURL 未配置，请检查 config.js 与 app.js initRequest()' };
+    console.error('[request]', err.message);
+    return Promise.reject(err);
+  }
 
   return new Promise((resolve, reject) => {
     const token = getToken();
