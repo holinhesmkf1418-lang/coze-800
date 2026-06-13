@@ -9,15 +9,28 @@ Page({
     sortBy: 'date',
     wrongList: [],
     filteredList: [],
-    dataSource: 'mock'
+    dataSource: 'mock',
+    isMember: false   // 非会员不可用错题本
   },
 
   onLoad() {
-    this.loadData();
+    this.loadMembership();
   },
 
   onShow() {
-    this.loadData();
+    this.loadMembership();
+  },
+
+  async loadMembership() {
+    try {
+      const m = await api.membership.getStatus();
+      this.setData({ isMember: !!(m && m.isMember) });
+    } catch (_) {
+      this.setData({ isMember: false });
+    }
+    if (this.data.isMember) {
+      this.loadData();
+    }
   },
 
   async loadData() {
@@ -140,6 +153,10 @@ Page({
   /**
    * 移出错题本
    */
+  goToProfile() {
+    wx.switchTab({ url: '/pages/profile/profile' });
+  },
+
   onRemoveWrong(e) {
     const { id } = e.currentTarget.dataset;
     wx.showModal({

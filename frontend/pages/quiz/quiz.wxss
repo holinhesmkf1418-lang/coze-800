@@ -108,6 +108,24 @@
   box-shadow: 0 8rpx 18rpx rgba(79, 110, 247, 0.12);
 }
 
+.count-option.locked {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.count-lock {
+  font-size: 22rpx;
+  margin-left: 4rpx;
+}
+
+.member-hint {
+  font-size: var(--font-xs);
+  color: var(--color-text-hint);
+  text-align: center;
+  margin-top: 16rpx;
+  padding: 12rpx 0;
+}
+
 /* 倒计时选项 */
 .timer-options {
   display: flex;

@@ -9,8 +9,11 @@ Page({
     quizState: 'setup',
 
     // 设置参数
-    questionCount: 100,
-    duration: 1800,     // 倒计时秒数，0=不限时
+    questionCount: 50,       // 免费用户默认50
+    duration: 1800,
+    // 会员权限
+    isMember: false,
+    freeTestsLeft: 3,
     requestedQuestionCount: 100,
     actualQuestionCount: 0,
 
@@ -42,11 +45,38 @@ Page({
     this.clearTimer();
   },
 
+  onShow() {
+    this.loadMembership();
+  },
+
   // ===== 设置方法 =====
 
   setCount(e) {
     const count = Number(e.currentTarget.dataset.count);
+    // 非会员最大 50 题
+    if (!this.data.isMember && count > 50) {
+      wx.showToast({ title: '开通会员解锁更多题目', icon: 'none' });
+      return;
+    }
     this.setData({ questionCount: count });
+  },
+
+  async loadMembership() {
+    try {
+      const m = await api.membership.getStatus();
+      if (m && m.isMember) {
+        this.setData({ isMember: true, freeTestsLeft: Infinity });
+        return;
+      }
+    } catch (_) {}
+    // 非会员：计算剩余次数（3 - 已用）
+    try {
+      const h = await api.quiz.getHistory(1, 100);
+      const used = h?.total || 0;
+      this.setData({ isMember: false, freeTestsLeft: Math.max(0, 3 - used) });
+    } catch (_) {
+      this.setData({ isMember: false, freeTestsLeft: 3 });
+    }
   },
 
   setDuration(e) {

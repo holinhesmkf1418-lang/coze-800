@@ -33,12 +33,17 @@
           <view class="count-option {{questionCount === 50 ? 'active' : ''}}" bindtap="setCount" data-count="50">
             <text>50 题</text>
           </view>
-          <view class="count-option {{questionCount === 100 ? 'active' : ''}}" bindtap="setCount" data-count="100">
+          <view class="count-option {{questionCount === 100 ? 'active' : ''}} {{!isMember ? 'locked' : ''}}" bindtap="setCount" data-count="100">
             <text>100 题</text>
+            <text class="count-lock" wx:if="{{!isMember}}">🔒</text>
           </view>
-          <view class="count-option {{questionCount === 200 ? 'active' : ''}}" bindtap="setCount" data-count="200">
+          <view class="count-option {{questionCount === 200 ? 'active' : ''}} {{!isMember ? 'locked' : ''}}" bindtap="setCount" data-count="200">
             <text>200 题</text>
+            <text class="count-lock" wx:if="{{!isMember}}">🔒</text>
           </view>
+        </view>
+        <view class="member-hint" wx:if="{{!isMember}}">
+          <text>开通会员解锁 100/200 题 · 剩余免费 {{freeTestsLeft}} 次</text>
         </view>
       </view>
 

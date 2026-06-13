@@ -5,6 +5,18 @@
   状态：静态原型，数据来自 mock
 -->
 <view class="page-container">
+  <!-- 非会员：锁定页 -->
+  <block wx:if="{{!isMember}}">
+    <view class="locked-page">
+      <text class="locked-icon">🔒</text>
+      <text class="locked-title">错题本需要开通会员</text>
+      <text class="locked-desc">开通冲刺会员，解锁完整错题分析功能<br/>查看错题统计、分类薄弱项、精准复习</text>
+      <button class="btn-primary locked-btn" bindtap="goToProfile">去开通会员</button>
+    </view>
+  </block>
+
+  <!-- 会员：正常页 -->
+  <block wx:if="{{isMember}}">
   <!-- 统计面板 -->
   <view class="section-header">
     <text class="section-title">错题统计</text>
@@ -99,4 +111,6 @@
 
   <!-- 底部安全区 -->
   <view class="safe-bottom" style="height: 120rpx;"></view>
+  </block>
+  <!-- /isMember end -->
 </view>
