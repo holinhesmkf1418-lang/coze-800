@@ -1,9 +1,12 @@
 import { Router, Request, Response } from 'express';
 import { wrongAnswerService } from '../services/wrongAnswerService';
 import { authMiddleware } from '../middleware/auth';
+import { membershipGuard, wrongAnswerGuard } from '../middleware/membershipGuard';
 
 const router = Router();
 router.use(authMiddleware);
+router.use(membershipGuard);
+router.use(wrongAnswerGuard);
 
 /**
  * GET /api/wrong-answers?page=1&pageSize=20&category=政治

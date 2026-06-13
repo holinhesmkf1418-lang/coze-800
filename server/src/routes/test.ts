@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { testService } from '../services/testService';
 import { authMiddleware } from '../middleware/auth';
-import { membershipGuard, requireMember } from '../middleware/membershipGuard';
+import { membershipGuard, quizLimitGuard } from '../middleware/membershipGuard';
 
 const router = Router();
 router.use(authMiddleware);
@@ -19,7 +19,7 @@ router.use(membershipGuard);
  *   categoryFilter?: string[] // 可选分类筛选
  * }
  */
-router.post('/start', requireMember, async (req: Request, res: Response) => {
+router.post('/start', quizLimitGuard, async (req: Request, res: Response) => {
   try {
     const data = await testService.startTest(req.userId!, {
       timeLimit: req.body.timeLimit || 0,

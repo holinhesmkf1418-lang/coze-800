@@ -268,19 +268,28 @@ app.get('/api/check-in/history', auth, (_req, res) => {
   res.json({ code: 0, message: 'ok', data: { list: [], total: 0, page: 1, pageSize: 30 } });
 });
 
-// 错题列表
+// 错题列表（需会员）
 app.get('/api/wrong-answers', auth, (req, res) => {
   const userId = (req as any).userId;
+  const m = userMemberships.get(userId);
+  if (!m || m.status !== 'ACTIVE' || new Date(m.expiresAt) <= new Date()) {
+    return res.status(403).json({ code: 403, message: '错题本需激活冲刺会员', data: null });
+  }
   const list = Array.from(wrongAnswers.values()).filter(w => {
-    // 简化：所有用户共用同一份错题数据（dev server 通常只有一个用户）
+    // 所有用户共用同一份错题数据
     const category = (req.query.category as string);
     return !category || w.category === category;
   });
   res.json({ code: 0, message: 'ok', data: { list, total: list.length, page: 1, pageSize: 20 } });
 });
 
-// 错题统计
-app.get('/api/wrong-answers/stats', auth, (_req, res) => {
+// 错题统计（需会员）
+app.get('/api/wrong-answers/stats', auth, (req, res) => {
+  const m = userMemberships.get((req as any).userId);
+  if (!m || m.status !== 'ACTIVE' || new Date(m.expiresAt) <= new Date()) {
+    return res.status(403).json({ code: 403, message: '错题本需激活冲刺会员', data: null });
+  }
+
   const all = Array.from(wrongAnswers.values());
   const totalWrong = all.length;
 
@@ -329,7 +338,19 @@ app.post('/api/tests/start', auth, (req, res) => {
       data: null
     });
   }
-  const requestedCount = Math.max(1, Math.min(Number(req.body.questionCount) || 10, 200));
+  // 免费限次+限题数
+  if (!isMember) {
+    const freeCount = testHistory.filter((t: any) => t.userId === userId).length;
+    if (freeCount >= 3) {
+      return res.status(403).json({
+        code: 403,
+        message: '免费版随心测已用完 3 次，激活冲刺会员享无限次测试',
+        data: { used: freeCount, limit: 3, isMember: false }
+      });
+    }
+  }
+  const maxQuestions = isMember ? 200 : 50;
+  const requestedCount = Math.max(1, Math.min(Number(req.body.questionCount) || 10, maxQuestions));
   const uniqueVocabs = Array.from(new Map(vocabs.map(v => [v.word, v])).values());
   const questionCount = Math.min(requestedCount, uniqueVocabs.length);
 
@@ -434,7 +455,7 @@ app.post('/api/tests/submit', auth, (req, res) => {
 
   // 写入测试历史（个人中心需要 GET /api/tests/history）
   testHistory.unshift({
-    id: testId, score: correctCount, total: record.total,
+    id: testId, userId: (req as any).userId, score: correctCount, total: record.total,
     accuracyRate: `${((correctCount / record.total) * 100).toFixed(2)}%`,
     duration, timeLimit: record.timeLimit,
     status: record.status, createdAt: new Date().toISOString()
