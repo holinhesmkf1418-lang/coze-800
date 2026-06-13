@@ -137,6 +137,30 @@ Page({
     wx.switchTab({ url: '/pages/quiz/quiz' });
   },
 
+  // ===== 头像 =====
+
+  onChooseAvatar() {
+    // 微信头像选择（需基础库 2.21.2+）
+    if (wx.chooseAvatar) {
+      // 新版：button open-type="chooseAvatar"
+      // 旧版 fallback：用 wx.chooseImage
+    }
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album'],
+      success: (res) => {
+        const tempPath = res.tempFilePaths[0];
+        if (tempPath) {
+          const user = this.data.userInfo;
+          this.setData({ userInfo: { ...user, avatarUrl: tempPath } });
+          // TODO: 上传到后端 /api/auth/profile 保存
+          wx.showToast({ title: '头像已更新（本地）', icon: 'success' });
+        }
+      }
+    });
+  },
+
   // ===== 激活码 =====
 
   showRedeemDialog() {

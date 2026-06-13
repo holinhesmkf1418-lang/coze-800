@@ -7,10 +7,13 @@
   <view class="profile-header">
     <view class="profile-bg"></view>
     <view class="profile-content">
-      <view class="avatar-wrap">
+      <view class="avatar-wrap" bindtap="onChooseAvatar">
         <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
         <view class="avatar avatar-placeholder" wx:else>
           <text class="avatar-text">{{avatarInitial}}</text>
+        </view>
+        <view class="avatar-edit-hint">
+          <text class="avatar-edit-text">点击更换</text>
         </view>
       </view>
       <view class="profile-info">

@@ -24,6 +24,7 @@
 }
 
 .avatar-wrap {
+  position: relative;
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
@@ -49,6 +50,24 @@
   font-size: 48rpx;
   font-weight: 700;
   color: rgba(255,255,255,0.7);
+}
+
+.avatar-edit-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36rpx;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 0 50% 50%;
+}
+
+.avatar-edit-text {
+  font-size: 18rpx;
+  color: rgba(255,255,255,0.85);
 }
 
 .profile-info {
