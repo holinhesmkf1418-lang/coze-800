@@ -22,7 +22,7 @@ const CONFIG = {
   },
   production: {
     baseURL: 'https://api.gdgk800.cn',
-    loginMode: 'dev',                          // ⚠️ 微信 AppID 配置后改为 'wechat'
+    loginMode: 'wechat',                       // 正式微信登录
   }
 };
 
