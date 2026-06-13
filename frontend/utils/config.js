@@ -9,7 +9,7 @@
 // 🔧 上线时改这里
 // ═══════════════════════════════════════════
 
-const isProduction = false;  // true = 生产, false = 本地联调
+const isProduction = true;   // ✅ 生产环境
 
 const CONFIG = {
   dev: {
@@ -17,12 +17,12 @@ const CONFIG = {
     loginMode: 'dev',
   },
   remote: {
-    baseURL: 'http://api.gdgk800.cn:3000',   // 腾讯云服务器 (HTTPS 配好后去掉 :3000)
-    loginMode: 'dev',                         // 微信登录配好后改为 'wechat'
+    baseURL: 'http://api.gdgk800.cn:3000',
+    loginMode: 'dev',
   },
   production: {
-    baseURL: 'https://api.gdgk800.cn',        // Nginx HTTPS 反代后使用
-    loginMode: 'wechat',
+    baseURL: 'https://api.gdgk800.cn',
+    loginMode: 'dev',                          // ⚠️ 微信 AppID 配置后改为 'wechat'
   }
 };
 
