@@ -26,7 +26,7 @@
     <!-- 总进度 -->
     <view class="total-progress">
       <progress-bar
-        percent="{{(stats.masteredWords / stats.totalWords) * 100}}"
+        percent="{{_safeMasteredPercent}}"
         label="总进度"
         showText="{{true}}"
       />
@@ -52,12 +52,12 @@
       </view>
     </view>
     <!-- 分类薄弱项 -->
-    <view class="category-section" wx:if="{{stats.categoryBreakdown}}">
+    <view class="category-section" wx:if="{{_safeCategories}}">
       <text class="section-title">薄弱项分析</text>
       <view class="category-list">
         <view
           class="category-item"
-          wx:for="{{stats.categoryBreakdown}}"
+          wx:for="{{_safeCategories}}"
           wx:key="category"
           wx:for-item="cat"
         >
@@ -104,12 +104,12 @@
       </view>
     </view>
     <!-- 分类得分 -->
-    <view class="category-section" wx:if="{{stats.categoryBreakdown}}">
+    <view class="category-section" wx:if="{{_safeCategories}}">
       <text class="section-title">分类得分</text>
       <view class="category-list">
         <view
           class="category-item"
-          wx:for="{{stats.categoryBreakdown}}"
+          wx:for="{{_safeCategories}}"
           wx:key="category"
           wx:for-item="cat"
         >
