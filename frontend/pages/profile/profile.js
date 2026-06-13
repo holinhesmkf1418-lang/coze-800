@@ -8,6 +8,7 @@ Page({
       nickName: '备考同学',
       avatarUrl: ''
     },
+    avatarInitial: '备',
     continuousDays: 0,
     wrongCount: 0,
     quizCount: 0,
@@ -33,7 +34,11 @@ Page({
   async loadData() {
     const user = app.globalData.userInfo;
     if (user) {
-      this.setData({ userInfo: { nickName: user.nickname || '备考同学', avatarUrl: user.avatarUrl || '' } });
+      const nickName = user.nickname || '备考同学';
+      this.setData({
+        userInfo: { nickName, avatarUrl: user.avatarUrl || '' },
+        avatarInitial: nickName.slice(0, 1)
+      });
     }
 
     await app.globalData.loginReady;

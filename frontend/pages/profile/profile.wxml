@@ -10,7 +10,7 @@
       <view class="avatar-wrap">
         <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
         <view class="avatar avatar-placeholder" wx:else>
-          <text class="avatar-text">{{(userInfo.nickName || '备')[0]}}</text>
+          <text class="avatar-text">{{avatarInitial}}</text>
         </view>
       </view>
       <view class="profile-info">
