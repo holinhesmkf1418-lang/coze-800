@@ -1,9 +1,13 @@
 import { Router, Request, Response } from 'express';
 import { testService } from '../services/testService';
 import { authMiddleware } from '../middleware/auth';
+import { membershipGuard, requireMember } from '../middleware/membershipGuard';
 
 const router = Router();
 router.use(authMiddleware);
+
+// 会员守卫应用于整个 test 路由
+router.use(membershipGuard);
 
 /**
  * POST /api/tests/start
@@ -15,7 +19,7 @@ router.use(authMiddleware);
  *   categoryFilter?: string[] // 可选分类筛选
  * }
  */
-router.post('/start', async (req: Request, res: Response) => {
+router.post('/start', requireMember, async (req: Request, res: Response) => {
   try {
     const data = await testService.startTest(req.userId!, {
       timeLimit: req.body.timeLimit || 0,

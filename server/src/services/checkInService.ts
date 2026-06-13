@@ -135,4 +135,31 @@ export const checkInService = {
 
     return { streak, todayCompleted };
   },
+
+  /**
+   * 学习统计（首页「已掌握词汇」等）
+   */
+  async getStats(userId: number) {
+    // 打卡总天数
+    const totalCheckIns = await prisma.checkInRecord.count({
+      where: { userId, completed: true },
+    });
+
+    // 已掌握词汇 = 打卡过的词汇去重数
+    const dailyVocabs = await prisma.dailyVocab.findMany({
+      select: { vocabId: true },
+      distinct: ['vocabId'],
+    });
+    const masteredWords = dailyVocabs.length;
+
+    // 总错题数
+    const totalWrong = await prisma.wrongAnswerRecord.count({ where: { userId } });
+
+    // 测试总次数
+    const totalTests = await prisma.testRecord.count({
+      where: { userId, status: { not: 'IN_PROGRESS' } },
+    });
+
+    return { totalCheckIns, masteredWords, totalWrong, totalTests };
+  },
 };

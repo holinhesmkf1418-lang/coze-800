@@ -253,6 +253,16 @@ app.get('/api/check-in/streak', auth, (req, res) => {
   res.json({ code: 0, message: 'ok', data: { streak: 3, todayCompleted: false } });
 });
 
+// 学习统计（首页用）
+app.get('/api/check-in/stats', auth, (_req, res) => {
+  const unlockedVocabs = vocabs.length; // dev-server 全词库可见
+  const wrongTotal = wrongAnswers.size;
+  res.json({
+    code: 0, message: 'ok',
+    data: { totalCheckIns: checkIns.size, masteredWords: unlockedVocabs, totalWrong: wrongTotal, totalTests: testHistory.length }
+  });
+});
+
 // 打卡历史
 app.get('/api/check-in/history', auth, (_req, res) => {
   res.json({ code: 0, message: 'ok', data: { list: [], total: 0, page: 1, pageSize: 30 } });
@@ -306,8 +316,19 @@ app.get('/api/vocabs/:id', (req, res) => {
   res.json({ code: 0, message: 'ok', data: v });
 });
 
-// 开始随心测
+// 开始随心测（需激活会员）
 app.post('/api/tests/start', auth, (req, res) => {
+  const userId = (req as any).userId;
+  const membership = userMemberships.get(userId);
+  const isMember = membership && membership.status === 'ACTIVE' && new Date(membership.expiresAt) > new Date();
+
+  if (!isMember) {
+    return res.status(403).json({
+      code: 403,
+      message: '该功能需激活冲刺会员，请在「我的→激活码兑换」输入激活码',
+      data: null
+    });
+  }
   const requestedCount = Math.max(1, Math.min(Number(req.body.questionCount) || 10, 200));
   const uniqueVocabs = Array.from(new Map(vocabs.map(v => [v.word, v])).values());
   const questionCount = Math.min(requestedCount, uniqueVocabs.length);

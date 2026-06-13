@@ -65,4 +65,17 @@ router.get('/streak', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * GET /api/check-in/stats
+ * 学习统计（首页：已掌握词汇/打卡天数/错题数/测试次数）
+ */
+router.get('/stats', async (req: Request, res: Response) => {
+  try {
+    const data = await checkInService.getStats(req.userId!);
+    res.json({ code: 0, message: 'ok', data });
+  } catch (err: any) {
+    res.status(500).json({ code: 500, message: err.message, data: null });
+  }
+});
+
 export default router;
