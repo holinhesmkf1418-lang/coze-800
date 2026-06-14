@@ -61,7 +61,10 @@ const checkin = {
     request.get('/api/check-in/history', { page, pageSize }),
 
   /** 连续打卡天数 */
-  getStreak: () => request.get('/api/check-in/streak')
+  getStreak: () => request.get('/api/check-in/streak'),
+
+  /** 学习统计（已掌握词汇量等） */
+  getStats: () => request.get('/api/check-in/stats')
 };
 
 // ===== 错题管理 =====

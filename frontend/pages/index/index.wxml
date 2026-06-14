@@ -37,17 +37,14 @@
       <text class="hero-sub">坚持打卡积累词汇量</text>
     </view>
     <view class="hero-progress-big">
-      <text class="hero-num-mastered" wx:if="{{overviewStats.masteredWords > 0}}">{{overviewStats.masteredWords}}</text>
-      <text class="hero-num-mastered" wx:else>{{continuousDays}}</text>
-      <text class="hero-num-sep" wx:if="{{overviewStats.masteredWords > 0}}">/</text>
-      <text class="hero-num-total" wx:if="{{overviewStats.masteredWords > 0}}">800</text>
-      <text class="hero-num-total" wx:else>天</text>
+      <text class="hero-num-mastered">{{overviewStats.masteredWords || 0}}</text>
+      <text class="hero-num-sep">/</text>
+      <text class="hero-num-total">{{overviewStats.totalWords || 800}}</text>
     </view>
     <view class="hero-bar-wrap">
-      <view class="hero-bar-fill" style="width: {{overviewStats.masteredWords > 0 ? (overviewStats.masteredWords / 800) * 100 : continuousDays * 3}}%;"></view>
+      <view class="hero-bar-fill" style="width: {{(overviewStats.masteredWords / (overviewStats.totalWords || 800)) * 100}}%;"></view>
     </view>
-    <view class="hero-percent" wx:if="{{overviewStats.masteredWords > 0}}">{{Math.round((overviewStats.masteredWords / 800) * 100)}}% 掌握率</view>
-    <view class="hero-percent" wx:else>连续打卡 {{continuousDays}} 天</view>
+    <view class="hero-percent">{{Math.round((overviewStats.masteredWords / (overviewStats.totalWords || 800)) * 100)}}% 掌握率</view>
 
     <!-- 三指标 -->
     <view class="hero-stats-row">

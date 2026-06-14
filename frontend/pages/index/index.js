@@ -52,38 +52,36 @@ Page({
     }
 
     // 独立请求：单个失败不影响其他
-    const checkinStats = mock.getCheckinStats();
-    const [streakRes, wrongStats, todayRes] = await Promise.allSettled([
+    const [streakRes, wrongStats, statsRes] = await Promise.allSettled([
       api.checkin.getStreak(),
       api.wrongAnswers.getStats(),
-      api.checkin.getToday()
+      api.checkin.getStats()
     ]);
 
     const streak = streakRes.status === 'fulfilled' ? streakRes.value : null;
-    const stats = wrongStats.status === 'fulfilled' ? wrongStats.value : null;
-    const today = todayRes.status === 'fulfilled' ? todayRes.value : null;
+    const wrong = wrongStats.status === 'fulfilled' ? wrongStats.value : null;
+    const stats = statsRes.status === 'fulfilled' ? statsRes.value : null;
 
-    if (!streak && !stats && !today) throw new Error('所有 API 均不可用');
+    if (!streak && !wrong && !stats) throw new Error('所有 API 均不可用');
 
-    const todayProgress = this.getTodayProgress(today);
-    // API 模式不展示假 masteredWords，用真实连续天数
     const continuousDays = streak?.streak || 0;
+    const masteredWords = stats?.masteredWords || 0;
+    const totalWords = stats?.totalWords || 800;
 
     this.setData({
       continuousDays,
-      todayProgress,
-      wrongCount: stats?.totalWrong || 0,
+      wrongCount: wrong?.totalWrong || 0,
       overviewStats: {
-        totalWords: 800,
-        masteredWords: 0,      // API模式无此数据，后端补 mastery 统计后替换
-        accuracy: stats?.accuracyRate || 0
+        totalWords,
+        masteredWords,              // 真实 API 数据
+        accuracy: wrong?.accuracyRate || 0
       },
-      categoryMastery: (stats?.categoryBreakdown || []).map(cat => ({
+      categoryMastery: (wrong?.categoryBreakdown || []).map(cat => ({
         category: cat.category,
-        accuracy: Math.round((1 - cat.count / Math.max(stats?.totalWrong || 0, 1)) * 100),
+        accuracy: Math.round((1 - cat.count / Math.max(wrong?.totalWrong || 0, 1)) * 100),
         count: cat.count
       })),
-      weeklyStats: checkinStats.weeklyStats
+      weeklyStats: mock.getCheckinStats().weeklyStats
     });
   },
 

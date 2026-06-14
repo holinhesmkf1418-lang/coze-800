@@ -52,82 +52,108 @@
   color: rgba(255,255,255,0.7);
 }
 
-.avatar-edit-hint {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 36rpx;
-  background: rgba(0,0,0,0.35);
+/* ===== 编辑资料按钮 ===== */
+.edit-btn {
+  margin-left: auto;
+  padding: 10rpx 18rpx;
+  border-radius: 30rpx;
+  font-size: 28rpx;
+  background: rgba(255,255,255,0.2);
+  color: #FFFFFF;
+  border: none;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ===== 编辑资料弹窗 ===== */
+.edit-dialog {
+  width: 580rpx;
+  background: #FFFFFF;
+  border-radius: var(--radius-xl);
+  padding: 48rpx 40rpx 36rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.edit-avatar-btn {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  margin: 24rpx 0;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.edit-avatar-btn::after {
+  border: none;
+}
+
+.edit-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #E8ECF4;
+}
+
+.edit-avatar-placeholder {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #4F6EF7, #6B8AFF);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0 0 50% 50%;
 }
 
-.avatar-edit-text {
-  font-size: 18rpx;
-  color: rgba(255,255,255,0.85);
+.edit-avatar-initial {
+  font-size: 64rpx;
+  font-weight: 700;
+  color: #FFFFFF;
 }
 
-/* ===== 编辑资料 ===== */
-.profile-edit-bar {
-  position: absolute;
-  top: 20rpx;
-  right: 20rpx;
-  display: flex;
-  gap: 12rpx;
-  z-index: 2;
-}
-
-.edit-btn {
-  padding: 8rpx 20rpx;
-  border-radius: 30rpx;
+.edit-avatar-hint {
   font-size: var(--font-xs);
-  font-weight: 500;
-  background: rgba(255,255,255,0.25);
-  color: #FFFFFF;
-  border: none;
-  line-height: 1.4;
-}
-
-.edit-btn.save {
-  background: rgba(255,255,255,0.9);
-  color: var(--color-primary);
-  font-weight: 700;
-}
-
-.edit-btn.cancel {
-  background: rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.7);
-}
-
-.avatar-btn {
-  border: none;
-  padding: 0;
-  margin: 0;
-  background: none;
-  line-height: 1;
-  text-align: left;
-}
-
-.avatar-btn::after {
-  border: none;
-}
-
-.profile-info.editing {
-  justify-content: center;
-}
-
-.nickname-input {
-  background: rgba(255,255,255,0.2);
-  border-radius: 12rpx;
-  padding: 12rpx 24rpx;
-  color: #FFFFFF;
-  font-size: var(--font-lg);
-  font-weight: 700;
-  width: 280rpx;
+  color: var(--color-text-hint);
+  margin-top: 12rpx;
+  display: block;
   text-align: center;
+}
+
+.edit-nickname-wrap {
+  width: 100%;
+  margin: 16rpx 0 32rpx;
+}
+
+.edit-label {
+  font-size: var(--font-sm);
+  color: var(--color-text-hint);
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.edit-nickname-input {
+  width: 100%;
+  height: 88rpx;
+  background: #F5F7FA;
+  border-radius: var(--radius-md);
+  padding: 0 28rpx;
+  font-size: var(--font-lg);
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.edit-dialog-btns {
+  width: 100%;
+  display: flex;
+  gap: 20rpx;
 }
 
 .profile-info {
