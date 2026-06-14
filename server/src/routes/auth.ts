@@ -107,7 +107,8 @@ router.get('/profile', authMiddleware, async (req: Request, res: Response) => {
  * Request: { nickname?: string, avatarUrl?: string }
  * Response: { id, nickname, avatarUrl }
  */
-router.patch('/profile', authMiddleware, async (req: Request, res: Response) => {
+// 同时支持 PUT 和 PATCH（前端用 PUT）
+const updateProfile = async (req: Request, res: Response) => {
   try {
     const { nickname, avatarUrl } = req.body;
     const user = await authService.updateUser(req.userId!, { nickname, avatarUrl });
@@ -115,6 +116,8 @@ router.patch('/profile', authMiddleware, async (req: Request, res: Response) => 
   } catch (err: any) {
     res.status(400).json({ code: 400, message: err.message, data: null });
   }
-});
+};
+router.patch('/profile', authMiddleware, updateProfile);
+router.put('/profile', authMiddleware, updateProfile);
 
 export default router;

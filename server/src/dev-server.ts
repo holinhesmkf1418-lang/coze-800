@@ -217,14 +217,16 @@ app.get('/api/auth/profile', auth, (req, res) => {
   res.json({ code: 0, message: 'ok', data: { id: user.id, openid: user.openid, nickname: user.nickname, avatarUrl: null } });
 });
 
-// Profile — 更新昵称/头像
-app.patch('/api/auth/profile', auth, (req, res) => {
+// Profile — 更新昵称/头像 (支持 PUT 和 PATCH)
+const updateProfile = (req: any, res: any) => {
   const user = users.get((req as any).userId);
   if (!user) return res.status(404).json({ code: 404, message: '用户不存在', data: null });
   const { nickname, avatarUrl } = req.body;
   if (nickname !== undefined) user.nickname = nickname;
   res.json({ code: 0, message: '资料已更新', data: { id: user.id, openid: user.openid, nickname: user.nickname, avatarUrl: avatarUrl || null } });
-});
+};
+app.patch('/api/auth/profile', auth, updateProfile);
+app.put('/api/auth/profile', auth, updateProfile);
 
 // 今日打卡
 app.get('/api/check-in/today', auth, (req, res) => {
