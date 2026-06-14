@@ -126,7 +126,7 @@ Page({
         completedCount,
         remainingCount: this.data.totalCount - completedCount,
         incompleteCount: this.data.totalCount - completedCount,
-        progressPercent: Math.round((completedCount / this.data.totalCount) * 100),
+        progressPercent: this.data.totalCount > 0 ? Math.round((completedCount / this.data.totalCount) * 100) : 0,
         allDone: completedCount === this.data.totalCount
       });
     } else {

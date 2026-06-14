@@ -51,16 +51,16 @@ Page({
       throw new Error('未登录');
     }
 
-    // 独立请求：单个失败不影响其他
-    const [streakRes, wrongStats, statsRes, todayRes] = await Promise.allSettled([
+    // 错题统计只在登录后请求（避免非会员403刷屏）
+    const [streakRes, statsRes, todayRes, wrongRes] = await Promise.allSettled([
       api.checkin.getStreak(),
-      api.wrongAnswers.getStats(),   // 非会员返回 403 是正常的，静默
       api.checkin.getStats(),
-      api.checkin.getToday()
+      api.checkin.getToday(),
+      getApp().globalData.isLoggedIn ? api.wrongAnswers.getStats() : Promise.resolve(null)
     ]);
 
     const streak = streakRes.status === 'fulfilled' ? streakRes.value : null;
-    const wrong = wrongStats.status === 'fulfilled' ? wrongStats.value : null;
+    const wrong = wrongRes.status === 'fulfilled' ? wrongRes.value : null;
     const stats = statsRes.status === 'fulfilled' ? statsRes.value : null;
     const today = todayRes.status === 'fulfilled' ? todayRes.value : null;
 
