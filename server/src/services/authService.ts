@@ -51,4 +51,40 @@ export const authService = {
       avatarUrl: user.avatarUrl,
     };
   },
+
+  /**
+   * 获取用户完整信息
+   */
+  async getUser(userId: number) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new Error('用户不存在');
+    return {
+      id: user.id,
+      openid: user.openid,
+      nickname: user.nickname,
+      avatarUrl: user.avatarUrl,
+      createdAt: user.createdAt.toISOString(),
+    };
+  },
+
+  /**
+   * 更新用户资料
+   */
+  async updateUser(userId: number, data: { nickname?: string; avatarUrl?: string }) {
+    const update: any = {};
+    if (data.nickname !== undefined) update.nickname = data.nickname;
+    if (data.avatarUrl !== undefined) update.avatarUrl = data.avatarUrl;
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: update,
+    });
+
+    return {
+      id: user.id,
+      openid: user.openid,
+      nickname: user.nickname,
+      avatarUrl: user.avatarUrl,
+    };
+  },
 };

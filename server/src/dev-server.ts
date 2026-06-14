@@ -210,10 +210,20 @@ app.post('/api/auth/dev-login', (req, res) => {
   res.json({ code: 0, message: '🔧 开发登录成功', data: { token, user: { id: user.id, nickname: user.nickname, avatarUrl: null } } });
 });
 
-// Profile
+// Profile — 获取完整用户信息
 app.get('/api/auth/profile', auth, (req, res) => {
   const user = users.get((req as any).userId);
-  res.json({ code: 0, message: 'ok', data: { userId: user?.id, openid: user?.openid } });
+  if (!user) return res.status(404).json({ code: 404, message: '用户不存在', data: null });
+  res.json({ code: 0, message: 'ok', data: { id: user.id, openid: user.openid, nickname: user.nickname, avatarUrl: null } });
+});
+
+// Profile — 更新昵称/头像
+app.patch('/api/auth/profile', auth, (req, res) => {
+  const user = users.get((req as any).userId);
+  if (!user) return res.status(404).json({ code: 404, message: '用户不存在', data: null });
+  const { nickname, avatarUrl } = req.body;
+  if (nickname !== undefined) user.nickname = nickname;
+  res.json({ code: 0, message: '资料已更新', data: { id: user.id, openid: user.openid, nickname: user.nickname, avatarUrl: avatarUrl || null } });
 });
 
 // 今日打卡

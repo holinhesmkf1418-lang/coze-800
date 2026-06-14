@@ -89,14 +89,32 @@ router.post('/dev-login', async (req: Request, res: Response) => {
 
 /**
  * GET /api/auth/profile
- * 获取当前用户信息
+ * 获取当前用户完整信息
  */
 router.get('/profile', authMiddleware, async (req: Request, res: Response) => {
-  res.json({
-    code: 0,
-    message: 'ok',
-    data: { userId: req.userId, openid: req.openid },
-  });
+  try {
+    const user = await authService.getUser(req.userId!);
+    res.json({ code: 0, message: 'ok', data: user });
+  } catch (err: any) {
+    res.status(500).json({ code: 500, message: err.message, data: null });
+  }
+});
+
+/**
+ * PATCH /api/auth/profile
+ * 更新用户资料（昵称/头像）
+ *
+ * Request: { nickname?: string, avatarUrl?: string }
+ * Response: { id, nickname, avatarUrl }
+ */
+router.patch('/profile', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const { nickname, avatarUrl } = req.body;
+    const user = await authService.updateUser(req.userId!, { nickname, avatarUrl });
+    res.json({ code: 0, message: '资料已更新', data: user });
+  } catch (err: any) {
+    res.status(400).json({ code: 400, message: err.message, data: null });
+  }
 });
 
 export default router;
