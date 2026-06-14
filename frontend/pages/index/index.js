@@ -54,7 +54,7 @@ Page({
     // 独立请求：单个失败不影响其他
     const [streakRes, wrongStats, statsRes, todayRes] = await Promise.allSettled([
       api.checkin.getStreak(),
-      api.wrongAnswers.getStats(),
+      api.wrongAnswers.getStats(),   // 非会员返回 403 是正常的，静默
       api.checkin.getStats(),
       api.checkin.getToday()
     ]);

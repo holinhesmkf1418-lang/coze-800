@@ -166,7 +166,9 @@ Page({
     this.saveCheckinState();
 
     if (allDone) {
-      wx.showToast({ title: '今日词条全部完成', icon: 'success', duration: 1200 });
+      wx.showToast({ title: '全部完成，正在同步...', icon: 'none', duration: 1500 });
+      // 全部完成后自动提交到后端
+      setTimeout(() => this.onCheckin(), 600);
       return;
     }
 
@@ -213,14 +215,15 @@ Page({
     // 先存本地
     this.saveCheckinState();
 
-    // 尝试调用真实 API
+    // 调用真实 API 同步
     try {
       const today = new Date().toISOString().split('T')[0];
       await api.checkin.submit(today);
-      wx.showToast({ title: '🎉 打卡成功！（已同步后端）', icon: 'success', duration: 2000 });
+      wx.showToast({ title: '🎉 打卡成功！已同步', icon: 'success', duration: 2000 });
+      // 标记已同步，首页/my页下次 onShow 会拉到最新数据
     } catch (e) {
       console.warn('[checkin] API submit 失败:', e.message);
-      wx.showToast({ title: '🎉 打卡成功！（本地记录）', icon: 'success', duration: 2000 });
+      wx.showToast({ title: '⚠️ 打卡成功但同步失败，请检查网络', icon: 'none', duration: 2500 });
     }
   },
 
