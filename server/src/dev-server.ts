@@ -267,9 +267,11 @@ app.get('/api/check-in/streak', auth, (req, res) => {
 
 // 学习统计（首页+我的页共用）
 app.get('/api/check-in/stats', auth, (_req, res) => {
-  const masteredWords = vocabs.length;
+  // 已掌握 = 用户已完成打卡的词汇累计
   const totalWords = vocabs.length;
-  const completedCheckIns = Array.from(checkIns.values()).filter(c => c.completed).length;
+  const completedList = Array.from(checkIns.values()).filter(c => c.completed);
+  const masteredWords = completedList.reduce((sum, c) => sum + c.vocabCount, 0);
+  const completedCheckIns = completedList.length;
   const wrongTotal = wrongAnswers.size;
   res.json({
     code: 0, message: 'ok',

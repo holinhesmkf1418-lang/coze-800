@@ -145,12 +145,12 @@ export const checkInService = {
       where: { userId, completed: true },
     });
 
-    // 已掌握词汇 = 打卡过的词汇去重数
-    const dailyVocabs = await prisma.dailyVocab.findMany({
-      select: { vocabId: true },
-      distinct: ['vocabId'],
+    // 已掌握词汇 = 用户历史完成打卡的词汇累计
+    const records = await prisma.checkInRecord.findMany({
+      where: { userId, completed: true },
+      select: { vocabCount: true },
     });
-    const masteredWords = dailyVocabs.length;
+    const masteredWords = records.reduce((sum: number, r: { vocabCount: number }) => sum + r.vocabCount, 0);
 
     // 总错题数
     const totalWrong = await prisma.wrongAnswerRecord.count({ where: { userId } });
