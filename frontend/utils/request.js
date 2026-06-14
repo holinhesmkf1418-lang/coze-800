@@ -150,6 +150,10 @@ function put(path, data) {
   return request(path, { method: 'PUT', data });
 }
 
+function patch(path, data) {
+  return request(path, { method: 'PATCH', data });
+}
+
 function del(path, data) {
   return request(path, { method: 'DELETE', data });
 }
@@ -157,7 +161,7 @@ function del(path, data) {
 // ===== Token 过期处理 =====
 
 function handleTokenExpired() {
-  const hadToken = !!TOKEN;
+  const hadToken = !!getToken();
   clearToken();
 
   if (typeof onTokenExpired === 'function') {
@@ -220,6 +224,7 @@ module.exports = {
   get,
   post,
   put,
+  patch,
   del,
   request,
 

@@ -5,7 +5,7 @@ const api = require('../../utils/api');
 Page({
   data: {
     userInfo: {
-      nickName: '备考同学',
+      nickname: '备考同学',
       avatarUrl: ''
     },
     avatarInitial: '备',
@@ -38,10 +38,10 @@ Page({
   async loadData() {
     const user = app.globalData.userInfo;
     if (user) {
-      const nickName = user.nickname || '备考同学';
+      const nickname = user.nickname || '备考同学';
       this.setData({
-        userInfo: { nickName, avatarUrl: user.avatarUrl || '' },
-        avatarInitial: nickName.slice(0, 1)
+        userInfo: { nickname, avatarUrl: user.avatarUrl || '' },
+        avatarInitial: nickname.slice(0, 1)
       });
     }
 
@@ -148,7 +148,7 @@ Page({
   startEdit() {
     this.setData({
       editing: true,
-      editNickname: this.data.userInfo.nickName || '备考同学',
+      editNickname: this.data.userInfo.nickname || '备考同学',
       editAvatarUrl: this.data.userInfo.avatarUrl || ''
     });
   },
@@ -170,28 +170,26 @@ Page({
 
   async saveProfile() {
     const nickname = (this.data.editNickname || '').trim() || '备考同学';
-    const avatarUrl = this.data.editAvatarUrl;
+    const avatarUrl = this.data.editAvatarUrl || this.data.userInfo.avatarUrl;
 
     wx.showLoading({ title: '保存中...', mask: true });
 
     try {
-      // 调用后端保存
-      await api.auth.updateProfile({ nickname, avatarUrl });
+      // 只发 nickname 给后端，头像暂存本地（临时路径不适合持久化）
+      await api.auth.updateProfile({ nickname });
 
-      // 更新本地
-      const userInfo = { nickName: nickname, avatarUrl };
+      const userInfo = { nickname, avatarUrl };
       this.setData({ userInfo, avatarInitial: nickname.slice(0, 1), editing: false });
 
       const app = getApp();
       app.globalData.userInfo = userInfo;
-      api.auth.updateProfile && wx.setStorageSync('user_info', userInfo);
+      wx.setStorageSync('user_info', userInfo);
 
       wx.hideLoading();
-      wx.showToast({ title: '资料已更新', icon: 'success' });
+      wx.showToast({ title: '昵称已同步云端', icon: 'success' });
     } catch (e) {
       wx.hideLoading();
-      // 后端不可用时，至少本地生效
-      const userInfo = { nickName: nickname, avatarUrl };
+      const userInfo = { nickname, avatarUrl };
       this.setData({ userInfo, avatarInitial: nickname.slice(0, 1), editing: false });
       wx.showToast({ title: '已本地更新（未同步云端）', icon: 'none' });
     }

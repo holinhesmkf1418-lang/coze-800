@@ -38,7 +38,7 @@ const auth = {
    * 更新用户资料（需登录）
    * @param {object} data - { nickname, avatarUrl }
    */
-  updateProfile: (data) => request.put('/api/auth/profile', data),
+  updateProfile: (data) => request.patch('/api/auth/profile', data),
 
   /** 是否已登录 */
   isLoggedIn: () => request.isLoggedIn(),
