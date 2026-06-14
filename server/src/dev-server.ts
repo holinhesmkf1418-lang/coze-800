@@ -265,13 +265,15 @@ app.get('/api/check-in/streak', auth, (req, res) => {
   res.json({ code: 0, message: 'ok', data: { streak: 3, todayCompleted: false } });
 });
 
-// 学习统计（首页用）
+// 学习统计（首页+我的页共用）
 app.get('/api/check-in/stats', auth, (_req, res) => {
-  const unlockedVocabs = vocabs.length; // dev-server 全词库可见
+  const masteredWords = vocabs.length;
+  const totalWords = vocabs.length;
+  const completedCheckIns = Array.from(checkIns.values()).filter(c => c.completed).length;
   const wrongTotal = wrongAnswers.size;
   res.json({
     code: 0, message: 'ok',
-    data: { totalCheckIns: checkIns.size, masteredWords: unlockedVocabs, totalWrong: wrongTotal, totalTests: testHistory.length }
+    data: { totalCheckIns: completedCheckIns, masteredWords, totalWords, continuousDays: completedCheckIns, totalWrong: wrongTotal, totalTests: testHistory.length }
   });
 });
 

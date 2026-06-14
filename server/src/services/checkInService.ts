@@ -160,6 +160,13 @@ export const checkInService = {
       where: { userId, status: { not: 'IN_PROGRESS' } },
     });
 
-    return { totalCheckIns, masteredWords, totalWrong, totalTests };
+    // 词库总数
+    const totalWords = await prisma.vocabulary.count();
+
+    // 连续打卡天数
+    const { streak } = await this.getStreak(userId);
+    const continuousDays = streak;
+
+    return { totalCheckIns, masteredWords, totalWords, continuousDays, totalWrong, totalTests };
   },
 };
