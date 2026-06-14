@@ -16,10 +16,12 @@
 
 .profile-content {
   position: relative;
-  padding: 48rpx 36rpx 36rpx;
+  padding: 40rpx 36rpx 32rpx;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 24rpx;
+  text-align: center;
+  gap: 16rpx;
   z-index: 1;
 }
 
@@ -54,31 +56,31 @@
 
 /* ===== 编辑资料按钮 ===== */
 .edit-btn {
-  margin-left: auto;
-  padding: 10rpx 18rpx;
+  margin-top: 8rpx;
+  padding: 10rpx 32rpx;
   border-radius: 30rpx;
-  font-size: 28rpx;
-  background: rgba(255,255,255,0.2);
+  font-size: 24rpx;
+  font-weight: 500;
+  background: rgba(255,255,255,0.25);
   color: #FFFFFF;
   border: none;
-  line-height: 1;
-  flex-shrink: 0;
+  line-height: 1.4;
 }
 
 /* ===== 编辑资料弹窗 ===== */
 .edit-dialog {
-  width: 580rpx;
+  width: 540rpx;
   background: #FFFFFF;
   border-radius: var(--radius-xl);
-  padding: 48rpx 40rpx 36rpx;
+  padding: 40rpx 36rpx 28rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .edit-avatar-btn {
-  width: 160rpx;
-  height: 160rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 50%;
   overflow: hidden;
   border: none;

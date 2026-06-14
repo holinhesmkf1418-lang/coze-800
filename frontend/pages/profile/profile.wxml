@@ -15,9 +15,9 @@
       </view>
       <view class="profile-info">
         <text class="profile-name">{{userInfo.nickname || '备考同学'}}</text>
-        <text class="profile-bio">坚持打卡 第 {{continuousDays}} 天</text>
+        <text class="profile-bio">连续打卡 {{continuousDays}} 天</text>
       </view>
-      <button class="edit-btn" bindtap="startEdit">✏️</button>
+      <button class="edit-btn" bindtap="startEdit">编辑资料</button>
     </view>
 
     <!-- 编辑资料弹窗 -->

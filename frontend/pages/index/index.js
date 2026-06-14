@@ -52,30 +52,33 @@ Page({
     }
 
     // 独立请求：单个失败不影响其他
-    const [streakRes, wrongStats, statsRes] = await Promise.allSettled([
+    const [streakRes, wrongStats, statsRes, todayRes] = await Promise.allSettled([
       api.checkin.getStreak(),
       api.wrongAnswers.getStats(),
-      api.checkin.getStats()
+      api.checkin.getStats(),
+      api.checkin.getToday()
     ]);
 
     const streak = streakRes.status === 'fulfilled' ? streakRes.value : null;
     const wrong = wrongStats.status === 'fulfilled' ? wrongStats.value : null;
     const stats = statsRes.status === 'fulfilled' ? statsRes.value : null;
+    const today = todayRes.status === 'fulfilled' ? todayRes.value : null;
 
-    if (!streak && !wrong && !stats) throw new Error('所有 API 均不可用');
+    if (!streak && !wrong && !stats && !today) throw new Error('所有 API 均不可用');
 
     const continuousDays = streak?.streak || 0;
     const masteredWords = stats?.masteredWords || 0;
     const totalWords = stats?.totalWords || 800;
 
+    // 今日进度：从 check-in/today API 取真实数据
+    const todayCompleted = today?.vocabCount || 0;
+    const todayTotal = today?.totalCount || 30;
+
     this.setData({
       continuousDays,
+      todayProgress: { completed: todayCompleted, total: todayTotal },
       wrongCount: wrong?.totalWrong || 0,
-      overviewStats: {
-        totalWords,
-        masteredWords,              // 真实 API 数据
-        accuracy: wrong?.accuracyRate || 0
-      },
+      overviewStats: { totalWords, masteredWords, accuracy: wrong?.accuracyRate || 0 },
       categoryMastery: (wrong?.categoryBreakdown || []).map(cat => ({
         category: cat.category,
         accuracy: Math.round((1 - cat.count / Math.max(wrong?.totalWrong || 0, 1)) * 100),
@@ -104,26 +107,18 @@ Page({
    * 从 mock 数据加载（兜底）
    */
   loadFromMock() {
-    const checkinStats = mock.getCheckinStats();
-    const wrongStats = mock.getWrongStats();
-
-    const categoryMastery = (wrongStats.categoryBreakdown || []).map(cat => ({
-      category: cat.category,
-      accuracy: cat.accuracy,
-      count: cat.count
-    }));
-
+    // mock 仅作兜底，不显示假数据
     this.setData({
-      continuousDays: checkinStats.continuousDays,
-      todayProgress: checkinStats.todayProgress,
-      wrongCount: wrongStats.totalWrong,
+      continuousDays: 0,
+      todayProgress: { completed: 0, total: 30 },
+      wrongCount: 0,
       overviewStats: {
-        totalWords: checkinStats.totalWords,
-        masteredWords: checkinStats.masteredWords,
-        accuracy: wrongStats.accuracy
+        totalWords: 800,
+        masteredWords: 0,
+        accuracy: 0
       },
-      weeklyStats: checkinStats.weeklyStats,
-      categoryMastery
+      weeklyStats: mock.getCheckinStats().weeklyStats,
+      categoryMastery: []
     });
   },
 

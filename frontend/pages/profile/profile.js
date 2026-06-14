@@ -112,18 +112,15 @@ Page({
   },
 
   loadFromMock() {
-    const checkinStats = mock.getCheckinStats();
-    const wrongStats = mock.getWrongStats();
-
+    // mock 仅作兜底，不显示假数据
     this.setData({
-      continuousDays: checkinStats.continuousDays,
-      wrongCount: wrongStats.totalWrong,
-      quizCount: 5,
+      continuousDays: 0,
+      wrongCount: 0,
+      quizCount: 0,
       overviewStats: {
-        totalWords: checkinStats.totalWords,
-        masteredWords: checkinStats.masteredWords,
-        continuousDays: checkinStats.continuousDays,
-        accuracy: wrongStats.accuracy
+        totalWords: 800,
+        masteredWords: 0,
+        accuracy: 0
       }
     });
   },
