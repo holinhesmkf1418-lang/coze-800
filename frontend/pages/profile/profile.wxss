@@ -70,6 +70,66 @@
   color: rgba(255,255,255,0.85);
 }
 
+/* ===== 编辑资料 ===== */
+.profile-edit-bar {
+  position: absolute;
+  top: 20rpx;
+  right: 20rpx;
+  display: flex;
+  gap: 12rpx;
+  z-index: 2;
+}
+
+.edit-btn {
+  padding: 8rpx 20rpx;
+  border-radius: 30rpx;
+  font-size: var(--font-xs);
+  font-weight: 500;
+  background: rgba(255,255,255,0.25);
+  color: #FFFFFF;
+  border: none;
+  line-height: 1.4;
+}
+
+.edit-btn.save {
+  background: rgba(255,255,255,0.9);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.edit-btn.cancel {
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+}
+
+.avatar-btn {
+  border: none;
+  padding: 0;
+  margin: 0;
+  background: none;
+  line-height: 1;
+  text-align: left;
+}
+
+.avatar-btn::after {
+  border: none;
+}
+
+.profile-info.editing {
+  justify-content: center;
+}
+
+.nickname-input {
+  background: rgba(255,255,255,0.2);
+  border-radius: 12rpx;
+  padding: 12rpx 24rpx;
+  color: #FFFFFF;
+  font-size: var(--font-lg);
+  font-weight: 700;
+  width: 280rpx;
+  text-align: center;
+}
+
 .profile-info {
   display: flex;
   flex-direction: column;

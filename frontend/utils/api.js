@@ -34,6 +34,12 @@ const auth = {
   /** 获取用户信息（需登录） */
   getProfile: () => request.get('/api/auth/profile'),
 
+  /**
+   * 更新用户资料（需登录）
+   * @param {object} data - { nickname, avatarUrl }
+   */
+  updateProfile: (data) => request.put('/api/auth/profile', data),
+
   /** 是否已登录 */
   isLoggedIn: () => request.isLoggedIn(),
 

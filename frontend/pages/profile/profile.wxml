@@ -7,19 +7,40 @@
   <view class="profile-header">
     <view class="profile-bg"></view>
     <view class="profile-content">
-      <view class="avatar-wrap" bindtap="onChooseAvatar">
-        <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
-        <view class="avatar avatar-placeholder" wx:else>
-          <text class="avatar-text">{{avatarInitial}}</text>
-        </view>
-        <view class="avatar-edit-hint">
-          <text class="avatar-edit-text">点击更换</text>
-        </view>
+      <view class="profile-edit-bar">
+        <button class="edit-btn" wx:if="{{!editing}}" bindtap="startEdit">✏️ 编辑资料</button>
+        <button class="edit-btn save" wx:if="{{editing}}" bindtap="saveProfile">💾 保存</button>
+        <button class="edit-btn cancel" wx:if="{{editing}}" bindtap="cancelEdit">取消</button>
       </view>
-      <view class="profile-info">
-        <text class="profile-name">{{userInfo.nickName || '备考同学'}}</text>
-        <text class="profile-bio">坚持打卡 第 {{continuousDays}} 天</text>
-      </view>
+      <!-- 编辑态 -->
+      <block wx:if="{{editing}}">
+        <button class="avatar-wrap avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatarNew">
+          <image class="avatar" src="{{editAvatarUrl || userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{editAvatarUrl || userInfo.avatarUrl}}"/>
+          <view class="avatar avatar-placeholder" wx:else>
+            <text class="avatar-text">{{avatarInitial}}</text>
+          </view>
+        </button>
+        <view class="profile-info editing">
+          <input class="nickname-input" type="nickname" value="{{editNickname}}" bindinput="onNickInput" placeholder="请输入昵称" maxlength="20"/>
+        </view>
+      </block>
+
+      <!-- 展示态 -->
+      <block wx:else>
+        <view class="avatar-wrap" bindtap="onChooseAvatar">
+          <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" wx:if="{{userInfo.avatarUrl}}"/>
+          <view class="avatar avatar-placeholder" wx:else>
+            <text class="avatar-text">{{avatarInitial}}</text>
+          </view>
+          <view class="avatar-edit-hint">
+            <text class="avatar-edit-text">点击更换</text>
+          </view>
+        </view>
+        <view class="profile-info">
+          <text class="profile-name">{{userInfo.nickName || '备考同学'}}</text>
+          <text class="profile-bio">坚持打卡 第 {{continuousDays}} 天</text>
+        </view>
+      </block>
     </view>
   </view>
 

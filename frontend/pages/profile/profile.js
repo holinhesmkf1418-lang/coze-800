@@ -9,6 +9,10 @@ Page({
       avatarUrl: ''
     },
     avatarInitial: '备',
+    // 编辑资料
+    editing: false,
+    editNickname: '',
+    editAvatarUrl: '',
     continuousDays: 0,
     wrongCount: 0,
     quizCount: 0,
@@ -139,26 +143,63 @@ Page({
 
   // ===== 头像 =====
 
-  onChooseAvatar() {
-    // 微信头像选择（需基础库 2.21.2+）
-    if (wx.chooseAvatar) {
-      // 新版：button open-type="chooseAvatar"
-      // 旧版 fallback：用 wx.chooseImage
-    }
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album'],
-      success: (res) => {
-        const tempPath = res.tempFilePaths[0];
-        if (tempPath) {
-          const user = this.data.userInfo;
-          this.setData({ userInfo: { ...user, avatarUrl: tempPath } });
-          // TODO: 上传到后端 /api/auth/profile 保存
-          wx.showToast({ title: '头像已更新（本地）', icon: 'success' });
-        }
-      }
+  // ===== 编辑资料 =====
+
+  startEdit() {
+    this.setData({
+      editing: true,
+      editNickname: this.data.userInfo.nickName || '备考同学',
+      editAvatarUrl: this.data.userInfo.avatarUrl || ''
     });
+  },
+
+  cancelEdit() {
+    this.setData({ editing: false, editNickname: '', editAvatarUrl: '' });
+  },
+
+  onNickInput(e) {
+    this.setData({ editNickname: e.detail.value });
+  },
+
+  onChooseAvatarNew(e) {
+    const avatarUrl = e.detail?.avatarUrl;
+    if (avatarUrl) {
+      this.setData({ editAvatarUrl: avatarUrl });
+    }
+  },
+
+  async saveProfile() {
+    const nickname = (this.data.editNickname || '').trim() || '备考同学';
+    const avatarUrl = this.data.editAvatarUrl;
+
+    wx.showLoading({ title: '保存中...', mask: true });
+
+    try {
+      // 调用后端保存
+      await api.auth.updateProfile({ nickname, avatarUrl });
+
+      // 更新本地
+      const userInfo = { nickName: nickname, avatarUrl };
+      this.setData({ userInfo, avatarInitial: nickname.slice(0, 1), editing: false });
+
+      const app = getApp();
+      app.globalData.userInfo = userInfo;
+      api.auth.updateProfile && wx.setStorageSync('user_info', userInfo);
+
+      wx.hideLoading();
+      wx.showToast({ title: '资料已更新', icon: 'success' });
+    } catch (e) {
+      wx.hideLoading();
+      // 后端不可用时，至少本地生效
+      const userInfo = { nickName: nickname, avatarUrl };
+      this.setData({ userInfo, avatarInitial: nickname.slice(0, 1), editing: false });
+      wx.showToast({ title: '已本地更新（未同步云端）', icon: 'none' });
+    }
+  },
+
+  onChooseAvatar() {
+    // 展示态点击头像：进入编辑模式
+    this.startEdit();
   },
 
   // ===== 激活码 =====
