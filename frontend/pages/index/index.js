@@ -51,20 +51,18 @@ Page({
       throw new Error('未登录');
     }
 
-    // 错题统计只在登录后请求（避免非会员403刷屏）
-    const [streakRes, statsRes, todayRes, wrongRes] = await Promise.allSettled([
+    // 首页不请求错题统计（非会员403），由错题本页独立处理
+    const [streakRes, statsRes, todayRes] = await Promise.allSettled([
       api.checkin.getStreak(),
       api.checkin.getStats(),
-      api.checkin.getToday(),
-      getApp().globalData.isLoggedIn ? api.wrongAnswers.getStats() : Promise.resolve(null)
+      api.checkin.getToday()
     ]);
 
     const streak = streakRes.status === 'fulfilled' ? streakRes.value : null;
-    const wrong = wrongRes.status === 'fulfilled' ? wrongRes.value : null;
     const stats = statsRes.status === 'fulfilled' ? statsRes.value : null;
     const today = todayRes.status === 'fulfilled' ? todayRes.value : null;
 
-    if (!streak && !wrong && !stats && !today) throw new Error('所有 API 均不可用');
+    if (!streak && !stats && !today) throw new Error('所有 API 均不可用');
 
     const continuousDays = streak?.streak || 0;
     const masteredWords = stats?.masteredWords || 0;
@@ -77,13 +75,9 @@ Page({
     this.setData({
       continuousDays,
       todayProgress: { completed: todayCompleted, total: todayTotal },
-      wrongCount: wrong?.totalWrong || 0,
+      wrongCount: 0,  // 首页不请求错题统计，由错题本页处理
       overviewStats: { totalWords, masteredWords, accuracy: wrong?.accuracyRate || 0 },
-      categoryMastery: (wrong?.categoryBreakdown || []).map(cat => ({
-        category: cat.category,
-        accuracy: Math.round((1 - cat.count / Math.max(wrong?.totalWrong || 0, 1)) * 100),
-        count: cat.count
-      })),
+      categoryMastery: [],  // 首页不展示分类掌握度（需会员），由错题本页展示
       weeklyStats: mock.getCheckinStats().weeklyStats
     });
   },

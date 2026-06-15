@@ -78,9 +78,13 @@ Page({
   async loadFromAPI() {
     let anySucceeded = false;
 
+    // 先查会员状态，决定是否请求错题统计
+    let isMember = false;
+    try { const m = await api.membership.getStatus(); isMember = !!(m && m.isMember); } catch (_) {}
+
     const [streakRes, wrongStats, statsRes, quizHistory] = await Promise.allSettled([
       api.checkin.getStreak(),
-      api.wrongAnswers.getStats(),
+      isMember ? api.wrongAnswers.getStats() : Promise.resolve(null),
       api.checkin.getStats(),
       api.quiz.getHistory(1, 1)
     ]);
